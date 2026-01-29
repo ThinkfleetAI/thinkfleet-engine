@@ -14,6 +14,7 @@ import {
   resolveAuthStorePathForDisplay,
 } from "./auth-profiles.js";
 import { normalizeProviderId } from "./model-selection.js";
+import { fetchCredentialFromSaas, isSaasMode } from "./saas-credential-client.js";
 
 export { ensureAuthProfileStore, resolveAuthProfileOrder } from "./auth-profiles.js";
 
@@ -159,6 +160,18 @@ export async function resolveApiKeyForProvider(params: {
   const authOverride = resolveProviderAuthOverride(cfg, provider);
   if (authOverride === "aws-sdk") {
     return resolveAwsSdkAuthInfo();
+  }
+
+  // SaaS credential pull -- highest priority in container mode
+  if (isSaasMode()) {
+    const saasResult = await fetchCredentialFromSaas(provider);
+    if (saasResult) {
+      return {
+        apiKey: saasResult.apiKey,
+        source: "saas-pull",
+        mode: "api-key",
+      };
+    }
   }
 
   const order = resolveAuthProfileOrder({
