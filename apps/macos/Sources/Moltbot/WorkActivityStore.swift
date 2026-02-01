@@ -1,5 +1,5 @@
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetKit
+import ThinkFleetProtocol
 import Foundation
 import Observation
 import SwiftUI
@@ -236,10 +236,10 @@ final class WorkActivityStore {
         return display.label
     }
 
-    private static func wrapToolArgs(_ args: [String: MoltbotProtocol.AnyCodable]?) -> MoltbotKit.AnyCodable? {
+    private static func wrapToolArgs(_ args: [String: MoltbotProtocol.AnyCodable]?) -> ThinkFleetKit.AnyCodable? {
         guard let args else { return nil }
         let converted: [String: Any] = args.mapValues { self.unwrapJSONValue($0.value) }
-        return MoltbotKit.AnyCodable(converted)
+        return ThinkFleetKit.AnyCodable(converted)
     }
 
     private static func unwrapJSONValue(_ value: Any) -> Any {

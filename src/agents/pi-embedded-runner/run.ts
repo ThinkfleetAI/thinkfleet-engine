@@ -3,7 +3,7 @@ import type { ThinkLevel } from "../../auto-reply/thinking.js";
 import { enqueueCommandInLane } from "../../process/command-queue.js";
 import { resolveUserPath } from "../../utils.js";
 import { isMarkdownCapableMessageChannel } from "../../utils/message-channel.js";
-import { resolveMoltbotAgentDir } from "../agent-paths.js";
+import { resolveThinkfleetAgentDir } from "../agent-paths.js";
 import {
   isProfileInCooldown,
   markAuthProfileFailure,
@@ -25,7 +25,7 @@ import {
   type ResolvedProviderAuth,
 } from "../model-auth.js";
 import { normalizeProviderId } from "../model-selection.js";
-import { ensureMoltbotModelsJson } from "../models-config.js";
+import { ensureThinkfleetModelsJson } from "../models-config.js";
 import {
   classifyFailoverReason,
   formatAssistantErrorText,
@@ -42,6 +42,7 @@ import {
   type FailoverReason,
 } from "../pi-embedded-helpers.js";
 import { normalizeUsage, type UsageLike } from "../usage.js";
+import { reportUsage } from "../usage-reporter.js";
 
 import { compactEmbeddedPiSessionDirect } from "./compact.js";
 import { resolveGlobalLane, resolveSessionLane } from "./lanes.js";
@@ -94,10 +95,10 @@ export async function runEmbeddedPiAgent(
 
       const provider = (params.provider ?? DEFAULT_PROVIDER).trim() || DEFAULT_PROVIDER;
       const modelId = (params.model ?? DEFAULT_MODEL).trim() || DEFAULT_MODEL;
-      const agentDir = params.agentDir ?? resolveMoltbotAgentDir();
+      const agentDir = params.agentDir ?? resolveThinkfleetAgentDir();
       const fallbackConfigured =
         (params.config?.agents?.defaults?.model?.fallbacks?.length ?? 0) > 0;
-      await ensureMoltbotModelsJson(params.config, agentDir);
+      await ensureThinkfleetModelsJson(params.config, agentDir);
 
       const { model, error, authStorage, modelRegistry } = resolveModel(
         provider,
@@ -617,6 +618,16 @@ export async function runEmbeddedPiAgent(
             model: lastAssistant?.model ?? model.id,
             usage,
           };
+
+          // Report token usage to SaaS for budget tracking
+          if (usage) {
+            reportUsage({
+              provider: agentMeta.provider,
+              model: agentMeta.model,
+              usage,
+              keySource: (apiKeyInfo as ApiKeyInfo | null)?.keySource ?? "byok",
+            });
+          }
 
           const payloads = buildEmbeddedRunPayloads({
             assistantTexts: attempt.assistantTexts,

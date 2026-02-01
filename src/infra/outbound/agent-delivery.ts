@@ -14,7 +14,7 @@ import {
   resolveSessionDeliveryTarget,
   type SessionDeliveryTarget,
 } from "./targets.js";
-import type { MoltbotConfig } from "../../config/config.js";
+import type { ThinkfleetConfig } from "../../config/config.js";
 import type { OutboundTargetResolution } from "./targets.js";
 
 export type AgentDeliveryPlan = {
@@ -98,7 +98,7 @@ export function resolveAgentDeliveryPlan(params: {
 }
 
 export function resolveAgentOutboundTarget(params: {
-  cfg: MoltbotConfig;
+  cfg: ThinkfleetConfig;
   plan: AgentDeliveryPlan;
   targetMode?: ChannelOutboundTargetMode;
   validateExplicitTarget?: boolean;

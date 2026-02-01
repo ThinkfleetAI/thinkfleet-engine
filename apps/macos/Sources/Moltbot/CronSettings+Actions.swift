@@ -1,4 +1,4 @@
-import MoltbotProtocol
+import ThinkFleetProtocol
 import Foundation
 
 extension CronSettings {

@@ -20,7 +20,7 @@ import { clearAgentRunContext, onAgentEvent } from "../infra/agent-events.js";
 import { onHeartbeatEvent } from "../infra/heartbeat-events.js";
 import { startHeartbeatRunner } from "../infra/heartbeat-runner.js";
 import { getMachineDisplayName } from "../infra/machine-name.js";
-import { ensureMoltbotCliOnPath } from "../infra/path-env.js";
+import { ensureThinkfleetCliOnPath } from "../infra/path-env.js";
 import {
   primeRemoteSkillsCache,
   refreshRemoteBinsForConnectedNodes,
@@ -52,6 +52,7 @@ import { createGatewayCloseHandler } from "./server-close.js";
 import { buildGatewayCronService } from "./server-cron.js";
 import { applyGatewayLaneConcurrency } from "./server-lanes.js";
 import { startGatewayMaintenanceTimers } from "./server-maintenance.js";
+import { startPortScanner } from "./server-port-scanner.js";
 import { coreGatewayHandlers } from "./server-methods.js";
 import { GATEWAY_EVENTS, listGatewayMethods } from "./server-methods-list.js";
 import { loadGatewayModelCatalog } from "./server-model-catalog.js";
@@ -73,7 +74,7 @@ import { attachGatewayWsHandlers } from "./server-ws-runtime.js";
 
 export { __resetModelCatalogCacheForTest } from "./server-model-catalog.js";
 
-ensureMoltbotCliOnPath();
+ensureThinkfleetCliOnPath();
 
 const log = createSubsystemLogger("gateway");
 const logCanvas = log.child("canvas");
@@ -149,13 +150,13 @@ export async function startGatewayServer(
   opts: GatewayServerOptions = {},
 ): Promise<GatewayServer> {
   // Ensure all default port derivations (browser/canvas) see the actual runtime port.
-  process.env.CLAWDBOT_GATEWAY_PORT = String(port);
+  process.env.THINKFLEET_GATEWAY_PORT = String(port);
   logAcceptedEnvOption({
-    key: "CLAWDBOT_RAW_STREAM",
+    key: "THINKFLEET_RAW_STREAM",
     description: "raw stream logging enabled",
   });
   logAcceptedEnvOption({
-    key: "CLAWDBOT_RAW_STREAM_PATH",
+    key: "THINKFLEET_RAW_STREAM_PATH",
     description: "raw stream log path override",
   });
 
@@ -169,7 +170,7 @@ export async function startGatewayServer(
     const { config: migrated, changes } = migrateLegacyConfig(configSnapshot.parsed);
     if (!migrated) {
       throw new Error(
-        `Legacy config entries detected but auto-migration failed. Run "${formatCliCommand("moltbot doctor")}" to migrate.`,
+        `Legacy config entries detected but auto-migration failed. Run "${formatCliCommand("thinkfleet doctor")}" to migrate.`,
       );
     }
     await writeConfigFile(migrated);
@@ -191,7 +192,7 @@ export async function startGatewayServer(
             .join("\n")
         : "Unknown validation issue.";
     throw new Error(
-      `Invalid config at ${configSnapshot.path}.\n${issues}\nRun "${formatCliCommand("moltbot doctor")}" to repair, then retry.`,
+      `Invalid config at ${configSnapshot.path}.\n${issues}\nRun "${formatCliCommand("thinkfleet doctor")}" to repair, then retry.`,
     );
   }
 
@@ -218,6 +219,15 @@ export async function startGatewayServer(
   initSubagentRegistry();
   const defaultAgentId = resolveDefaultAgentId(cfgAtStart);
   const defaultWorkspaceDir = resolveAgentWorkspaceDir(cfgAtStart, defaultAgentId);
+
+  // In SaaS mode, fetch agent config (name, persona, model) from the platform
+  // and apply it before plugins/channels start.
+  const { isSaasMode } = await import("../agents/saas-credential-client.js");
+  if (isSaasMode()) {
+    const { applySaasAgentConfig } = await import("../agents/saas-config-client.js");
+    await applySaasAgentConfig(defaultWorkspaceDir ?? "/home/node/clawd");
+  }
+
   const baseMethods = listGatewayMethods();
   const { pluginRegistry, gatewayMethods: baseGatewayMethods } = loadGatewayPlugins({
     cfg: cfgAtStart,
@@ -406,6 +416,8 @@ export async function startGatewayServer(
     broadcast("heartbeat", evt, { dropIfSlow: true });
   });
 
+  const portScanner = startPortScanner({ broadcast });
+
   let heartbeatRunner = startHeartbeatRunner({ cfg: cfgAtStart });
 
   void cron.start().catch((err) => logCron.error(`failed to start: ${String(err)}`));
@@ -574,6 +586,7 @@ export async function startGatewayServer(
       if (diagnosticsEnabled) {
         stopDiagnosticHeartbeat();
       }
+      portScanner.stop();
       if (skillsRefreshTimer) {
         clearTimeout(skillsRefreshTimer);
         skillsRefreshTimer = null;

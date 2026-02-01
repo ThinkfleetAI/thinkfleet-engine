@@ -1,6 +1,6 @@
 import { createRequire } from "node:module";
 
-import type { MoltbotConfig } from "../config/config.js";
+import type { ThinkfleetConfig } from "../config/config.js";
 
 const requireConfig = createRequire(import.meta.url);
 
@@ -97,10 +97,10 @@ function redactText(text: string, patterns: RegExp[]): string {
 }
 
 function resolveConfigRedaction(): RedactOptions {
-  let cfg: MoltbotConfig["logging"] | undefined;
+  let cfg: ThinkfleetConfig["logging"] | undefined;
   try {
     const loaded = requireConfig("../config/config.js") as {
-      loadConfig?: () => MoltbotConfig;
+      loadConfig?: () => ThinkfleetConfig;
     };
     cfg = loaded.loadConfig?.().logging;
   } catch {

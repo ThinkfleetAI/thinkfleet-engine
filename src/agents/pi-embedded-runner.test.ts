@@ -4,8 +4,8 @@ import path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import "./test-helpers/fast-coding-tools.js";
-import type { MoltbotConfig } from "../config/config.js";
-import { ensureMoltbotModelsJson } from "./models-config.js";
+import type { ThinkfleetConfig } from "../config/config.js";
+import { ensureThinkfleetModelsJson } from "./models-config.js";
 
 vi.mock("@mariozechner/pi-ai", async () => {
   const actual = await vi.importActual<typeof import("@mariozechner/pi-ai")>("@mariozechner/pi-ai");
@@ -96,7 +96,7 @@ let sessionCounter = 0;
 beforeAll(async () => {
   vi.useRealTimers();
   ({ runEmbeddedPiAgent } = await import("./pi-embedded-runner.js"));
-  tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "moltbot-embedded-agent-"));
+  tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "thinkfleet-embedded-agent-"));
   agentDir = path.join(tempRoot, "agent");
   workspaceDir = path.join(tempRoot, "workspace");
   await fs.mkdir(agentDir, { recursive: true });
@@ -129,9 +129,10 @@ const makeOpenAiConfig = (modelIds: string[]) =>
         },
       },
     },
-  }) satisfies MoltbotConfig;
+  }) satisfies ThinkfleetConfig;
 
-const ensureModels = (cfg: MoltbotConfig) => ensureMoltbotModelsJson(cfg, agentDir) as unknown;
+const ensureModels = (cfg: ThinkfleetConfig) =>
+  ensureThinkfleetModelsJson(cfg, agentDir) as unknown;
 
 const nextSessionFile = () => {
   sessionCounter += 1;
@@ -191,7 +192,7 @@ describe("runEmbeddedPiAgent", () => {
           },
         },
       },
-    } satisfies MoltbotConfig;
+    } satisfies ThinkfleetConfig;
 
     await expect(
       runEmbeddedPiAgent({

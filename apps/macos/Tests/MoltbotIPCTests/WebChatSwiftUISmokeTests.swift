@@ -1,5 +1,5 @@
 import AppKit
-import MoltbotChatUI
+import ThinkFleetChatUI
 import Foundation
 import Testing
 @testable import Moltbot

@@ -1,5 +1,5 @@
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetKit
+import ThinkFleetProtocol
 import Cocoa
 import Foundation
 import Observation

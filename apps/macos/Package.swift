@@ -20,7 +20,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-log.git", from: "1.8.0"),
         .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.8.1"),
         .package(url: "https://github.com/steipete/Peekaboo.git", branch: "main"),
-        .package(path: "../shared/MoltbotKit"),
+        .package(path: "../shared/ThinkFleetKit"),
         .package(path: "../../Swabble"),
     ],
     targets: [
@@ -33,7 +33,7 @@ let package = Package(
         .target(
             name: "MoltbotDiscovery",
             dependencies: [
-                .product(name: "MoltbotKit", package: "MoltbotKit"),
+                .product(name: "ThinkFleetKit", package: "ThinkFleetKit"),
             ],
             path: "Sources/MoltbotDiscovery",
             swiftSettings: [
@@ -44,9 +44,9 @@ let package = Package(
             dependencies: [
                 "MoltbotIPC",
                 "MoltbotDiscovery",
-                .product(name: "MoltbotKit", package: "MoltbotKit"),
-                .product(name: "MoltbotChatUI", package: "MoltbotKit"),
-                .product(name: "MoltbotProtocol", package: "MoltbotKit"),
+                .product(name: "ThinkFleetKit", package: "ThinkFleetKit"),
+                .product(name: "ThinkFleetChatUI", package: "ThinkFleetKit"),
+                .product(name: "ThinkFleetProtocol", package: "ThinkFleetKit"),
                 .product(name: "SwabbleKit", package: "swabble"),
                 .product(name: "MenuBarExtraAccess", package: "MenuBarExtraAccess"),
                 .product(name: "Subprocess", package: "swift-subprocess"),
@@ -69,8 +69,8 @@ let package = Package(
             name: "MoltbotMacCLI",
             dependencies: [
                 "MoltbotDiscovery",
-                .product(name: "MoltbotKit", package: "MoltbotKit"),
-                .product(name: "MoltbotProtocol", package: "MoltbotKit"),
+                .product(name: "ThinkFleetKit", package: "ThinkFleetKit"),
+                .product(name: "ThinkFleetProtocol", package: "ThinkFleetKit"),
             ],
             path: "Sources/MoltbotMacCLI",
             swiftSettings: [
@@ -82,7 +82,7 @@ let package = Package(
                 "MoltbotIPC",
                 "Moltbot",
                 "MoltbotDiscovery",
-                .product(name: "MoltbotProtocol", package: "MoltbotKit"),
+                .product(name: "ThinkFleetProtocol", package: "ThinkFleetKit"),
                 .product(name: "SwabbleKit", package: "swabble"),
             ],
             swiftSettings: [

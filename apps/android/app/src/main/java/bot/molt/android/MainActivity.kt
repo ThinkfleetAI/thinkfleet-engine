@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -18,23 +19,27 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import bot.molt.android.auth.AuthScreen
+import bot.molt.android.model.AppState
+import bot.molt.android.ui.MainNavScreen
 import bot.molt.android.ui.RootScreen
-import bot.molt.android.ui.MoltbotTheme
+import bot.molt.android.ui.ThinkFleetTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
   private val viewModel: MainViewModel by viewModels()
   private lateinit var permissionRequester: PermissionRequester
   private lateinit var screenCaptureRequester: ScreenCaptureRequester
+  private lateinit var appState: AppState
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    appState = AppState(applicationContext)
+
     val isDebuggable = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
     WebView.setWebContentsDebuggingEnabled(isDebuggable)
-    applyImmersiveMode()
     requestDiscoveryPermissionsIfNeeded()
     requestNotificationPermissionIfNeeded()
-    NodeForegroundService.start(this)
     permissionRequester = PermissionRequester(this)
     screenCaptureRequester = ScreenCaptureRequester(this)
     viewModel.camera.attachLifecycleOwner(this)
@@ -42,6 +47,10 @@ class MainActivity : ComponentActivity() {
     viewModel.sms.attachPermissionRequester(permissionRequester)
     viewModel.screenRecorder.attachScreenCaptureRequester(screenCaptureRequester)
     viewModel.screenRecorder.attachPermissionRequester(permissionRequester)
+
+    lifecycleScope.launch {
+      appState.restoreSessionIfNeeded()
+    }
 
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -56,9 +65,18 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
-      MoltbotTheme {
+      ThinkFleetTheme {
+        val isAuthenticated = appState.sessionStore.sessionToken.collectAsState().value != null
+            && appState.sessionStore.currentUser.collectAsState().value != null
+
         Surface(modifier = Modifier) {
-          RootScreen(viewModel = viewModel)
+          if (isAuthenticated) {
+            MainNavScreen(appState = appState)
+          } else {
+            AuthScreen(appState = appState) {
+              // onAuthenticated callback - recomposition handles the switch
+            }
+          }
         }
       }
     }

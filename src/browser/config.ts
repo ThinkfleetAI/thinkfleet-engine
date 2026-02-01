@@ -1,4 +1,4 @@
-import type { BrowserConfig, BrowserProfileConfig, MoltbotConfig } from "../config/config.js";
+import type { BrowserConfig, BrowserProfileConfig, ThinkfleetConfig } from "../config/config.js";
 import {
   deriveDefaultBrowserCdpPortRange,
   deriveDefaultBrowserControlPort,
@@ -116,7 +116,7 @@ function ensureDefaultProfile(
 /**
  * Ensure a built-in "chrome" profile exists for the Chrome extension relay.
  *
- * Note: this is a Moltbot browser profile (routing config), not a Chrome user profile.
+ * Note: this is a Thinkfleet browser profile (routing config), not a Chrome user profile.
  * It points at the local relay CDP endpoint (controlPort + 1).
  */
 function ensureDefaultChromeExtensionProfile(
@@ -139,7 +139,7 @@ function ensureDefaultChromeExtensionProfile(
 }
 export function resolveBrowserConfig(
   cfg: BrowserConfig | undefined,
-  rootConfig?: MoltbotConfig,
+  rootConfig?: ThinkfleetConfig,
 ): ResolvedBrowserConfig {
   const enabled = cfg?.enabled ?? DEFAULT_CLAWD_BROWSER_ENABLED;
   const evaluateEnabled = cfg?.evaluateEnabled ?? DEFAULT_BROWSER_EVALUATE_ENABLED;

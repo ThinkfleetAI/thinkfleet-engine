@@ -1,7 +1,7 @@
 import AppKit
 import MoltbotDiscovery
 import MoltbotIPC
-import MoltbotKit
+import ThinkFleetKit
 import Observation
 import SwiftUI
 

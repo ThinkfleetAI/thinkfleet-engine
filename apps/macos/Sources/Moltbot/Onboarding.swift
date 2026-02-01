@@ -1,5 +1,5 @@
 import AppKit
-import MoltbotChatUI
+import ThinkFleetChatUI
 import MoltbotDiscovery
 import MoltbotIPC
 import Combine

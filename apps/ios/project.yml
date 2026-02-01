@@ -1,6 +1,6 @@
-name: Moltbot
+name: ThinkFleet
 options:
-  bundleIdPrefix: bot.molt
+  bundleIdPrefix: com.thinkfleet
   deploymentTarget:
     iOS: "18.0"
   xcodeVersion: "16.0"
@@ -10,35 +10,40 @@ settings:
     SWIFT_VERSION: "6.0"
 
 packages:
-  MoltbotKit:
-    path: ../shared/MoltbotKit
+  ThinkFleetKit:
+    path: ../shared/ThinkFleetKit
   Swabble:
     path: ../../Swabble
+  SocketIO:
+    url: https://github.com/socketio/socket.io-client-swift
+    from: "16.1.1"
 
 schemes:
-  Moltbot:
+  ThinkFleet:
     shared: true
     build:
       targets:
-        Moltbot: all
+        ThinkFleet: all
     test:
       targets:
-        - MoltbotTests
+        - ThinkFleetTests
 
 targets:
-  Moltbot:
+  ThinkFleet:
     type: application
     platform: iOS
     sources:
       - path: Sources
     dependencies:
-      - package: MoltbotKit
-      - package: MoltbotKit
-        product: MoltbotChatUI
-      - package: MoltbotKit
-        product: MoltbotProtocol
+      - package: ThinkFleetKit
+      - package: ThinkFleetKit
+        product: ThinkFleetChatUI
+      - package: ThinkFleetKit
+        product: ThinkFleetProtocol
       - package: Swabble
         product: SwabbleKit
+      - package: SocketIO
+        product: SocketIO
       - sdk: AppIntents.framework
     preBuildScripts:
       - name: SwiftFormat (lint)
@@ -71,7 +76,7 @@ targets:
         CODE_SIGN_IDENTITY: "Apple Development"
         CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: Y5PE65HELJ
-        PRODUCT_BUNDLE_IDENTIFIER: bot.molt.ios
+        PRODUCT_BUNDLE_IDENTIFIER: ai.thinkfleet.thinkfleetAI
         PROVISIONING_PROFILE_SPECIFIER: "bot.molt.ios Development"
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
@@ -79,7 +84,7 @@ targets:
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: Moltbot
+        CFBundleDisplayName: ThinkFleet
         CFBundleIconName: AppIcon
         CFBundleShortVersionString: "2026.1.27-beta.1"
         CFBundleVersion: "20260126"
@@ -88,16 +93,16 @@ targets:
           UIApplicationSupportsMultipleScenes: false
         UIBackgroundModes:
           - audio
-        NSLocalNetworkUsageDescription: Moltbot discovers and connects to your Moltbot gateway on the local network.
+        NSLocalNetworkUsageDescription: ThinkFleet discovers and connects to your ThinkFleet gateway on the local network.
         NSAppTransportSecurity:
           NSAllowsArbitraryLoadsInWebContent: true
         NSBonjourServices:
-          - _moltbot-gw._tcp
-        NSCameraUsageDescription: Moltbot can capture photos or short video clips when requested via the gateway.
-        NSLocationWhenInUseUsageDescription: Moltbot uses your location when you allow location sharing.
-        NSLocationAlwaysAndWhenInUseUsageDescription: Moltbot can share your location in the background when you enable Always.
-        NSMicrophoneUsageDescription: Moltbot needs microphone access for voice wake.
-        NSSpeechRecognitionUsageDescription: Moltbot uses on-device speech recognition for voice wake.
+          - _thinkfleet-gw._tcp
+        NSCameraUsageDescription: ThinkFleet can capture photos or short video clips when requested via the gateway.
+        NSLocationWhenInUseUsageDescription: ThinkFleet uses your location when you allow location sharing.
+        NSLocationAlwaysAndWhenInUseUsageDescription: ThinkFleet can share your location in the background when you enable Always.
+        NSMicrophoneUsageDescription: ThinkFleet needs microphone access for voice wake.
+        NSSpeechRecognitionUsageDescription: ThinkFleet uses on-device speech recognition for voice wake.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationPortraitUpsideDown
@@ -109,26 +114,26 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
 
-  MoltbotTests:
+  ThinkFleetTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - path: Tests
     dependencies:
-      - target: Moltbot
+      - target: ThinkFleet
       - package: Swabble
         product: SwabbleKit
       - sdk: AppIntents.framework
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: bot.molt.ios.tests
+        PRODUCT_BUNDLE_IDENTIFIER: ai.thinkfleet.thinkfleetAI.tests
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Moltbot.app/Moltbot"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ThinkFleet.app/ThinkFleet"
         BUNDLE_LOADER: "$(TEST_HOST)"
     info:
       path: Tests/Info.plist
       properties:
-        CFBundleDisplayName: MoltbotTests
+        CFBundleDisplayName: ThinkFleetTests
         CFBundleShortVersionString: "2026.1.27-beta.1"
         CFBundleVersion: "20260126"

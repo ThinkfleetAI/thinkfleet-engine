@@ -22,10 +22,10 @@ vi.mock("../config/config.js", async (importOriginal) => {
 });
 
 import "./test-helpers/fast-core-tools.js";
-import { createMoltbotTools } from "./moltbot-tools.js";
+import { createThinkfleetTools } from "./thinkfleet-tools.js";
 import { resetSubagentRegistryForTests } from "./subagent-registry.js";
 
-describe("moltbot-tools: subagents", () => {
+describe("thinkfleet-tools: subagents", () => {
   beforeEach(() => {
     configOverride = {
       session: {
@@ -89,7 +89,7 @@ describe("moltbot-tools: subagents", () => {
       return {};
     });
 
-    const tool = createMoltbotTools({
+    const tool = createThinkfleetTools({
       agentSessionKey: "discord:group:req",
       agentChannel: "discord",
     }).find((candidate) => candidate.name === "sessions_spawn");

@@ -1,5 +1,5 @@
-import MoltbotChatUI
-import MoltbotProtocol
+import ThinkFleetChatUI
+import ThinkFleetProtocol
 import Testing
 @testable import Moltbot
 

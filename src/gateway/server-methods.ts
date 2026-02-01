@@ -1,6 +1,7 @@
 import { ErrorCodes, errorShape } from "./protocol/index.js";
 import { agentHandlers } from "./server-methods/agent.js";
 import { agentsHandlers } from "./server-methods/agents.js";
+import { agentZeroHandlers } from "./server-methods/agentzero.js";
 import { authHandlers } from "./server-methods/auth.js";
 import { browserHandlers } from "./server-methods/browser.js";
 import { channelsHandlers } from "./server-methods/channels.js";
@@ -10,6 +11,8 @@ import { connectHandlers } from "./server-methods/connect.js";
 import { cronHandlers } from "./server-methods/cron.js";
 import { deviceHandlers } from "./server-methods/devices.js";
 import { execApprovalsHandlers } from "./server-methods/exec-approvals.js";
+import { filesHandlers } from "./server-methods/files.js";
+import { portsHandlers } from "./server-methods/ports.js";
 import { healthHandlers } from "./server-methods/health.js";
 import { logsHandlers } from "./server-methods/logs.js";
 import { modelsHandlers } from "./server-methods/models.js";
@@ -73,6 +76,12 @@ const READ_METHODS = new Set([
   "node.list",
   "node.describe",
   "chat.history",
+  "files.read",
+  "files.list",
+  "ports.list",
+  "agentzero.health",
+  "agentzero.task.get",
+  "agentzero.task.list",
 ]);
 const WRITE_METHODS = new Set([
   "send",
@@ -89,6 +98,9 @@ const WRITE_METHODS = new Set([
   "chat.send",
   "chat.abort",
   "browser.request",
+  "files.publish",
+  "agentzero.task.create",
+  "agentzero.task.cancel",
 ]);
 
 function authorizeGatewayMethod(method: string, client: GatewayRequestOptions["client"]) {
@@ -173,6 +185,9 @@ export const coreGatewayHandlers: GatewayRequestHandlers = {
   ...agentsHandlers,
   ...browserHandlers,
   ...authHandlers,
+  ...filesHandlers,
+  ...portsHandlers,
+  ...agentZeroHandlers,
 };
 
 export async function handleGatewayRequest(

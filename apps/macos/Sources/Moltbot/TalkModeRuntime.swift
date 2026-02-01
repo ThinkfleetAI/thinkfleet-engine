@@ -1,6 +1,6 @@
 import AVFoundation
-import MoltbotChatUI
-import MoltbotKit
+import ThinkFleetChatUI
+import ThinkFleetKit
 import Foundation
 import OSLog
 import Speech

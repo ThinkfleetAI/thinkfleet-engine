@@ -5,20 +5,21 @@ plugins {
   id("org.jetbrains.kotlin.android")
   id("org.jetbrains.kotlin.plugin.compose")
   id("org.jetbrains.kotlin.plugin.serialization")
+  id("com.google.gms.google-services")
 }
 
 android {
-  namespace = "bot.molt.android"
+  namespace = "com.thinkfleet.android"
   compileSdk = 36
 
   sourceSets {
     getByName("main") {
-      assets.srcDir(file("../../shared/MoltbotKit/Sources/MoltbotKit/Resources"))
+      assets.srcDir(file("../../shared/ThinkFleetKit/Sources/ThinkFleetKit/Resources"))
     }
   }
 
   defaultConfig {
-    applicationId = "bot.molt.android"
+    applicationId = "ai.thinkfleet.thinkfleetAI"
     minSdk = 31
     targetSdk = 36
     versionCode = 202601260
@@ -65,7 +66,7 @@ androidComponents {
         val versionName = output.versionName.orNull ?: "0"
         val buildType = variant.buildType
 
-        val outputFileName = "moltbot-${versionName}-${buildType}.apk"
+        val outputFileName = "thinkfleet-${versionName}-${buildType}.apk"
         output.outputFileName = outputFileName
       }
   }
@@ -114,6 +115,19 @@ dependencies {
 
   // Unicast DNS-SD (Wide-Area Bonjour) for tailnet discovery domains.
   implementation("dnsjava:dnsjava:3.6.4")
+
+  // Socket.IO for SaaS real-time communication
+  implementation("io.socket:socket.io-client:2.1.1")
+
+  // Image loading for avatars and assets
+  implementation("io.coil-kt:coil-compose:2.7.0")
+
+  // Firebase Cloud Messaging for push notifications
+  implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+  implementation("com.google.firebase:firebase-messaging-ktx")
+
+  // Passkey/credential support
+  implementation("androidx.credentials:credentials:1.5.0")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")

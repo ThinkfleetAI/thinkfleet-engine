@@ -3,6 +3,7 @@ packages:
   - ui
   - packages/*
   - extensions/*
+  - apps/desktop
 
 onlyBuiltDependencies:
   - '@whiskeysockets/baileys'
@@ -10,5 +11,6 @@ onlyBuiltDependencies:
   - '@matrix-org/matrix-sdk-crypto-nodejs'
   - authenticate-pam
   - esbuild
+  - electron
   - protobufjs
   - sharp

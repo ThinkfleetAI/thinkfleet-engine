@@ -82,6 +82,12 @@ const BASE_METHODS = [
   "chat.history",
   "chat.abort",
   "chat.send",
+  // File access methods
+  "files.read",
+  "files.list",
+  "files.publish",
+  // Port scanning for reverse proxy
+  "ports.list",
 ];
 
 export function listGatewayMethods(): string[] {
@@ -108,4 +114,6 @@ export const GATEWAY_EVENTS = [
   "voicewake.changed",
   "exec.approval.requested",
   "exec.approval.resolved",
+  "task.file",
+  "ports.detected",
 ];

@@ -14,6 +14,7 @@ import type { createSubsystemLogger } from "../logging/subsystem.js";
 import { handleSlackHttpRequest } from "../slack/http/index.js";
 import { resolveAgentAvatar } from "../agents/identity-avatar.js";
 import { handleControlUiAvatarRequest, handleControlUiHttpRequest } from "./control-ui.js";
+import { handleKioskHttpRequest } from "./kiosk-ui.js";
 import {
   extractHookToken,
   getHookChannelError,
@@ -87,7 +88,7 @@ export function createHooksRequestHandler(
       logHooks.warn(
         "Hook token provided via query parameter is deprecated for security reasons. " +
           "Tokens in URLs appear in logs, browser history, and referrer headers. " +
-          "Use Authorization: Bearer <token> or X-Moltbot-Token header instead.",
+          "Use Authorization: Bearer <token> or X-Thinkfleet-Token header instead.",
       );
     }
 
@@ -288,6 +289,8 @@ export function createGatewayHttpServer(opts: {
           return;
       }
 
+      if (handleKioskHttpRequest(req, res)) return;
+
       res.statusCode = 404;
       res.setHeader("Content-Type", "text/plain; charset=utf-8");
       res.end("Not Found");
@@ -301,13 +304,20 @@ export function createGatewayHttpServer(opts: {
   return httpServer;
 }
 
+export type LocalAudioUpgradeHandler = {
+  handleUpgrade(req: IncomingMessage, socket: import("node:stream").Duplex, head: Buffer): boolean;
+};
+
 export function attachGatewayUpgradeHandler(opts: {
   httpServer: HttpServer;
   wss: WebSocketServer;
   canvasHost: CanvasHostHandler | null;
+  localAudioHandler?: LocalAudioUpgradeHandler | null;
 }) {
-  const { httpServer, wss, canvasHost } = opts;
+  const { httpServer, wss, canvasHost, localAudioHandler } = opts;
   httpServer.on("upgrade", (req, socket, head) => {
+    // Local audio WebSocket (kiosk <-> gateway)
+    if (localAudioHandler?.handleUpgrade(req, socket, head)) return;
     if (canvasHost?.handleUpgrade(req, socket, head)) return;
     wss.handleUpgrade(req, socket, head, (ws) => {
       wss.emit("connection", ws, req);

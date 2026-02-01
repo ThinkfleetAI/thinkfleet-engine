@@ -59,7 +59,7 @@ function defaultIndexHTML() {
   return `<!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Moltbot Canvas</title>
+<title>Thinkfleet Canvas</title>
 <style>
   html, body { height: 100%; margin: 0; background: #000; color: #fff; font: 16px/1.4 -apple-system, BlinkMacSystemFont, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
   .wrap { min-height: 100%; display: grid; place-items: center; padding: 24px; }
@@ -77,7 +77,7 @@ function defaultIndexHTML() {
 <div class="wrap">
   <div class="card">
     <div class="title">
-      <h1>Moltbot Canvas</h1>
+      <h1>Thinkfleet Canvas</h1>
       <div class="sub">Interactive test page (auto-reload enabled)</div>
     </div>
 
@@ -102,46 +102,46 @@ function defaultIndexHTML() {
     !!(
       window.webkit &&
       window.webkit.messageHandlers &&
-      (window.webkit.messageHandlers.moltbotCanvasA2UIAction ||
-        window.webkit.messageHandlers.clawdbotCanvasA2UIAction)
+      (window.webkit.messageHandlers.thinkfleetCanvasA2UIAction ||
+        window.webkit.messageHandlers.thinkfleetCanvasA2UIAction)
     );
   const hasAndroid = () =>
     !!(
-      (window.moltbotCanvasA2UIAction &&
-        typeof window.moltbotCanvasA2UIAction.postMessage === "function") ||
-      (window.clawdbotCanvasA2UIAction &&
-        typeof window.clawdbotCanvasA2UIAction.postMessage === "function")
+      (window.thinkfleetCanvasA2UIAction &&
+        typeof window.thinkfleetCanvasA2UIAction.postMessage === "function") ||
+      (window.thinkfleetCanvasA2UIAction &&
+        typeof window.thinkfleetCanvasA2UIAction.postMessage === "function")
     );
-  const legacySend = typeof window.clawdbotSendUserAction === "function" ? window.clawdbotSendUserAction : undefined;
-  if (!window.moltbotSendUserAction && legacySend) {
-    window.moltbotSendUserAction = legacySend;
+  const legacySend = typeof window.thinkfleetSendUserAction === "function" ? window.thinkfleetSendUserAction : undefined;
+  if (!window.thinkfleetSendUserAction && legacySend) {
+    window.thinkfleetSendUserAction = legacySend;
   }
-  if (!window.clawdbotSendUserAction && typeof window.moltbotSendUserAction === "function") {
-    window.clawdbotSendUserAction = window.moltbotSendUserAction;
+  if (!window.thinkfleetSendUserAction && typeof window.thinkfleetSendUserAction === "function") {
+    window.thinkfleetSendUserAction = window.thinkfleetSendUserAction;
   }
   const hasHelper = () =>
-    typeof window.moltbotSendUserAction === "function" ||
-    typeof window.clawdbotSendUserAction === "function";
+    typeof window.thinkfleetSendUserAction === "function" ||
+    typeof window.thinkfleetSendUserAction === "function";
   statusEl.innerHTML =
     "Bridge: " +
     (hasHelper() ? "<span class='ok'>ready</span>" : "<span class='bad'>missing</span>") +
     " · iOS=" + (hasIOS() ? "yes" : "no") +
     " · Android=" + (hasAndroid() ? "yes" : "no");
 
-  window.addEventListener("moltbot:a2ui-action-status", (ev) => {
+  window.addEventListener("thinkfleet:a2ui-action-status", (ev) => {
     const d = ev && ev.detail || {};
     log("Action status: id=" + (d.id || "?") + " ok=" + String(!!d.ok) + (d.error ? (" error=" + d.error) : ""));
   });
 
   function send(name, sourceComponentId) {
     if (!hasHelper()) {
-      log("No action bridge found. Ensure you're viewing this on an iOS/Android Moltbot node canvas.");
+      log("No action bridge found. Ensure you're viewing this on an iOS/Android Thinkfleet node canvas.");
       return;
     }
     const sendUserAction =
-      typeof window.moltbotSendUserAction === "function"
-        ? window.moltbotSendUserAction
-        : window.clawdbotSendUserAction;
+      typeof window.thinkfleetSendUserAction === "function"
+        ? window.thinkfleetSendUserAction
+        : window.thinkfleetSendUserAction;
     const ok = sendUserAction({
       name,
       surfaceId: "main",
@@ -199,7 +199,7 @@ async function resolveFilePath(rootReal: string, urlPath: string) {
 }
 
 function isDisabledByEnv() {
-  if (isTruthyEnvValue(process.env.CLAWDBOT_SKIP_CANVAS_HOST)) return true;
+  if (isTruthyEnvValue(process.env.THINKFLEET_SKIP_CANVAS_HOST)) return true;
   if (process.env.NODE_ENV === "test") return true;
   if (process.env.VITEST) return true;
   return false;
@@ -344,7 +344,7 @@ export async function createCanvasHostHandler(
           res.statusCode = 404;
           res.setHeader("Content-Type", "text/html; charset=utf-8");
           res.end(
-            `<!doctype html><meta charset="utf-8" /><title>Moltbot Canvas</title><pre>Missing file.\nCreate ${rootDir}/index.html</pre>`,
+            `<!doctype html><meta charset="utf-8" /><title>Thinkfleet Canvas</title><pre>Missing file.\nCreate ${rootDir}/index.html</pre>`,
           );
           return true;
         }

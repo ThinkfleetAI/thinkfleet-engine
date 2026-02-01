@@ -1,6 +1,6 @@
 import AppKit
 import MoltbotIPC
-import MoltbotKit
+import ThinkFleetKit
 import Foundation
 import WebKit
 
@@ -144,5 +144,5 @@ final class CanvasA2UIActionMessageHandler: NSObject, WKScriptMessageHandler {
         return false
     }
 
-    // Formatting helpers live in MoltbotKit (`MoltbotCanvasA2UIAction`).
+    // Formatting helpers live in ThinkFleetKit (`MoltbotCanvasA2UIAction`).
 }

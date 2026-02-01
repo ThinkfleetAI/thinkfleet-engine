@@ -1,5 +1,5 @@
 import AppKit
-import MoltbotProtocol
+import ThinkFleetProtocol
 import SwiftUI
 import Testing
 

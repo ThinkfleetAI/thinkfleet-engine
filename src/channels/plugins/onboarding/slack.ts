@@ -1,4 +1,4 @@
-import type { MoltbotConfig } from "../../../config/config.js";
+import type { ThinkfleetConfig } from "../../../config/config.js";
 import type { DmPolicy } from "../../../config/types.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../../../routing/session-key.js";
 import {
@@ -16,7 +16,7 @@ import { addWildcardAllowFrom, promptAccountId } from "./helpers.js";
 
 const channel = "slack" as const;
 
-function setSlackDmPolicy(cfg: MoltbotConfig, dmPolicy: DmPolicy) {
+function setSlackDmPolicy(cfg: ThinkfleetConfig, dmPolicy: DmPolicy) {
   const allowFrom =
     dmPolicy === "open" ? addWildcardAllowFrom(cfg.channels?.slack?.dm?.allowFrom) : undefined;
   return {
@@ -37,11 +37,11 @@ function setSlackDmPolicy(cfg: MoltbotConfig, dmPolicy: DmPolicy) {
 }
 
 function buildSlackManifest(botName: string) {
-  const safeName = botName.trim() || "Moltbot";
+  const safeName = botName.trim() || "Thinkfleet";
   const manifest = {
     display_information: {
       name: safeName,
-      description: `${safeName} connector for Moltbot`,
+      description: `${safeName} connector for Thinkfleet`,
     },
     features: {
       bot_user: {
@@ -55,7 +55,7 @@ function buildSlackManifest(botName: string) {
       slash_commands: [
         {
           command: "/clawd",
-          description: "Send a message to Moltbot",
+          description: "Send a message to Thinkfleet",
           should_escape: false,
         },
       ],
@@ -125,10 +125,10 @@ async function noteSlackTokenHelp(prompter: WizardPrompter, botName: string): Pr
 }
 
 function setSlackGroupPolicy(
-  cfg: MoltbotConfig,
+  cfg: ThinkfleetConfig,
   accountId: string,
   groupPolicy: "open" | "allowlist" | "disabled",
-): MoltbotConfig {
+): ThinkfleetConfig {
   if (accountId === DEFAULT_ACCOUNT_ID) {
     return {
       ...cfg,
@@ -163,10 +163,10 @@ function setSlackGroupPolicy(
 }
 
 function setSlackChannelAllowlist(
-  cfg: MoltbotConfig,
+  cfg: ThinkfleetConfig,
   accountId: string,
   channelKeys: string[],
-): MoltbotConfig {
+): ThinkfleetConfig {
   const channels = Object.fromEntries(channelKeys.map((key) => [key, { allow: true }]));
   if (accountId === DEFAULT_ACCOUNT_ID) {
     return {
@@ -201,7 +201,7 @@ function setSlackChannelAllowlist(
   };
 }
 
-function setSlackAllowFrom(cfg: MoltbotConfig, allowFrom: string[]): MoltbotConfig {
+function setSlackAllowFrom(cfg: ThinkfleetConfig, allowFrom: string[]): ThinkfleetConfig {
   return {
     ...cfg,
     channels: {
@@ -226,10 +226,10 @@ function parseSlackAllowFromInput(raw: string): string[] {
 }
 
 async function promptSlackAllowFrom(params: {
-  cfg: MoltbotConfig;
+  cfg: ThinkfleetConfig;
   prompter: WizardPrompter;
   accountId?: string;
-}): Promise<MoltbotConfig> {
+}): Promise<ThinkfleetConfig> {
   const accountId =
     params.accountId && normalizeAccountId(params.accountId)
       ? (normalizeAccountId(params.accountId) ?? DEFAULT_ACCOUNT_ID)
@@ -364,7 +364,7 @@ export const slackOnboardingAdapter: ChannelOnboardingAdapter = {
     const slackBotName = String(
       await prompter.text({
         message: "Slack bot display name (used for manifest)",
-        initialValue: "Moltbot",
+        initialValue: "Thinkfleet",
       }),
     ).trim();
     if (!accountConfigured) {

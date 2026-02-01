@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import type { ZodIssue } from "zod";
 
-import type { MoltbotConfig } from "../config/config.js";
+import type { ThinkfleetConfig } from "../config/config.js";
 import {
-  MoltbotSchema,
+  ThinkfleetSchema,
   CONFIG_PATH,
   migrateLegacyConfig,
   readConfigFileSnapshot,
@@ -63,16 +63,16 @@ function resolvePathTarget(root: unknown, path: Array<string | number>): unknown
   return current;
 }
 
-function stripUnknownConfigKeys(config: MoltbotConfig): {
-  config: MoltbotConfig;
+function stripUnknownConfigKeys(config: ThinkfleetConfig): {
+  config: ThinkfleetConfig;
   removed: string[];
 } {
-  const parsed = MoltbotSchema.safeParse(config);
+  const parsed = ThinkfleetSchema.safeParse(config);
   if (parsed.success) {
     return { config, removed: [] };
   }
 
-  const next = structuredClone(config) as MoltbotConfig;
+  const next = structuredClone(config) as ThinkfleetConfig;
   const removed: string[] = [];
   for (const issue of parsed.error.issues) {
     if (!isUnrecognizedKeysIssue(issue)) continue;
@@ -91,7 +91,7 @@ function stripUnknownConfigKeys(config: MoltbotConfig): {
   return { config: next, removed };
 }
 
-function noteOpencodeProviderOverrides(cfg: MoltbotConfig) {
+function noteOpencodeProviderOverrides(cfg: ThinkfleetConfig) {
   const providers = cfg.models?.providers;
   if (!providers) return;
 
@@ -121,7 +121,7 @@ function noteOpencodeProviderOverrides(cfg: MoltbotConfig) {
 }
 
 function hasExplicitConfigPath(env: NodeJS.ProcessEnv): boolean {
-  return Boolean(env.MOLTBOT_CONFIG_PATH?.trim() || env.CLAWDBOT_CONFIG_PATH?.trim());
+  return Boolean(env.THINKFLEET_CONFIG_PATH?.trim() || env.THINKFLEET_CONFIG_PATH?.trim());
 }
 
 function moveLegacyConfigFile(legacyPath: string, canonicalPath: string) {
@@ -155,8 +155,8 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
   let snapshot = await readConfigFileSnapshot();
   if (!hasExplicitConfigPath(process.env) && snapshot.exists) {
     const basename = path.basename(snapshot.path);
-    if (basename === "clawdbot.json") {
-      const canonicalPath = path.join(path.dirname(snapshot.path), "moltbot.json");
+    if (basename === "thinkfleet.json") {
+      const canonicalPath = path.join(path.dirname(snapshot.path), "thinkfleet.json");
       if (!fs.existsSync(canonicalPath)) {
         moveLegacyConfigFile(snapshot.path, canonicalPath);
         note(`- Config: ${snapshot.path} → ${canonicalPath}`, "Doctor changes");
@@ -165,8 +165,8 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     }
   }
   const baseCfg = snapshot.config ?? {};
-  let cfg: MoltbotConfig = baseCfg;
-  let candidate = structuredClone(baseCfg) as MoltbotConfig;
+  let cfg: ThinkfleetConfig = baseCfg;
+  let candidate = structuredClone(baseCfg) as ThinkfleetConfig;
   let pendingChanges = false;
   let shouldWriteConfig = false;
   const fixHints: string[] = [];
@@ -197,7 +197,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       if (migrated) cfg = migrated;
     } else {
       fixHints.push(
-        `Run "${formatCliCommand("moltbot doctor --fix")}" to apply legacy migrations.`,
+        `Run "${formatCliCommand("thinkfleet doctor --fix")}" to apply legacy migrations.`,
       );
     }
   }
@@ -210,7 +210,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (shouldRepair) {
       cfg = normalized.config;
     } else {
-      fixHints.push(`Run "${formatCliCommand("moltbot doctor --fix")}" to apply these changes.`);
+      fixHints.push(`Run "${formatCliCommand("thinkfleet doctor --fix")}" to apply these changes.`);
     }
   }
 
@@ -222,7 +222,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (shouldRepair) {
       cfg = autoEnable.config;
     } else {
-      fixHints.push(`Run "${formatCliCommand("moltbot doctor --fix")}" to apply these changes.`);
+      fixHints.push(`Run "${formatCliCommand("thinkfleet doctor --fix")}" to apply these changes.`);
     }
   }
 
@@ -236,7 +236,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       note(lines, "Doctor changes");
     } else {
       note(lines, "Unknown config keys");
-      fixHints.push('Run "moltbot doctor --fix" to remove these keys.');
+      fixHints.push('Run "thinkfleet doctor --fix" to remove these keys.');
     }
   }
 

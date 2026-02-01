@@ -1,4 +1,4 @@
-import MoltbotKit
+import ThinkFleetKit
 import Foundation
 
 struct WideAreaGatewayBeacon: Sendable, Equatable {

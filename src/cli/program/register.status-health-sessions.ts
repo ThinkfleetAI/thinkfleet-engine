@@ -39,21 +39,21 @@ export function registerStatusHealthSessionsCommands(program: Command) {
       "after",
       () =>
         `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["moltbot status", "Show channel health + session summary."],
-          ["moltbot status --all", "Full diagnosis (read-only)."],
-          ["moltbot status --json", "Machine-readable output."],
-          ["moltbot status --usage", "Show model provider usage/quota snapshots."],
+          ["thinkfleet status", "Show channel health + session summary."],
+          ["thinkfleet status --all", "Full diagnosis (read-only)."],
+          ["thinkfleet status --json", "Machine-readable output."],
+          ["thinkfleet status --usage", "Show model provider usage/quota snapshots."],
           [
-            "moltbot status --deep",
+            "thinkfleet status --deep",
             "Run channel probes (WA + Telegram + Discord + Slack + Signal).",
           ],
-          ["moltbot status --deep --timeout 5000", "Tighten probe timeout."],
+          ["thinkfleet status --deep --timeout 5000", "Tighten probe timeout."],
         ])}`,
     )
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/status", "docs.molt.bot/cli/status")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/status", "docs.thinkfleet.ai/cli/status")}\n`,
     )
     .action(async (opts) => {
       const verbose = resolveVerbose(opts);
@@ -87,7 +87,7 @@ export function registerStatusHealthSessionsCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/health", "docs.molt.bot/cli/health")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/health", "docs.thinkfleet.ai/cli/health")}\n`,
     )
     .action(async (opts) => {
       const verbose = resolveVerbose(opts);
@@ -119,10 +119,10 @@ export function registerStatusHealthSessionsCommands(program: Command) {
       "after",
       () =>
         `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["moltbot sessions", "List all sessions."],
-          ["moltbot sessions --active 120", "Only last 2 hours."],
-          ["moltbot sessions --json", "Machine-readable output."],
-          ["moltbot sessions --store ./tmp/sessions.json", "Use a specific session store."],
+          ["thinkfleet sessions", "List all sessions."],
+          ["thinkfleet sessions --active 120", "Only last 2 hours."],
+          ["thinkfleet sessions --json", "Machine-readable output."],
+          ["thinkfleet sessions --store ./tmp/sessions.json", "Use a specific session store."],
         ])}\n\n${theme.muted(
           "Shows token usage per session when the agent reports it; set agents.defaults.contextTokens to see % of your model window.",
         )}`,
@@ -130,7 +130,7 @@ export function registerStatusHealthSessionsCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/sessions", "docs.molt.bot/cli/sessions")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/sessions", "docs.thinkfleet.ai/cli/sessions")}\n`,
     )
     .action(async (opts) => {
       setVerbose(Boolean(opts.verbose));

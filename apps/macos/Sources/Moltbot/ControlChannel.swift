@@ -1,5 +1,5 @@
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetKit
+import ThinkFleetProtocol
 import Foundation
 import Observation
 import SwiftUI
@@ -163,8 +163,8 @@ final class ControlChannel {
         timeoutMs: Double? = nil) async throws -> Data
     {
         do {
-            let rawParams = params?.reduce(into: [String: MoltbotKit.AnyCodable]()) {
-                $0[$1.key] = MoltbotKit.AnyCodable($1.value.base)
+            let rawParams = params?.reduce(into: [String: ThinkFleetKit.AnyCodable]()) {
+                $0[$1.key] = ThinkFleetKit.AnyCodable($1.value.base)
             }
             let data = try await GatewayConnection.shared.request(
                 method: method,
@@ -406,7 +406,7 @@ final class ControlChannel {
         if let dict = value.value as? [String: MoltbotProtocol.AnyCodable] {
             return dict
         }
-        if let dict = value.value as? [String: MoltbotKit.AnyCodable],
+        if let dict = value.value as? [String: ThinkFleetKit.AnyCodable],
            let data = try? JSONEncoder().encode(dict),
            let decoded = try? JSONDecoder().decode([String: MoltbotProtocol.AnyCodable].self, from: data)
         {

@@ -13,20 +13,6 @@ type BannerOptions = TaglineOptions & {
 
 let bannerEmitted = false;
 
-const graphemeSegmenter =
-  typeof Intl !== "undefined" && "Segmenter" in Intl
-    ? new Intl.Segmenter(undefined, { granularity: "grapheme" })
-    : null;
-
-function splitGraphemes(value: string): string[] {
-  if (!graphemeSegmenter) return Array.from(value);
-  try {
-    return Array.from(graphemeSegmenter.segment(value), (seg) => seg.segment);
-  } catch {
-    return Array.from(value);
-  }
-}
-
 const hasJsonFlag = (argv: string[]) =>
   argv.some((arg) => arg === "--json" || arg.startsWith("--json="));
 
@@ -38,9 +24,9 @@ export function formatCliBannerLine(version: string, options: BannerOptions = {}
   const commitLabel = commit ?? "unknown";
   const tagline = pickTagline(options);
   const rich = options.richTty ?? isRich();
-  const cliName = resolveCliName(options.argv ?? process.argv, options.env);
-  const title = cliName === "moltbot" ? "🦞 Moltbot" : "🦞 Moltbot";
-  const prefix = "🦞 ";
+  const _cliName = resolveCliName(options.argv ?? process.argv, options.env);
+  const title = "⚡ ThinkFleet";
+  const prefix = "⚡ ";
   const columns = options.columns ?? process.stdout.columns ?? 120;
   const plainFullLine = `${title} ${version} (${commitLabel}) — ${tagline}`;
   const fitsOnOneLine = visibleWidth(plainFullLine) <= columns;
@@ -64,37 +50,30 @@ export function formatCliBannerLine(version: string, options: BannerOptions = {}
   return `${line1}\n${line2}`;
 }
 
-const LOBSTER_ASCII = [
-  "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
-  "██░▄▀▄░██░▄▄▄░██░████▄▄░▄▄██░▄▄▀██░▄▄▄░█▄▄░▄▄██",
-  "██░█░█░██░███░██░██████░████░▄▄▀██░███░███░████",
-  "██░███░██░▀▀▀░██░▀▀░███░████░▀▀░██░▀▀▀░███░████",
-  "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
-  "               🦞 FRESH DAILY 🦞               ",
+const THINKFLEET_ASCII = [
+  "  _____ _     _       _    _____ _           _   ",
+  " |_   _| |__ (_)_ __ | | _|  ___| | ___  ___| |_ ",
+  "   | | | '_ \\| | '_ \\| |/ / |_  | |/ _ \\/ _ \\ __|",
+  "   | | | | | | | | | |   <|  _| | |  __/  __/ |_ ",
+  "   |_| |_| |_|_|_| |_|_|\\_\\_|   |_|\\___|\\___|\\__|",
+  "                ⚡ THINK FASTER ⚡               ",
   " ",
 ];
 
 export function formatCliBannerArt(options: BannerOptions = {}): string {
   const rich = options.richTty ?? isRich();
-  if (!rich) return LOBSTER_ASCII.join("\n");
+  if (!rich) return THINKFLEET_ASCII.join("\n");
 
-  const colorChar = (ch: string) => {
-    if (ch === "█") return theme.accentBright(ch);
-    if (ch === "░") return theme.accentDim(ch);
-    if (ch === "▀") return theme.accent(ch);
-    return theme.muted(ch);
-  };
-
-  const colored = LOBSTER_ASCII.map((line) => {
-    if (line.includes("FRESH DAILY")) {
+  const colored = THINKFLEET_ASCII.map((line) => {
+    if (line.includes("THINK FASTER")) {
       return (
-        theme.muted("              ") +
-        theme.accent("🦞") +
-        theme.info(" FRESH DAILY ") +
-        theme.accent("🦞")
+        theme.muted("               ") +
+        theme.accent("⚡") +
+        theme.info(" THINK FASTER ") +
+        theme.accent("⚡")
       );
     }
-    return splitGraphemes(line).map(colorChar).join("");
+    return theme.accentBright(line);
   });
 
   return colored.join("\n");

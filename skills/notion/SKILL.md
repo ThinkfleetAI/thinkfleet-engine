@@ -1,156 +1,83 @@
 ---
 name: notion
-description: Notion API for creating and managing pages, databases, and blocks.
-homepage: https://developers.notion.com
-metadata: {"moltbot":{"emoji":"📝","requires":{"env":["NOTION_API_KEY"]},"primaryEnv":"NOTION_API_KEY"}}
+description: "Manage Notion pages, databases, and blocks via the REST API."
+metadata: {"moltbot":{"emoji":"📓","requires":{"bins":["curl","jq"],"env":["NOTION_API_KEY"]}}}
 ---
 
-# notion
+# Notion
 
-Use the Notion API to create/read/update pages, data sources (databases), and blocks.
+Manage Notion pages and databases via the REST API.
 
-## Setup
+## Environment Variables
 
-1. Create an integration at https://notion.so/my-integrations
-2. Copy the API key (starts with `ntn_` or `secret_`)
-3. Store it:
+- `NOTION_API_KEY` - Integration token (generate at https://www.notion.so/my-integrations)
+
+## Search
+
 ```bash
-mkdir -p ~/.config/notion
-echo "ntn_your_key_here" > ~/.config/notion/api_key
-```
-4. Share target pages/databases with your integration (click "..." → "Connect to" → your integration name)
-
-## API Basics
-
-All requests need:
-```bash
-NOTION_KEY=$(cat ~/.config/notion/api_key)
-curl -X GET "https://api.notion.com/v1/..." \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03" \
-  -H "Content-Type: application/json"
+curl -s -X POST -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" -H "Content-Type: application/json" \
+  "https://api.notion.com/v1/search" \
+  -d '{"query":"search term","page_size":10}' | jq '.results[] | {id, type: .object, title: (if .object=="page" then .properties.title.title[0].plain_text // .properties.Name.title[0].plain_text // null else .title[0].plain_text // null end)}'
 ```
 
-> **Note:** The `Notion-Version` header is required. This skill uses `2025-09-03` (latest). In this version, databases are called "data sources" in the API.
+## Get page
 
-## Common Operations
-
-**Search for pages and data sources:**
 ```bash
-curl -X POST "https://api.notion.com/v1/search" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "page title"}'
+curl -s -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" \
+  "https://api.notion.com/v1/pages/PAGE_ID" | jq '{id, url, created_time, properties}'
 ```
 
-**Get page:**
+## Create page
+
 ```bash
-curl "https://api.notion.com/v1/pages/{page_id}" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03"
+curl -s -X POST -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" -H "Content-Type: application/json" \
+  "https://api.notion.com/v1/pages" \
+  -d '{"parent":{"database_id":"DATABASE_ID"},"properties":{"Name":{"title":[{"text":{"content":"New page title"}}]}}}' | jq '{id, url}'
 ```
 
-**Get page content (blocks):**
+## Update page
+
 ```bash
-curl "https://api.notion.com/v1/blocks/{page_id}/children" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03"
+curl -s -X PATCH -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" -H "Content-Type: application/json" \
+  "https://api.notion.com/v1/pages/PAGE_ID" \
+  -d '{"properties":{"Status":{"select":{"name":"Done"}}}}' | jq '{id, url}'
 ```
 
-**Create page in a data source:**
+## Query database
+
 ```bash
-curl -X POST "https://api.notion.com/v1/pages" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "parent": {"database_id": "xxx"},
-    "properties": {
-      "Name": {"title": [{"text": {"content": "New Item"}}]},
-      "Status": {"select": {"name": "Todo"}}
-    }
-  }'
+curl -s -X POST -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" -H "Content-Type: application/json" \
+  "https://api.notion.com/v1/databases/DATABASE_ID/query" \
+  -d '{"filter":{"property":"Status","select":{"equals":"In Progress"}},"page_size":20}' | jq '.results[] | {id, properties}'
 ```
 
-**Query a data source (database):**
+## List databases
+
 ```bash
-curl -X POST "https://api.notion.com/v1/data_sources/{data_source_id}/query" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filter": {"property": "Status", "select": {"equals": "Active"}},
-    "sorts": [{"property": "Date", "direction": "descending"}]
-  }'
+curl -s -X POST -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" -H "Content-Type: application/json" \
+  "https://api.notion.com/v1/search" \
+  -d '{"filter":{"value":"database","property":"object"},"page_size":20}' | jq '.results[] | {id, title: .title[0].plain_text}'
 ```
 
-**Create a data source (database):**
+## Create database entry
+
 ```bash
-curl -X POST "https://api.notion.com/v1/data_sources" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "parent": {"page_id": "xxx"},
-    "title": [{"text": {"content": "My Database"}}],
-    "properties": {
-      "Name": {"title": {}},
-      "Status": {"select": {"options": [{"name": "Todo"}, {"name": "Done"}]}},
-      "Date": {"date": {}}
-    }
-  }'
+curl -s -X POST -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" -H "Content-Type: application/json" \
+  "https://api.notion.com/v1/pages" \
+  -d '{"parent":{"database_id":"DATABASE_ID"},"properties":{"Name":{"title":[{"text":{"content":"New entry"}}]},"Status":{"select":{"name":"To Do"}}}}' | jq '{id, url}'
 ```
 
-**Update page properties:**
+## Get block children
+
 ```bash
-curl -X PATCH "https://api.notion.com/v1/pages/{page_id}" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03" \
-  -H "Content-Type: application/json" \
-  -d '{"properties": {"Status": {"select": {"name": "Done"}}}}'
+curl -s -H "Authorization: Bearer $NOTION_API_KEY" \
+  -H "Notion-Version: 2022-06-28" \
+  "https://api.notion.com/v1/blocks/BLOCK_ID/children?page_size=50" | jq '.results[] | {id, type, text: (if .type=="paragraph" then .paragraph.rich_text[0].plain_text // null else null end)}'
 ```
-
-**Add blocks to page:**
-```bash
-curl -X PATCH "https://api.notion.com/v1/blocks/{page_id}/children" \
-  -H "Authorization: Bearer $NOTION_KEY" \
-  -H "Notion-Version: 2025-09-03" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "children": [
-      {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": "Hello"}}]}}
-    ]
-  }'
-```
-
-## Property Types
-
-Common property formats for database items:
-- **Title:** `{"title": [{"text": {"content": "..."}}]}`
-- **Rich text:** `{"rich_text": [{"text": {"content": "..."}}]}`
-- **Select:** `{"select": {"name": "Option"}}`
-- **Multi-select:** `{"multi_select": [{"name": "A"}, {"name": "B"}]}`
-- **Date:** `{"date": {"start": "2024-01-15", "end": "2024-01-16"}}`
-- **Checkbox:** `{"checkbox": true}`
-- **Number:** `{"number": 42}`
-- **URL:** `{"url": "https://..."}`
-- **Email:** `{"email": "a@b.com"}`
-- **Relation:** `{"relation": [{"id": "page_id"}]}`
-
-## Key Differences in 2025-09-03
-
-- **Databases → Data Sources:** Use `/data_sources/` endpoints for queries and retrieval
-- **Two IDs:** Each database now has both a `database_id` and a `data_source_id`
-  - Use `database_id` when creating pages (`parent: {"database_id": "..."}`)
-  - Use `data_source_id` when querying (`POST /v1/data_sources/{id}/query`)
-- **Search results:** Databases return as `"object": "data_source"` with their `data_source_id`
-- **Parent in responses:** Pages show `parent.data_source_id` alongside `parent.database_id`
-- **Finding the data_source_id:** Search for the database, or call `GET /v1/data_sources/{data_source_id}`
-
-## Notes
-
-- Page/database IDs are UUIDs (with or without dashes)
-- The API cannot set database view filters — that's UI-only
-- Rate limit: ~3 requests/second average
-- Use `is_inline: true` when creating data sources to embed them in pages

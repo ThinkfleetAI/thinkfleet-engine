@@ -1,6 +1,6 @@
 import AppKit
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetKit
+import ThinkFleetProtocol
 import Foundation
 import Observation
 import OSLog

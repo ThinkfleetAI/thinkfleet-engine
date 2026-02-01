@@ -1,6 +1,6 @@
 type CustomEntryLike = { type?: unknown; customType?: unknown; data?: unknown };
 
-export const CACHE_TTL_CUSTOM_TYPE = "moltbot.cache-ttl";
+export const CACHE_TTL_CUSTOM_TYPE = "thinkfleet.cache-ttl";
 
 export type CacheTtlEntryData = {
   timestamp: number;

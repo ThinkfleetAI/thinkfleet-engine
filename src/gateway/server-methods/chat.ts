@@ -546,6 +546,28 @@ export const chatHandlers: GatewayRequestHandlers = {
               sessionKey: p.sessionKey,
               message,
             });
+          } else if (finalReplyParts.length > 0) {
+            // Agent run started (streaming path) but the dispatcher collected
+            // reply text that wasn't broadcast via the streaming buffer (e.g.
+            // LLM billing errors, auth failures). Broadcast it now so the
+            // webchat UI can display the error to the user.
+            const combinedReply = finalReplyParts
+              .map((part) => part.trim())
+              .filter(Boolean)
+              .join("\n\n")
+              .trim();
+            if (combinedReply) {
+              broadcastChatFinal({
+                context,
+                runId: clientRunId,
+                sessionKey: p.sessionKey,
+                message: {
+                  role: "assistant",
+                  content: [{ type: "text", text: combinedReply }],
+                  timestamp: Date.now(),
+                },
+              });
+            }
           }
           context.dedupe.set(`chat:${clientRunId}`, {
             ts: Date.now(),

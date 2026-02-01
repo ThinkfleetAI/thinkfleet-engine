@@ -51,24 +51,24 @@ export function registerAgentCommands(program: Command, args: { agentChannelOpti
         `
 ${theme.heading("Examples:")}
 ${formatHelpExamples([
-  ['moltbot agent --to +15555550123 --message "status update"', "Start a new session."],
-  ['moltbot agent --agent ops --message "Summarize logs"', "Use a specific agent."],
+  ['thinkfleet agent --to +15555550123 --message "status update"', "Start a new session."],
+  ['thinkfleet agent --agent ops --message "Summarize logs"', "Use a specific agent."],
   [
-    'moltbot agent --session-id 1234 --message "Summarize inbox" --thinking medium',
+    'thinkfleet agent --session-id 1234 --message "Summarize inbox" --thinking medium',
     "Target a session with explicit thinking level.",
   ],
   [
-    'moltbot agent --to +15555550123 --message "Trace logs" --verbose on --json',
+    'thinkfleet agent --to +15555550123 --message "Trace logs" --verbose on --json',
     "Enable verbose logging and JSON output.",
   ],
-  ['moltbot agent --to +15555550123 --message "Summon reply" --deliver', "Deliver reply."],
+  ['thinkfleet agent --to +15555550123 --message "Summon reply" --deliver', "Deliver reply."],
   [
-    'moltbot agent --agent ops --message "Generate report" --deliver --reply-channel slack --reply-to "#reports"',
+    'thinkfleet agent --agent ops --message "Generate report" --deliver --reply-channel slack --reply-to "#reports"',
     "Send reply to a different channel/target.",
   ],
 ])}
 
-${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.molt.bot/cli/agent")}`,
+${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.thinkfleet.ai/cli/agent")}`,
     )
     .action(async (opts) => {
       const verboseLevel = typeof opts.verbose === "string" ? opts.verbose.toLowerCase() : "";
@@ -86,7 +86,7 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.molt.bot/cli/agent"
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/agents", "docs.molt.bot/cli/agents")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/agents", "docs.thinkfleet.ai/cli/agents")}\n`,
     );
 
   agents
@@ -155,11 +155,11 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.molt.bot/cli/agent"
         `
 ${theme.heading("Examples:")}
 ${formatHelpExamples([
-  ['moltbot agents set-identity --agent main --name "Clawd" --emoji "🦞"', "Set name + emoji."],
-  ["moltbot agents set-identity --agent main --avatar avatars/clawd.png", "Set avatar path."],
-  ["moltbot agents set-identity --workspace ~/clawd --from-identity", "Load from IDENTITY.md."],
+  ['thinkfleet agents set-identity --agent main --name "Clawd" --emoji "🦞"', "Set name + emoji."],
+  ["thinkfleet agents set-identity --agent main --avatar avatars/clawd.png", "Set avatar path."],
+  ["thinkfleet agents set-identity --workspace ~/clawd --from-identity", "Load from IDENTITY.md."],
   [
-    "moltbot agents set-identity --identity-file ~/clawd/IDENTITY.md --agent main",
+    "thinkfleet agents set-identity --identity-file ~/clawd/IDENTITY.md --agent main",
     "Use a specific IDENTITY.md.",
   ],
 ])}

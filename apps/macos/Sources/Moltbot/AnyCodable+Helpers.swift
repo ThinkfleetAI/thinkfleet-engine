@@ -1,10 +1,10 @@
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetKit
+import ThinkFleetProtocol
 import Foundation
 
-// Prefer the MoltbotKit wrapper to keep gateway request payloads consistent.
-typealias AnyCodable = MoltbotKit.AnyCodable
-typealias InstanceIdentity = MoltbotKit.InstanceIdentity
+// Prefer the ThinkFleetKit wrapper to keep gateway request payloads consistent.
+typealias AnyCodable = ThinkFleetKit.AnyCodable
+typealias InstanceIdentity = ThinkFleetKit.InstanceIdentity
 
 extension AnyCodable {
     var stringValue: String? { self.value as? String }

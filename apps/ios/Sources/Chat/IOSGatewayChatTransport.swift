@@ -1,6 +1,6 @@
-import MoltbotChatUI
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetChatUI
+import ThinkFleetKit
+import ThinkFleetProtocol
 import Foundation
 
 struct IOSGatewayChatTransport: MoltbotChatTransport, Sendable {

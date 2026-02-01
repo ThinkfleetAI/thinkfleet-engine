@@ -1,6 +1,6 @@
 import AppKit
 import MoltbotIPC
-import MoltbotKit
+import ThinkFleetKit
 import Foundation
 
 actor MacNodeRuntime {
@@ -354,7 +354,7 @@ actor MacNodeRuntime {
 
     private func handleA2UIPush(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {
         let command = req.command
-        let messages: [MoltbotKit.AnyCodable]
+        let messages: [ThinkFleetKit.AnyCodable]
         if command == MoltbotCanvasA2UICommand.pushJSONL.rawValue {
             let params = try Self.decodeParams(MoltbotCanvasA2UIPushJSONLParams.self, from: req.paramsJSON)
             messages = try MoltbotCanvasA2UIJSONL.decodeMessagesFromJSONL(params.jsonl)

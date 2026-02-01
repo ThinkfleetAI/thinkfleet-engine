@@ -1,4 +1,4 @@
-import type { MoltbotConfig } from "../../config/config.js";
+import type { ThinkfleetConfig } from "../../config/config.js";
 import type { ReplyPayload } from "../../auto-reply/types.js";
 import type { GroupToolPolicyConfig } from "../../config/types.tools.js";
 import type { OutboundDeliveryResult, OutboundSendDeps } from "../../infra/outbound/deliver.js";
@@ -20,45 +20,45 @@ import type {
 } from "./types.core.js";
 
 export type ChannelSetupAdapter = {
-  resolveAccountId?: (params: { cfg: MoltbotConfig; accountId?: string }) => string;
+  resolveAccountId?: (params: { cfg: ThinkfleetConfig; accountId?: string }) => string;
   applyAccountName?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId: string;
     name?: string;
-  }) => MoltbotConfig;
+  }) => ThinkfleetConfig;
   applyAccountConfig: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId: string;
     input: ChannelSetupInput;
-  }) => MoltbotConfig;
+  }) => ThinkfleetConfig;
   validateInput?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId: string;
     input: ChannelSetupInput;
   }) => string | null;
 };
 
 export type ChannelConfigAdapter<ResolvedAccount> = {
-  listAccountIds: (cfg: MoltbotConfig) => string[];
-  resolveAccount: (cfg: MoltbotConfig, accountId?: string | null) => ResolvedAccount;
-  defaultAccountId?: (cfg: MoltbotConfig) => string;
+  listAccountIds: (cfg: ThinkfleetConfig) => string[];
+  resolveAccount: (cfg: ThinkfleetConfig, accountId?: string | null) => ResolvedAccount;
+  defaultAccountId?: (cfg: ThinkfleetConfig) => string;
   setAccountEnabled?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId: string;
     enabled: boolean;
-  }) => MoltbotConfig;
-  deleteAccount?: (params: { cfg: MoltbotConfig; accountId: string }) => MoltbotConfig;
-  isEnabled?: (account: ResolvedAccount, cfg: MoltbotConfig) => boolean;
-  disabledReason?: (account: ResolvedAccount, cfg: MoltbotConfig) => string;
-  isConfigured?: (account: ResolvedAccount, cfg: MoltbotConfig) => boolean | Promise<boolean>;
-  unconfiguredReason?: (account: ResolvedAccount, cfg: MoltbotConfig) => string;
-  describeAccount?: (account: ResolvedAccount, cfg: MoltbotConfig) => ChannelAccountSnapshot;
+  }) => ThinkfleetConfig;
+  deleteAccount?: (params: { cfg: ThinkfleetConfig; accountId: string }) => ThinkfleetConfig;
+  isEnabled?: (account: ResolvedAccount, cfg: ThinkfleetConfig) => boolean;
+  disabledReason?: (account: ResolvedAccount, cfg: ThinkfleetConfig) => string;
+  isConfigured?: (account: ResolvedAccount, cfg: ThinkfleetConfig) => boolean | Promise<boolean>;
+  unconfiguredReason?: (account: ResolvedAccount, cfg: ThinkfleetConfig) => string;
+  describeAccount?: (account: ResolvedAccount, cfg: ThinkfleetConfig) => ChannelAccountSnapshot;
   resolveAllowFrom?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
   }) => string[] | undefined;
   formatAllowFrom?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     allowFrom: Array<string | number>;
   }) => string[];
@@ -71,7 +71,7 @@ export type ChannelGroupAdapter = {
 };
 
 export type ChannelOutboundContext = {
-  cfg: MoltbotConfig;
+  cfg: ThinkfleetConfig;
   to: string;
   text: string;
   mediaUrl?: string;
@@ -93,7 +93,7 @@ export type ChannelOutboundAdapter = {
   textChunkLimit?: number;
   pollMaxOptions?: number;
   resolveTarget?: (params: {
-    cfg?: MoltbotConfig;
+    cfg?: ThinkfleetConfig;
     to?: string;
     allowFrom?: string[];
     accountId?: string | null;
@@ -109,37 +109,37 @@ export type ChannelStatusAdapter<ResolvedAccount> = {
   defaultRuntime?: ChannelAccountSnapshot;
   buildChannelSummary?: (params: {
     account: ResolvedAccount;
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     defaultAccountId: string;
     snapshot: ChannelAccountSnapshot;
   }) => Record<string, unknown> | Promise<Record<string, unknown>>;
   probeAccount?: (params: {
     account: ResolvedAccount;
     timeoutMs: number;
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
   }) => Promise<unknown>;
   auditAccount?: (params: {
     account: ResolvedAccount;
     timeoutMs: number;
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     probe?: unknown;
   }) => Promise<unknown>;
   buildAccountSnapshot?: (params: {
     account: ResolvedAccount;
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     runtime?: ChannelAccountSnapshot;
     probe?: unknown;
     audit?: unknown;
   }) => ChannelAccountSnapshot | Promise<ChannelAccountSnapshot>;
   logSelfId?: (params: {
     account: ResolvedAccount;
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     runtime: RuntimeEnv;
     includeChannelPrefix?: boolean;
   }) => void;
   resolveAccountState?: (params: {
     account: ResolvedAccount;
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     configured: boolean;
     enabled: boolean;
   }) => ChannelAccountState;
@@ -147,7 +147,7 @@ export type ChannelStatusAdapter<ResolvedAccount> = {
 };
 
 export type ChannelGatewayContext<ResolvedAccount = unknown> = {
-  cfg: MoltbotConfig;
+  cfg: ThinkfleetConfig;
   accountId: string;
   account: ResolvedAccount;
   runtime: RuntimeEnv;
@@ -174,7 +174,7 @@ export type ChannelLoginWithQrWaitResult = {
 };
 
 export type ChannelLogoutContext<ResolvedAccount = unknown> = {
-  cfg: MoltbotConfig;
+  cfg: ThinkfleetConfig;
   accountId: string;
   account: ResolvedAccount;
   runtime: RuntimeEnv;
@@ -185,7 +185,7 @@ export type ChannelPairingAdapter = {
   idLabel: string;
   normalizeAllowEntry?: (entry: string) => string;
   notifyApproval?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     id: string;
     runtime?: RuntimeEnv;
   }) => Promise<void>;
@@ -209,7 +209,7 @@ export type ChannelGatewayAdapter<ResolvedAccount = unknown> = {
 
 export type ChannelAuthAdapter = {
   login?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     runtime: RuntimeEnv;
     verbose?: boolean;
@@ -219,11 +219,14 @@ export type ChannelAuthAdapter = {
 
 export type ChannelHeartbeatAdapter = {
   checkReady?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     deps?: ChannelHeartbeatDeps;
   }) => Promise<{ ok: boolean; reason: string }>;
-  resolveRecipients?: (params: { cfg: MoltbotConfig; opts?: { to?: string; all?: boolean } }) => {
+  resolveRecipients?: (params: {
+    cfg: ThinkfleetConfig;
+    opts?: { to?: string; all?: boolean };
+  }) => {
     recipients: string[];
     source: string;
   };
@@ -231,40 +234,40 @@ export type ChannelHeartbeatAdapter = {
 
 export type ChannelDirectoryAdapter = {
   self?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     runtime: RuntimeEnv;
   }) => Promise<ChannelDirectoryEntry | null>;
   listPeers?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     query?: string | null;
     limit?: number | null;
     runtime: RuntimeEnv;
   }) => Promise<ChannelDirectoryEntry[]>;
   listPeersLive?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     query?: string | null;
     limit?: number | null;
     runtime: RuntimeEnv;
   }) => Promise<ChannelDirectoryEntry[]>;
   listGroups?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     query?: string | null;
     limit?: number | null;
     runtime: RuntimeEnv;
   }) => Promise<ChannelDirectoryEntry[]>;
   listGroupsLive?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     query?: string | null;
     limit?: number | null;
     runtime: RuntimeEnv;
   }) => Promise<ChannelDirectoryEntry[]>;
   listGroupMembers?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     groupId: string;
     limit?: number | null;
@@ -284,7 +287,7 @@ export type ChannelResolveResult = {
 
 export type ChannelResolverAdapter = {
   resolveTargets: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
     inputs: string[];
     kind: ChannelResolveKind;
@@ -294,7 +297,7 @@ export type ChannelResolverAdapter = {
 
 export type ChannelElevatedAdapter = {
   allowFromFallback?: (params: {
-    cfg: MoltbotConfig;
+    cfg: ThinkfleetConfig;
     accountId?: string | null;
   }) => Array<string | number> | undefined;
 };

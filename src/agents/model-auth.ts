@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { type Api, getEnvApiKey, type Model } from "@mariozechner/pi-ai";
-import type { MoltbotConfig } from "../config/config.js";
+import type { ThinkfleetConfig } from "../config/config.js";
 import type { ModelProviderAuthMode, ModelProviderConfig } from "../config/types.js";
 import { getShellEnvAppliedKeys } from "../infra/shell-env.js";
 import { formatCliCommand } from "../cli/command-format.js";
@@ -14,7 +14,7 @@ import {
   resolveAuthStorePathForDisplay,
 } from "./auth-profiles.js";
 import { normalizeProviderId } from "./model-selection.js";
-import { fetchCredentialFromSaas, isSaasMode } from "./saas-credential-client.js";
+import { fetchCredentialFromSaas, isSaasMode, type KeySource } from "./saas-credential-client.js";
 
 export { ensureAuthProfileStore, resolveAuthProfileOrder } from "./auth-profiles.js";
 
@@ -24,7 +24,7 @@ const AWS_SECRET_KEY_ENV = "AWS_SECRET_ACCESS_KEY";
 const AWS_PROFILE_ENV = "AWS_PROFILE";
 
 function resolveProviderConfig(
-  cfg: MoltbotConfig | undefined,
+  cfg: ThinkfleetConfig | undefined,
   provider: string,
 ): ModelProviderConfig | undefined {
   const providers = cfg?.models?.providers ?? {};
@@ -46,7 +46,7 @@ function resolveProviderConfig(
 }
 
 export function getCustomProviderApiKey(
-  cfg: MoltbotConfig | undefined,
+  cfg: ThinkfleetConfig | undefined,
   provider: string,
 ): string | undefined {
   const entry = resolveProviderConfig(cfg, provider);
@@ -55,7 +55,7 @@ export function getCustomProviderApiKey(
 }
 
 function resolveProviderAuthOverride(
-  cfg: MoltbotConfig | undefined,
+  cfg: ThinkfleetConfig | undefined,
   provider: string,
 ): ModelProviderAuthMode | undefined {
   const entry = resolveProviderConfig(cfg, provider);
@@ -125,11 +125,13 @@ export type ResolvedProviderAuth = {
   profileId?: string;
   source: string;
   mode: "api-key" | "oauth" | "token" | "aws-sdk";
+  /** Whether the key came from platform-managed keys or the user's own (BYOK). */
+  keySource?: KeySource;
 };
 
 export async function resolveApiKeyForProvider(params: {
   provider: string;
-  cfg?: MoltbotConfig;
+  cfg?: ThinkfleetConfig;
   profileId?: string;
   preferredProfile?: string;
   store?: AuthProfileStore;
@@ -170,6 +172,7 @@ export async function resolveApiKeyForProvider(params: {
         apiKey: saasResult.apiKey,
         source: "saas-pull",
         mode: "api-key",
+        keySource: saasResult.source,
       };
     }
   }
@@ -234,7 +237,7 @@ export async function resolveApiKeyForProvider(params: {
     [
       `No API key found for provider "${provider}".`,
       `Auth store: ${authStorePath} (agentDir: ${resolvedAgentDir}).`,
-      `Configure auth for this agent (${formatCliCommand("moltbot agents add <id>")}) or copy auth-profiles.json from the main agentDir.`,
+      `Configure auth for this agent (${formatCliCommand("thinkfleet agents add <id>")}) or copy auth-profiles.json from the main agentDir.`,
     ].join(" "),
   );
 }
@@ -306,7 +309,7 @@ export function resolveEnvApiKey(provider: string): EnvApiKeyResult | null {
 
 export function resolveModelAuthMode(
   provider?: string,
-  cfg?: MoltbotConfig,
+  cfg?: ThinkfleetConfig,
   store?: AuthProfileStore,
 ): ModelAuthMode | undefined {
   const resolved = provider?.trim();
@@ -348,7 +351,7 @@ export function resolveModelAuthMode(
 
 export async function getApiKeyForModel(params: {
   model: Model<Api>;
-  cfg?: MoltbotConfig;
+  cfg?: ThinkfleetConfig;
   profileId?: string;
   preferredProfile?: string;
   store?: AuthProfileStore;

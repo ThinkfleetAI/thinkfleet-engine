@@ -1,6 +1,6 @@
-import MoltbotChatUI
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetChatUI
+import ThinkFleetKit
+import ThinkFleetProtocol
 import OSLog
 import SwiftUI
 
@@ -385,7 +385,7 @@ enum SessionMenuPreviewLoader {
         maxItems: Int) -> [SessionPreviewItem]
     {
         let boundedItems = self.normalizeMaxItems(maxItems)
-        let raw: [MoltbotKit.AnyCodable] = payload.messages ?? []
+        let raw: [ThinkFleetKit.AnyCodable] = payload.messages ?? []
         let messages = self.decodeMessages(raw)
         let built = messages.compactMap { message -> SessionPreviewItem? in
             guard let text = self.previewText(for: message) else { return nil }
@@ -399,7 +399,7 @@ enum SessionMenuPreviewLoader {
         return Array(trimmed.reversed())
     }
 
-    private static func decodeMessages(_ raw: [MoltbotKit.AnyCodable]) -> [MoltbotChatMessage] {
+    private static func decodeMessages(_ raw: [ThinkFleetKit.AnyCodable]) -> [MoltbotChatMessage] {
         raw.compactMap { item in
             guard let data = try? JSONEncoder().encode(item) else { return nil }
             return try? JSONDecoder().decode(MoltbotChatMessage.self, from: data)

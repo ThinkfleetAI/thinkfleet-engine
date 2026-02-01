@@ -1,16 +1,16 @@
-import type { MoltbotConfig } from "../config/config.js";
+import type { ThinkfleetConfig } from "../config/config.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 
 export async function applyDefaultModelChoice(params: {
-  config: MoltbotConfig;
+  config: ThinkfleetConfig;
   setDefaultModel: boolean;
   defaultModel: string;
-  applyDefaultConfig: (config: MoltbotConfig) => MoltbotConfig;
-  applyProviderConfig: (config: MoltbotConfig) => MoltbotConfig;
+  applyDefaultConfig: (config: ThinkfleetConfig) => ThinkfleetConfig;
+  applyProviderConfig: (config: ThinkfleetConfig) => ThinkfleetConfig;
   noteDefault?: string;
   noteAgentModel: (model: string) => Promise<void>;
   prompter: WizardPrompter;
-}): Promise<{ config: MoltbotConfig; agentModelOverride?: string }> {
+}): Promise<{ config: ThinkfleetConfig; agentModelOverride?: string }> {
   if (params.setDefaultModel) {
     const next = params.applyDefaultConfig(params.config);
     if (params.noteDefault) {

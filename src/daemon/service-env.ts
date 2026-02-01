@@ -131,7 +131,7 @@ export function buildServiceEnvironment(params: {
   launchdLabel?: string;
 }): Record<string, string | undefined> {
   const { env, port, token, launchdLabel } = params;
-  const profile = env.CLAWDBOT_PROFILE;
+  const profile = env.THINKFLEET_PROFILE;
   const resolvedLaunchdLabel =
     launchdLabel ||
     (process.platform === "darwin" ? resolveGatewayLaunchAgentLabel(profile) : undefined);
@@ -139,16 +139,16 @@ export function buildServiceEnvironment(params: {
   return {
     HOME: env.HOME,
     PATH: buildMinimalServicePath({ env }),
-    CLAWDBOT_PROFILE: profile,
-    CLAWDBOT_STATE_DIR: env.CLAWDBOT_STATE_DIR,
-    CLAWDBOT_CONFIG_PATH: env.CLAWDBOT_CONFIG_PATH,
-    CLAWDBOT_GATEWAY_PORT: String(port),
-    CLAWDBOT_GATEWAY_TOKEN: token,
-    CLAWDBOT_LAUNCHD_LABEL: resolvedLaunchdLabel,
-    CLAWDBOT_SYSTEMD_UNIT: systemdUnit,
-    CLAWDBOT_SERVICE_MARKER: GATEWAY_SERVICE_MARKER,
-    CLAWDBOT_SERVICE_KIND: GATEWAY_SERVICE_KIND,
-    CLAWDBOT_SERVICE_VERSION: VERSION,
+    THINKFLEET_PROFILE: profile,
+    THINKFLEET_STATE_DIR: env.THINKFLEET_STATE_DIR,
+    THINKFLEET_CONFIG_PATH: env.THINKFLEET_CONFIG_PATH,
+    THINKFLEET_GATEWAY_PORT: String(port),
+    THINKFLEET_GATEWAY_TOKEN: token,
+    THINKFLEET_LAUNCHD_LABEL: resolvedLaunchdLabel,
+    THINKFLEET_SYSTEMD_UNIT: systemdUnit,
+    THINKFLEET_SERVICE_MARKER: GATEWAY_SERVICE_MARKER,
+    THINKFLEET_SERVICE_KIND: GATEWAY_SERVICE_KIND,
+    THINKFLEET_SERVICE_VERSION: VERSION,
   };
 }
 
@@ -159,15 +159,15 @@ export function buildNodeServiceEnvironment(params: {
   return {
     HOME: env.HOME,
     PATH: buildMinimalServicePath({ env }),
-    CLAWDBOT_STATE_DIR: env.CLAWDBOT_STATE_DIR,
-    CLAWDBOT_CONFIG_PATH: env.CLAWDBOT_CONFIG_PATH,
-    CLAWDBOT_LAUNCHD_LABEL: resolveNodeLaunchAgentLabel(),
-    CLAWDBOT_SYSTEMD_UNIT: resolveNodeSystemdServiceName(),
-    CLAWDBOT_WINDOWS_TASK_NAME: resolveNodeWindowsTaskName(),
-    CLAWDBOT_TASK_SCRIPT_NAME: NODE_WINDOWS_TASK_SCRIPT_NAME,
-    CLAWDBOT_LOG_PREFIX: "node",
-    CLAWDBOT_SERVICE_MARKER: NODE_SERVICE_MARKER,
-    CLAWDBOT_SERVICE_KIND: NODE_SERVICE_KIND,
-    CLAWDBOT_SERVICE_VERSION: VERSION,
+    THINKFLEET_STATE_DIR: env.THINKFLEET_STATE_DIR,
+    THINKFLEET_CONFIG_PATH: env.THINKFLEET_CONFIG_PATH,
+    THINKFLEET_LAUNCHD_LABEL: resolveNodeLaunchAgentLabel(),
+    THINKFLEET_SYSTEMD_UNIT: resolveNodeSystemdServiceName(),
+    THINKFLEET_WINDOWS_TASK_NAME: resolveNodeWindowsTaskName(),
+    THINKFLEET_TASK_SCRIPT_NAME: NODE_WINDOWS_TASK_SCRIPT_NAME,
+    THINKFLEET_LOG_PREFIX: "node",
+    THINKFLEET_SERVICE_MARKER: NODE_SERVICE_MARKER,
+    THINKFLEET_SERVICE_KIND: NODE_SERVICE_KIND,
+    THINKFLEET_SERVICE_VERSION: VERSION,
   };
 }

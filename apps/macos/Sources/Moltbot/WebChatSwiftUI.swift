@@ -1,7 +1,7 @@
 import AppKit
-import MoltbotChatUI
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetChatUI
+import ThinkFleetKit
+import ThinkFleetProtocol
 import Foundation
 import OSLog
 import QuartzCore

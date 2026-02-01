@@ -351,7 +351,7 @@ function buildChatCommands(): ChatCommandDefinition[] {
     defineChatCommand({
       key: "restart",
       nativeName: "restart",
-      description: "Restart Moltbot.",
+      description: "Restart Thinkfleet.",
       textAlias: "/restart",
       category: "tools",
     }),

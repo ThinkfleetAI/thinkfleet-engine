@@ -1,8 +1,12 @@
 import type { Server as HttpServer } from "node:http";
+import { randomUUID } from "node:crypto";
 import { WebSocketServer } from "ws";
 import { CANVAS_HOST_PATH } from "../canvas-host/a2ui.js";
 import { type CanvasHostHandler, createCanvasHostHandler } from "../canvas-host/server.js";
 import type { CliDeps } from "../cli/deps.js";
+import { loadConfig } from "../config/config.js";
+import { runCronIsolatedAgentTurn } from "../cron/isolated-agent.js";
+import type { CronJob } from "../cron/types.js";
 import type { createSubsystemLogger } from "../logging/subsystem.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { ResolvedGatewayAuth } from "./auth.js";
@@ -20,9 +24,28 @@ import { attachGatewayUpgradeHandler, createGatewayHttpServer } from "./server-h
 import type { DedupeEntry } from "./server-shared.js";
 import type { PluginRegistry } from "../plugins/registry.js";
 import type { GatewayTlsRuntime } from "./server/tls.js";
+// Voice-call extension lives outside rootDir; use opaque paths to avoid TS6059
+const _VC_AUDIO_PATH = "../../extensions/voice-call/src/local-audio-stream.js";
+const _VC_STT_PATH = "../../extensions/voice-call/src/providers/stt-openai-realtime.js";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _voiceCallMod: { LocalAudioStreamHandler: any; OpenAIRealtimeSTTProvider: any } | null = null;
+async function loadVoiceCallExtension() {
+  if (_voiceCallMod) return _voiceCallMod;
+  try {
+    const audio = await import(/* webpackIgnore: true */ _VC_AUDIO_PATH);
+    const stt = await import(/* webpackIgnore: true */ _VC_STT_PATH);
+    _voiceCallMod = {
+      LocalAudioStreamHandler: audio.LocalAudioStreamHandler,
+      OpenAIRealtimeSTTProvider: stt.OpenAIRealtimeSTTProvider,
+    };
+    return _voiceCallMod;
+  } catch {
+    return null;
+  }
+}
 
 export async function createGatewayRuntimeState(params: {
-  cfg: import("../config/config.js").MoltbotConfig;
+  cfg: import("../config/config.js").ThinkfleetConfig;
   bindHost: string;
   port: number;
   controlUiEnabled: boolean;
@@ -144,8 +167,63 @@ export async function createGatewayRuntimeState(params: {
     noServer: true,
     maxPayload: MAX_PAYLOAD_BYTES,
   });
+
+  // Create local audio handler for kiosk <-> gateway streaming
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let localAudioHandler: any = null;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
+  const vcMod = openaiApiKey ? await loadVoiceCallExtension() : null;
+  if (openaiApiKey && vcMod) {
+    const vcCfg = (params.cfg as any).voiceCall;
+    const sttProvider = new vcMod.OpenAIRealtimeSTTProvider({
+      apiKey: openaiApiKey,
+      model: vcCfg?.sttModel,
+      silenceDurationMs: vcCfg?.silenceDurationMs,
+      vadThreshold: vcCfg?.vadThreshold,
+    });
+
+    localAudioHandler = new vcMod.LocalAudioStreamHandler({
+      sttProvider,
+      ttsConfig: {
+        apiKey: openaiApiKey,
+        model: vcCfg?.ttsModel,
+        voice: vcCfg?.ttsVoice,
+      },
+      onTranscript: async (sessionId: string, transcript: string) => {
+        const cfg = loadConfig();
+        const now = Date.now();
+        const jobId = randomUUID();
+        const job: CronJob = {
+          id: jobId,
+          name: "local-audio-transcript",
+          enabled: true,
+          createdAtMs: now,
+          updatedAtMs: now,
+          schedule: { kind: "at", atMs: now },
+          sessionTarget: "isolated",
+          wakeMode: "now",
+          payload: {
+            kind: "agentTurn",
+            message: transcript,
+          },
+          state: { nextRunAtMs: now },
+        };
+        const result = await runCronIsolatedAgentTurn({
+          cfg,
+          deps: params.deps,
+          job,
+          message: transcript,
+          sessionKey: `local-audio:${sessionId}`,
+          lane: "local-audio",
+        });
+        return result.outputText ?? "";
+      },
+    });
+    params.log.info("gateway: local audio handler enabled (kiosk voice streaming)");
+  }
+
   for (const server of httpServers) {
-    attachGatewayUpgradeHandler({ httpServer: server, wss, canvasHost });
+    attachGatewayUpgradeHandler({ httpServer: server, wss, canvasHost, localAudioHandler });
   }
 
   const clients = new Set<GatewayWsClient>();

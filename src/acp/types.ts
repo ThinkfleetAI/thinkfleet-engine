@@ -24,7 +24,7 @@ export type AcpServerOptions = {
 };
 
 export const ACP_AGENT_INFO = {
-  name: "moltbot-acp",
-  title: "Moltbot ACP Gateway",
+  name: "thinkfleet-acp",
+  title: "Thinkfleet ACP Gateway",
   version: VERSION,
 };

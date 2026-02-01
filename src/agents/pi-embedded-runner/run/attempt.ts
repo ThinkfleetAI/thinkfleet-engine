@@ -22,11 +22,13 @@ import { isSubagentSessionKey } from "../../../routing/session-key.js";
 import { resolveUserPath } from "../../../utils.js";
 import { createCacheTrace } from "../../cache-trace.js";
 import { createAnthropicPayloadLogger } from "../../anthropic-payload-log.js";
-import { resolveMoltbotAgentDir } from "../../agent-paths.js";
+import { resolveThinkfleetAgentDir } from "../../agent-paths.js";
 import { resolveSessionAgentIds } from "../../agent-scope.js";
 import { makeBootstrapWarn, resolveBootstrapContextForRun } from "../../bootstrap-files.js";
-import { resolveMoltbotDocsPath } from "../../docs-path.js";
+import { resolveThinkfleetDocsPath } from "../../docs-path.js";
 import { resolveModelAuthMode } from "../../model-auth.js";
+import { bootMcpTools } from "../../../mcp/boot.js";
+import { injectSaasCredentialsToEnv } from "../../saas-credential-client.js";
 import {
   isCloudCodeAssistFormatError,
   resolveBootstrapMaxChars,
@@ -38,7 +40,7 @@ import {
   ensurePiCompactionReserveTokens,
   resolveCompactionReserveTokensFloor,
 } from "../../pi-settings.js";
-import { createMoltbotCodingTools } from "../../pi-tools.js";
+import { createThinkfleetCodingTools } from "../../pi-tools.js";
 import { resolveSandboxContext } from "../../sandbox.js";
 import { guardSessionManager } from "../../session-tool-result-guard-wrapper.js";
 import { resolveTranscriptPolicy } from "../../transcript-policy.js";
@@ -157,8 +159,12 @@ export async function runEmbeddedAttempt(
   await fs.mkdir(effectiveWorkspace, { recursive: true });
 
   let restoreSkillEnv: (() => void) | undefined;
+  let restoreSaasEnv: (() => void) | undefined;
   process.chdir(effectiveWorkspace);
   try {
+    // Inject SaaS credentials as env vars before skill/tool setup
+    restoreSaasEnv = await injectSaasCredentialsToEnv();
+
     const shouldLoadSkillEntries = !params.skillsSnapshot || !params.skillsSnapshot.resolvedSkills;
     const skillEntries = shouldLoadSkillEntries
       ? loadWorkspaceSkillEntries(effectiveWorkspace)
@@ -195,13 +201,16 @@ export async function runEmbeddedAttempt(
       ? ["Reminder: commit your changes in this workspace after edits."]
       : undefined;
 
-    const agentDir = params.agentDir ?? resolveMoltbotAgentDir();
+    const agentDir = params.agentDir ?? resolveThinkfleetAgentDir();
 
     // Check if the model supports native image input
     const modelHasVision = params.model.input?.includes("image") ?? false;
+    const mcpTools = params.disableTools
+      ? []
+      : await bootMcpTools(params.config, (msg) => log.info(msg));
     const toolsRaw = params.disableTools
       ? []
-      : createMoltbotCodingTools({
+      : createThinkfleetCodingTools({
           exec: {
             ...params.execOverrides,
             elevated: params.bashElevated,
@@ -232,6 +241,7 @@ export async function runEmbeddedAttempt(
           replyToMode: params.replyToMode,
           hasRepliedRef: params.hasRepliedRef,
           modelHasVision,
+          mcpTools,
         });
     const tools = sanitizeToolsForGoogle({ tools: toolsRaw, provider: params.provider });
     logToolSchemasForGoogle({ tools, provider: params.provider });
@@ -326,7 +336,7 @@ export async function runEmbeddedAttempt(
     });
     const isDefaultAgent = sessionAgentId === defaultAgentId;
     const promptMode = isSubagentSessionKey(params.sessionKey) ? "minimal" : "full";
-    const docsPath = await resolveMoltbotDocsPath({
+    const docsPath = await resolveThinkfleetDocsPath({
       workspaceDir: effectiveWorkspace,
       argv1: process.argv[1],
       cwd: process.cwd(),
@@ -879,6 +889,7 @@ export async function runEmbeddedAttempt(
     }
   } finally {
     restoreSkillEnv?.();
+    restoreSaasEnv?.();
     process.chdir(prevCwd);
   }
 }

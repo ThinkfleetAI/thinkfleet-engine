@@ -1,8 +1,8 @@
 import type { OAuthCredentials } from "@mariozechner/pi-ai";
-import { resolveMoltbotAgentDir } from "../agents/agent-paths.js";
+import { resolveThinkfleetAgentDir } from "../agents/agent-paths.js";
 import { upsertAuthProfile } from "../agents/auth-profiles.js";
 
-const resolveAuthAgentDir = (agentDir?: string) => agentDir ?? resolveMoltbotAgentDir();
+const resolveAuthAgentDir = (agentDir?: string) => agentDir ?? resolveThinkfleetAgentDir();
 
 export async function writeOAuthCredentials(
   provider: string,

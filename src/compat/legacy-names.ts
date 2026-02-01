@@ -1,4 +1,4 @@
-export const LEGACY_PROJECT_NAME = "clawdbot" as const;
+export const LEGACY_PROJECT_NAME = "thinkfleet" as const;
 
 export const LEGACY_MANIFEST_KEY = LEGACY_PROJECT_NAME;
 
@@ -8,4 +8,4 @@ export const LEGACY_CANVAS_HANDLER_NAME = `${LEGACY_PROJECT_NAME}CanvasA2UIActio
 
 export const LEGACY_MACOS_APP_SOURCES_DIR = "apps/macos/Sources/Clawdbot" as const;
 
-export const MACOS_APP_SOURCES_DIR = "apps/macos/Sources/Moltbot" as const;
+export const MACOS_APP_SOURCES_DIR = "apps/macos/Sources/Thinkfleet" as const;

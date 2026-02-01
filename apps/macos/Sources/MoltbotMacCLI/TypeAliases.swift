@@ -1,5 +1,5 @@
-import MoltbotKit
-import MoltbotProtocol
+import ThinkFleetKit
+import ThinkFleetProtocol
 
 typealias ProtoAnyCodable = MoltbotProtocol.AnyCodable
-typealias KitAnyCodable = MoltbotKit.AnyCodable
+typealias KitAnyCodable = ThinkFleetKit.AnyCodable

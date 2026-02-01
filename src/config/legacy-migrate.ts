@@ -1,9 +1,9 @@
 import { applyLegacyMigrations } from "./legacy.js";
-import type { MoltbotConfig } from "./types.js";
+import type { ThinkfleetConfig } from "./types.js";
 import { validateConfigObjectWithPlugins } from "./validation.js";
 
 export function migrateLegacyConfig(raw: unknown): {
-  config: MoltbotConfig | null;
+  config: ThinkfleetConfig | null;
   changes: string[];
 } {
   const { next, changes } = applyLegacyMigrations(raw);

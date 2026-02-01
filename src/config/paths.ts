@@ -1,60 +1,31 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { MoltbotConfig } from "./types.js";
+import type { ThinkfleetConfig } from "./types.js";
 
 /**
- * Nix mode detection: When CLAWDBOT_NIX_MODE=1, the gateway is running under Nix.
- * In this mode:
- * - No auto-install flows should be attempted
- * - Missing dependencies should produce actionable Nix-specific error messages
- * - Config is managed externally (read-only from Nix perspective)
+ * Nix mode detection: When THINKFLEET_NIX_MODE=1, the gateway is running under Nix.
  */
 export function resolveIsNixMode(env: NodeJS.ProcessEnv = process.env): boolean {
-  return env.CLAWDBOT_NIX_MODE === "1";
+  return env.THINKFLEET_NIX_MODE === "1";
 }
 
 export const isNixMode = resolveIsNixMode();
 
-const LEGACY_STATE_DIRNAME = ".clawdbot";
-const NEW_STATE_DIRNAME = ".moltbot";
-const CONFIG_FILENAME = "moltbot.json";
-const LEGACY_CONFIG_FILENAME = "clawdbot.json";
+const STATE_DIRNAME = ".thinkfleet";
+const CONFIG_FILENAME = "thinkfleet.json";
 
-function legacyStateDir(homedir: () => string = os.homedir): string {
-  return path.join(homedir(), LEGACY_STATE_DIRNAME);
+function stateDir(homedir: () => string = os.homedir): string {
+  return path.join(homedir(), STATE_DIRNAME);
 }
 
-function newStateDir(homedir: () => string = os.homedir): string {
-  return path.join(homedir(), NEW_STATE_DIRNAME);
-}
-
-export function resolveLegacyStateDir(homedir: () => string = os.homedir): string {
-  return legacyStateDir(homedir);
-}
-
-export function resolveNewStateDir(homedir: () => string = os.homedir): string {
-  return newStateDir(homedir);
-}
-
-/**
- * State directory for mutable data (sessions, logs, caches).
- * Can be overridden via MOLTBOT_STATE_DIR (preferred) or CLAWDBOT_STATE_DIR (legacy).
- * Default: ~/.clawdbot (legacy default for compatibility)
- * If ~/.moltbot exists and ~/.clawdbot does not, prefer ~/.moltbot.
- */
 export function resolveStateDir(
   env: NodeJS.ProcessEnv = process.env,
   homedir: () => string = os.homedir,
 ): string {
-  const override = env.MOLTBOT_STATE_DIR?.trim() || env.CLAWDBOT_STATE_DIR?.trim();
+  const override = env.THINKFLEET_STATE_DIR?.trim();
   if (override) return resolveUserPath(override);
-  const legacyDir = legacyStateDir(homedir);
-  const newDir = newStateDir(homedir);
-  const hasLegacy = fs.existsSync(legacyDir);
-  const hasNew = fs.existsSync(newDir);
-  if (!hasLegacy && hasNew) return newDir;
-  return legacyDir;
+  return stateDir(homedir);
 }
 
 function resolveUserPath(input: string): string {
@@ -71,21 +42,21 @@ export const STATE_DIR = resolveStateDir();
 
 /**
  * Config file path (JSON5).
- * Can be overridden via MOLTBOT_CONFIG_PATH (preferred) or CLAWDBOT_CONFIG_PATH (legacy).
- * Default: ~/.clawdbot/moltbot.json (or $*_STATE_DIR/moltbot.json)
+ * Can be overridden via THINKFLEET_CONFIG_PATH.
+ * Default: ~/.thinkfleet/thinkfleet.json
  */
 export function resolveCanonicalConfigPath(
   env: NodeJS.ProcessEnv = process.env,
-  stateDir: string = resolveStateDir(env, os.homedir),
+  stateDirPath: string = resolveStateDir(env, os.homedir),
 ): string {
-  const override = env.MOLTBOT_CONFIG_PATH?.trim() || env.CLAWDBOT_CONFIG_PATH?.trim();
+  const override = env.THINKFLEET_CONFIG_PATH?.trim();
   if (override) return resolveUserPath(override);
-  return path.join(stateDir, CONFIG_FILENAME);
+  return path.join(stateDirPath, CONFIG_FILENAME);
 }
 
 /**
- * Resolve the active config path by preferring existing config candidates
- * (new/legacy filenames) before falling back to the canonical path.
+ * Resolve the active config path by preferring an existing config file
+ * before falling back to the canonical path.
  */
 export function resolveConfigPathCandidate(
   env: NodeJS.ProcessEnv = process.env,
@@ -104,65 +75,41 @@ export function resolveConfigPathCandidate(
 }
 
 /**
- * Active config path (prefers existing legacy/new config files).
+ * Active config path.
  */
 export function resolveConfigPath(
   env: NodeJS.ProcessEnv = process.env,
-  stateDir: string = resolveStateDir(env, os.homedir),
+  stateDirPath: string = resolveStateDir(env, os.homedir),
   homedir: () => string = os.homedir,
 ): string {
-  const override = env.MOLTBOT_CONFIG_PATH?.trim() || env.CLAWDBOT_CONFIG_PATH?.trim();
+  const override = env.THINKFLEET_CONFIG_PATH?.trim();
   if (override) return resolveUserPath(override);
-  const stateOverride = env.MOLTBOT_STATE_DIR?.trim() || env.CLAWDBOT_STATE_DIR?.trim();
-  const candidates = [
-    path.join(stateDir, CONFIG_FILENAME),
-    path.join(stateDir, LEGACY_CONFIG_FILENAME),
-  ];
-  const existing = candidates.find((candidate) => {
-    try {
-      return fs.existsSync(candidate);
-    } catch {
-      return false;
-    }
-  });
-  if (existing) return existing;
-  if (stateOverride) return path.join(stateDir, CONFIG_FILENAME);
-  const defaultStateDir = resolveStateDir(env, homedir);
-  if (path.resolve(stateDir) === path.resolve(defaultStateDir)) {
-    return resolveConfigPathCandidate(env, homedir);
-  }
-  return path.join(stateDir, CONFIG_FILENAME);
+  const candidate = path.join(stateDirPath, CONFIG_FILENAME);
+  try {
+    if (fs.existsSync(candidate)) return candidate;
+  } catch {}
+  return resolveCanonicalConfigPath(env, resolveStateDir(env, homedir));
 }
 
 export const CONFIG_PATH = resolveConfigPathCandidate();
 
 /**
- * Resolve default config path candidates across new + legacy locations.
- * Order: explicit config path → state-dir-derived paths → new default → legacy default.
+ * Resolve default config path candidates.
  */
 export function resolveDefaultConfigCandidates(
   env: NodeJS.ProcessEnv = process.env,
   homedir: () => string = os.homedir,
 ): string[] {
-  const explicit = env.MOLTBOT_CONFIG_PATH?.trim() || env.CLAWDBOT_CONFIG_PATH?.trim();
+  const explicit = env.THINKFLEET_CONFIG_PATH?.trim();
   if (explicit) return [resolveUserPath(explicit)];
 
   const candidates: string[] = [];
-  const moltbotStateDir = env.MOLTBOT_STATE_DIR?.trim();
-  if (moltbotStateDir) {
-    candidates.push(path.join(resolveUserPath(moltbotStateDir), CONFIG_FILENAME));
-    candidates.push(path.join(resolveUserPath(moltbotStateDir), LEGACY_CONFIG_FILENAME));
-  }
-  const legacyStateDirOverride = env.CLAWDBOT_STATE_DIR?.trim();
-  if (legacyStateDirOverride) {
-    candidates.push(path.join(resolveUserPath(legacyStateDirOverride), CONFIG_FILENAME));
-    candidates.push(path.join(resolveUserPath(legacyStateDirOverride), LEGACY_CONFIG_FILENAME));
+  const stateDirOverride = env.THINKFLEET_STATE_DIR?.trim();
+  if (stateDirOverride) {
+    candidates.push(path.join(resolveUserPath(stateDirOverride), CONFIG_FILENAME));
   }
 
-  candidates.push(path.join(newStateDir(homedir), CONFIG_FILENAME));
-  candidates.push(path.join(newStateDir(homedir), LEGACY_CONFIG_FILENAME));
-  candidates.push(path.join(legacyStateDir(homedir), CONFIG_FILENAME));
-  candidates.push(path.join(legacyStateDir(homedir), LEGACY_CONFIG_FILENAME));
+  candidates.push(path.join(stateDir(homedir), CONFIG_FILENAME));
   return candidates;
 }
 
@@ -170,12 +117,12 @@ export const DEFAULT_GATEWAY_PORT = 18789;
 
 /**
  * Gateway lock directory (ephemeral).
- * Default: os.tmpdir()/moltbot-<uid> (uid suffix when available).
+ * Default: os.tmpdir()/thinkfleet-<uid>
  */
 export function resolveGatewayLockDir(tmpdir: () => string = os.tmpdir): string {
   const base = tmpdir();
   const uid = typeof process.getuid === "function" ? process.getuid() : undefined;
-  const suffix = uid != null ? `moltbot-${uid}` : "moltbot";
+  const suffix = uid != null ? `thinkfleet-${uid}` : "thinkfleet";
   return path.join(base, suffix);
 }
 
@@ -183,33 +130,30 @@ const OAUTH_FILENAME = "oauth.json";
 
 /**
  * OAuth credentials storage directory.
- *
- * Precedence:
- * - `CLAWDBOT_OAUTH_DIR` (explicit override)
- * - `$*_STATE_DIR/credentials` (canonical server/default)
- * - `~/.clawdbot/credentials` (legacy default)
+ * Override: THINKFLEET_OAUTH_DIR
+ * Default: ~/.thinkfleet/credentials
  */
 export function resolveOAuthDir(
   env: NodeJS.ProcessEnv = process.env,
-  stateDir: string = resolveStateDir(env, os.homedir),
+  stateDirPath: string = resolveStateDir(env, os.homedir),
 ): string {
-  const override = env.CLAWDBOT_OAUTH_DIR?.trim();
+  const override = env.THINKFLEET_OAUTH_DIR?.trim();
   if (override) return resolveUserPath(override);
-  return path.join(stateDir, "credentials");
+  return path.join(stateDirPath, "credentials");
 }
 
 export function resolveOAuthPath(
   env: NodeJS.ProcessEnv = process.env,
-  stateDir: string = resolveStateDir(env, os.homedir),
+  stateDirPath: string = resolveStateDir(env, os.homedir),
 ): string {
-  return path.join(resolveOAuthDir(env, stateDir), OAUTH_FILENAME);
+  return path.join(resolveOAuthDir(env, stateDirPath), OAUTH_FILENAME);
 }
 
 export function resolveGatewayPort(
-  cfg?: MoltbotConfig,
+  cfg?: ThinkfleetConfig,
   env: NodeJS.ProcessEnv = process.env,
 ): number {
-  const envRaw = env.CLAWDBOT_GATEWAY_PORT?.trim();
+  const envRaw = env.THINKFLEET_GATEWAY_PORT?.trim();
   if (envRaw) {
     const parsed = Number.parseInt(envRaw, 10);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
@@ -220,3 +164,7 @@ export function resolveGatewayPort(
   }
   return DEFAULT_GATEWAY_PORT;
 }
+
+// Legacy re-exports for compatibility during transition
+export const resolveLegacyStateDir = resolveStateDir;
+export const resolveNewStateDir = resolveStateDir;
