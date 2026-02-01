@@ -1,7 +1,7 @@
 ---
 name: monday
 description: "Manage Monday.com boards, items, and groups via the GraphQL API."
-metadata: {"moltbot":{"emoji":"🟣","requires":{"bins":["curl","jq"],"env":["MONDAY_API_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🟣","requires":{"bins":["curl","jq"],"env":["MONDAY_API_TOKEN"]}}}
 ---
 
 # Monday.com

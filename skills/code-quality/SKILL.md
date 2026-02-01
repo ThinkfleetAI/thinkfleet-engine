@@ -1,7 +1,7 @@
 ---
 name: code-quality
 description: "Measure and improve code quality: linting, complexity analysis, coverage reports, tech debt tracking, and formatting enforcement."
-metadata: {"moltbot":{"emoji":"📊","requires":{"anyBins":["eslint","ruff","golangci-lint","clippy"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📊","requires":{"anyBins":["eslint","ruff","golangci-lint","clippy"]}}}
 ---
 
 # Code Quality

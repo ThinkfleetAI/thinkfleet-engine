@@ -1,13 +1,13 @@
 ---
 summary: "Zalo Personal plugin: QR login + messaging via zca-cli (plugin install + channel config + CLI + tool)"
 read_when:
-  - You want Zalo Personal (unofficial) support in Moltbot
+  - You want Zalo Personal (unofficial) support in ThinkFleetBot
   - You are configuring or developing the zalouser plugin
 ---
 
 # Zalo Personal (plugin)
 
-Zalo Personal support for Moltbot via a plugin, using `zca-cli` to automate a normal Zalo user account.
+Zalo Personal support for ThinkFleetBot via a plugin, using `zca-cli` to automate a normal Zalo user account.
 
 > **Warning:** Unofficial automation may lead to account suspension/ban. Use at your own risk.
 
@@ -24,7 +24,7 @@ If you use a remote Gateway, install/configure it on the **machine running the G
 ### Option A: install from npm
 
 ```bash
-moltbot plugins install @moltbot/zalouser
+thinkfleetbot plugins install @thinkfleetbot/zalouser
 ```
 
 Restart the Gateway afterwards.
@@ -32,7 +32,7 @@ Restart the Gateway afterwards.
 ### Option B: install from a local folder (dev)
 
 ```bash
-moltbot plugins install ./extensions/zalouser
+thinkfleetbot plugins install ./extensions/zalouser
 cd ./extensions/zalouser && pnpm install
 ```
 
@@ -62,11 +62,11 @@ Channel config lives under `channels.zalouser` (not `plugins.entries.*`):
 ## CLI
 
 ```bash
-moltbot channels login --channel zalouser
-moltbot channels logout --channel zalouser
-moltbot channels status --probe
-moltbot message send --channel zalouser --target <threadId> --message "Hello from Moltbot"
-moltbot directory peers list --channel zalouser --query "name"
+thinkfleetbot channels login --channel zalouser
+thinkfleetbot channels logout --channel zalouser
+thinkfleetbot channels status --probe
+thinkfleetbot message send --channel zalouser --target <threadId> --message "Hello from ThinkFleetBot"
+thinkfleetbot directory peers list --channel zalouser --query "name"
 ```
 
 ## Agent tool

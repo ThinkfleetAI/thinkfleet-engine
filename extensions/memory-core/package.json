@@ -1,17 +1,17 @@
 {
-  "name": "@moltbot/memory-core",
+  "name": "@thinkfleetbot/memory-core",
   "version": "2026.1.27-beta.1",
   "type": "module",
-  "description": "Moltbot core memory search plugin",
-  "moltbot": {
+  "description": "ThinkFleetBot core memory search plugin",
+  "thinkfleetbot": {
     "extensions": [
       "./index.ts"
     ]
   },
   "peerDependencies": {
-    "moltbot": ">=2026.1.26"
+    "thinkfleetbot": ">=2026.1.26"
   },
   "devDependencies": {
-    "moltbot": "workspace:*"
+    "thinkfleetbot": "workspace:*"
   }
 }

@@ -1,7 +1,7 @@
 ---
 name: dependency-audit
 description: "Audit project dependencies for vulnerabilities, outdated packages, license compliance, and supply chain risks."
-metadata: {"moltbot":{"emoji":"📦","requires":{"anyBins":["npm","pnpm","pip","cargo","go"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📦","requires":{"anyBins":["npm","pnpm","pip","cargo","go"]}}}
 ---
 
 # Dependency Audit

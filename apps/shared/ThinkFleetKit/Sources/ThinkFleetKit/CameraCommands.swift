@@ -1,38 +1,38 @@
 import Foundation
 
-public enum MoltbotCameraCommand: String, Codable, Sendable {
+public enum ThinkFleetBotCameraCommand: String, Codable, Sendable {
     case list = "camera.list"
     case snap = "camera.snap"
     case clip = "camera.clip"
 }
 
-public enum MoltbotCameraFacing: String, Codable, Sendable {
+public enum ThinkFleetBotCameraFacing: String, Codable, Sendable {
     case back
     case front
 }
 
-public enum MoltbotCameraImageFormat: String, Codable, Sendable {
+public enum ThinkFleetBotCameraImageFormat: String, Codable, Sendable {
     case jpg
     case jpeg
 }
 
-public enum MoltbotCameraVideoFormat: String, Codable, Sendable {
+public enum ThinkFleetBotCameraVideoFormat: String, Codable, Sendable {
     case mp4
 }
 
-public struct MoltbotCameraSnapParams: Codable, Sendable, Equatable {
-    public var facing: MoltbotCameraFacing?
+public struct ThinkFleetBotCameraSnapParams: Codable, Sendable, Equatable {
+    public var facing: ThinkFleetBotCameraFacing?
     public var maxWidth: Int?
     public var quality: Double?
-    public var format: MoltbotCameraImageFormat?
+    public var format: ThinkFleetBotCameraImageFormat?
     public var deviceId: String?
     public var delayMs: Int?
 
     public init(
-        facing: MoltbotCameraFacing? = nil,
+        facing: ThinkFleetBotCameraFacing? = nil,
         maxWidth: Int? = nil,
         quality: Double? = nil,
-        format: MoltbotCameraImageFormat? = nil,
+        format: ThinkFleetBotCameraImageFormat? = nil,
         deviceId: String? = nil,
         delayMs: Int? = nil)
     {
@@ -45,18 +45,18 @@ public struct MoltbotCameraSnapParams: Codable, Sendable, Equatable {
     }
 }
 
-public struct MoltbotCameraClipParams: Codable, Sendable, Equatable {
-    public var facing: MoltbotCameraFacing?
+public struct ThinkFleetBotCameraClipParams: Codable, Sendable, Equatable {
+    public var facing: ThinkFleetBotCameraFacing?
     public var durationMs: Int?
     public var includeAudio: Bool?
-    public var format: MoltbotCameraVideoFormat?
+    public var format: ThinkFleetBotCameraVideoFormat?
     public var deviceId: String?
 
     public init(
-        facing: MoltbotCameraFacing? = nil,
+        facing: ThinkFleetBotCameraFacing? = nil,
         durationMs: Int? = nil,
         includeAudio: Bool? = nil,
-        format: MoltbotCameraVideoFormat? = nil,
+        format: ThinkFleetBotCameraVideoFormat? = nil,
         deviceId: String? = nil)
     {
         self.facing = facing

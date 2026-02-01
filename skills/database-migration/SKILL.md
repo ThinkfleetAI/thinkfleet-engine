@@ -1,7 +1,7 @@
 ---
 name: database-migration
 description: "Manage database schema migrations with Flyway, Alembic, Prisma, Knex, and raw SQL migration patterns."
-metadata: {"moltbot":{"emoji":"🔄","requires":{"anyBins":["flyway","alembic","npx","psql","mysql"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔄","requires":{"anyBins":["flyway","alembic","npx","psql","mysql"]}}}
 ---
 
 # Database Migration

@@ -1,7 +1,7 @@
 ---
 name: supabase
 description: "Query Supabase — database tables, auth users, storage, and edge functions via the REST API."
-metadata: {"moltbot":{"emoji":"⚡","requires":{"bins":["curl","jq"],"env":["SUPABASE_URL","SUPABASE_SERVICE_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"⚡","requires":{"bins":["curl","jq"],"env":["SUPABASE_URL","SUPABASE_SERVICE_KEY"]}}}
 ---
 
 # Supabase

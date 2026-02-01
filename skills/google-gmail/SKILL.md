@@ -1,7 +1,7 @@
 ---
 name: google-gmail
 description: "Read and send email via the Gmail API using curl + OAuth tokens."
-metadata: {"moltbot":{"emoji":"✉️","requires":{"bins":["curl","jq","python3"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"✉️","requires":{"bins":["curl","jq","python3"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
 ---
 
 # Google Gmail

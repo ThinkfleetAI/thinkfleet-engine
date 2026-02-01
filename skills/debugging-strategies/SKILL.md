@@ -1,7 +1,7 @@
 ---
 name: debugging-strategies
 description: "Systematic debugging: stack trace analysis, log-based diagnosis, bisecting regressions, memory leak detection, and profiling."
-metadata: {"moltbot":{"emoji":"🐛","requires":{"anyBins":["git","node","python3"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐛","requires":{"anyBins":["git","node","python3"]}}}
 ---
 
 # Debugging Strategies

@@ -2,7 +2,7 @@
 name: video-editing
 description: Video editing with ffmpeg
 metadata:
-  moltbot_emoji: "🎥"
+  thinkfleetbot_emoji: "🎥"
   requires_bins:
     - ffmpeg
   requires_env: []

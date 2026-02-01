@@ -1,7 +1,7 @@
 ---
 name: postgres
 description: PostgreSQL database management. Run queries, manage schemas, and monitor performance.
-metadata: {"clawdbot":{"emoji":"🐘","always":true,"requires":{"bins":["curl","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐘","always":true,"requires":{"bins":["curl","jq"]}}}
 ---
 
 # PostgreSQL 🐘

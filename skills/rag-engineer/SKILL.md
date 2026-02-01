@@ -1,7 +1,7 @@
 ---
 name: rag-engineer
 description: "Build RAG systems: document chunking, embedding generation, vector storage, retrieval strategies, and answer generation."
-metadata: {"moltbot":{"emoji":"📚","requires":{"anyBins":["python3","curl"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📚","requires":{"anyBins":["python3","curl"]}}}
 ---
 
 # RAG Engineering

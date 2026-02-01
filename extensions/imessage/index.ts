@@ -1,5 +1,5 @@
-import type { MoltbotPluginApi } from "clawdbot/plugin-sdk";
-import { emptyPluginConfigSchema } from "clawdbot/plugin-sdk";
+import type { ThinkFleetBotPluginApi } from "thinkfleetbot/plugin-sdk";
+import { emptyPluginConfigSchema } from "thinkfleetbot/plugin-sdk";
 
 import { imessagePlugin } from "./src/channel.js";
 import { setIMessageRuntime } from "./src/runtime.js";
@@ -9,7 +9,7 @@ const plugin = {
   name: "iMessage",
   description: "iMessage channel plugin",
   configSchema: emptyPluginConfigSchema(),
-  register(api: MoltbotPluginApi) {
+  register(api: ThinkFleetBotPluginApi) {
     setIMessageRuntime(api.runtime);
     api.registerChannel({ plugin: imessagePlugin });
   },

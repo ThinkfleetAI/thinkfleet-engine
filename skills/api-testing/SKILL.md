@@ -1,7 +1,7 @@
 ---
 name: api-testing
 description: "Test APIs with Newman/Postman collections, contract testing with Pact, mock servers, and GraphQL testing."
-metadata: {"moltbot":{"emoji":"🧪","requires":{"bins":["curl","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🧪","requires":{"bins":["curl","jq"]}}}
 ---
 
 # API Testing

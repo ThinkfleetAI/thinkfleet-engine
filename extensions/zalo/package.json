@@ -1,9 +1,9 @@
 {
-  "name": "@moltbot/zalo",
+  "name": "@thinkfleetbot/zalo",
   "version": "2026.1.27-beta.1",
   "type": "module",
-  "description": "Moltbot Zalo channel plugin",
-  "moltbot": {
+  "description": "ThinkFleetBot Zalo channel plugin",
+  "thinkfleetbot": {
     "extensions": [
       "./index.ts"
     ],
@@ -21,13 +21,13 @@
       "quickstartAllowFrom": true
     },
     "install": {
-      "npmSpec": "@moltbot/zalo",
+      "npmSpec": "@thinkfleetbot/zalo",
       "localPath": "extensions/zalo",
       "defaultChoice": "npm"
     }
   },
   "dependencies": {
-    "moltbot": "workspace:*",
+    "thinkfleetbot": "workspace:*",
     "undici": "7.19.0"
   }
 }

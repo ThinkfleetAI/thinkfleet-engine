@@ -1,7 +1,7 @@
 ---
 name: redis-query
 description: "Execute Redis commands using redis-cli."
-metadata: {"moltbot":{"emoji":"🔴","requires":{"bins":["redis-cli"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔴","requires":{"bins":["redis-cli"]}}}
 ---
 
 # Redis Query

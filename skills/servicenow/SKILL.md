@@ -1,7 +1,7 @@
 ---
 name: servicenow
 description: "Query and manage ServiceNow — incidents, changes, problems, and catalog items via the Table API."
-metadata: {"moltbot":{"emoji":"🎫","requires":{"bins":["curl","jq"],"env":["SERVICENOW_INSTANCE","SERVICENOW_USER","SERVICENOW_PASSWORD"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎫","requires":{"bins":["curl","jq"],"env":["SERVICENOW_INSTANCE","SERVICENOW_USER","SERVICENOW_PASSWORD"]}}}
 ---
 
 # ServiceNow

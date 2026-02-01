@@ -1,7 +1,7 @@
 ---
 name: freshdesk
 description: "Manage Freshdesk support — tickets, contacts, and agents via the REST API."
-metadata: {"moltbot":{"emoji":"🎧","requires":{"bins":["curl","jq"],"env":["FRESHDESK_DOMAIN","FRESHDESK_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎧","requires":{"bins":["curl","jq"],"env":["FRESHDESK_DOMAIN","FRESHDESK_API_KEY"]}}}
 ---
 
 # Freshdesk

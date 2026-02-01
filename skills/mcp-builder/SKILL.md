@@ -1,7 +1,7 @@
 ---
 name: mcp-builder
 description: "Build Model Context Protocol (MCP) servers: define tools, resources, and prompts that AI agents can discover and use."
-metadata: {"moltbot":{"emoji":"🔌","requires":{"anyBins":["node","npx"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔌","requires":{"anyBins":["node","npx"]}}}
 ---
 
 # MCP Server Builder

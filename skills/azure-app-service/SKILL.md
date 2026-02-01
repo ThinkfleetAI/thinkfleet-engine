@@ -1,7 +1,7 @@
 ---
 name: azure-app-service
 description: "Manage Azure App Service web apps, deployments, and configuration."
-metadata: {"moltbot":{"emoji":"🌐","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌐","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure App Service

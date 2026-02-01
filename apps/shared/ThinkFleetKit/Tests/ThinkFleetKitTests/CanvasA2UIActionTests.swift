@@ -4,25 +4,25 @@ import Testing
 
 @Suite struct CanvasA2UIActionTests {
     @Test func sanitizeTagValueIsStable() {
-        #expect(MoltbotCanvasA2UIAction.sanitizeTagValue("Hello World!") == "Hello_World_")
-        #expect(MoltbotCanvasA2UIAction.sanitizeTagValue("  ") == "-")
-        #expect(MoltbotCanvasA2UIAction.sanitizeTagValue("macOS 26.2") == "macOS_26.2")
+        #expect(ThinkFleetBotCanvasA2UIAction.sanitizeTagValue("Hello World!") == "Hello_World_")
+        #expect(ThinkFleetBotCanvasA2UIAction.sanitizeTagValue("  ") == "-")
+        #expect(ThinkFleetBotCanvasA2UIAction.sanitizeTagValue("macOS 26.2") == "macOS_26.2")
     }
 
     @Test func extractActionNameAcceptsNameOrAction() {
-        #expect(MoltbotCanvasA2UIAction.extractActionName(["name": "Hello"]) == "Hello")
-        #expect(MoltbotCanvasA2UIAction.extractActionName(["action": "Wave"]) == "Wave")
-        #expect(MoltbotCanvasA2UIAction.extractActionName(["name": "  ", "action": "Fallback"]) == "Fallback")
-        #expect(MoltbotCanvasA2UIAction.extractActionName(["action": " "]) == nil)
+        #expect(ThinkFleetBotCanvasA2UIAction.extractActionName(["name": "Hello"]) == "Hello")
+        #expect(ThinkFleetBotCanvasA2UIAction.extractActionName(["action": "Wave"]) == "Wave")
+        #expect(ThinkFleetBotCanvasA2UIAction.extractActionName(["name": "  ", "action": "Fallback"]) == "Fallback")
+        #expect(ThinkFleetBotCanvasA2UIAction.extractActionName(["action": " "]) == nil)
     }
 
     @Test func formatAgentMessageIsTokenEfficientAndUnambiguous() {
-        let messageContext = MoltbotCanvasA2UIAction.AgentMessageContext(
+        let messageContext = ThinkFleetBotCanvasA2UIAction.AgentMessageContext(
             actionName: "Get Weather",
             session: .init(key: "main", surfaceId: "main"),
             component: .init(id: "btnWeather", host: "Peter’s iPad", instanceId: "ipad16,6"),
             contextJSON: "{\"city\":\"Vienna\"}")
-        let msg = MoltbotCanvasA2UIAction.formatAgentMessage(messageContext)
+        let msg = ThinkFleetBotCanvasA2UIAction.formatAgentMessage(messageContext)
 
         #expect(msg.contains("CANVAS_A2UI "))
         #expect(msg.contains("action=Get_Weather"))

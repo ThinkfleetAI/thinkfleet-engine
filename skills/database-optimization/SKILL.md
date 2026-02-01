@@ -1,7 +1,7 @@
 ---
 name: database-optimization
 description: "Query performance tuning, EXPLAIN analysis, index strategies, slow query detection, and connection pool management."
-metadata: {"moltbot":{"emoji":"🏎️","requires":{"anyBins":["psql","mysql"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🏎️","requires":{"anyBins":["psql","mysql"]}}}
 ---
 
 # Database Optimization

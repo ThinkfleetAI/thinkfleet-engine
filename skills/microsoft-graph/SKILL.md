@@ -1,7 +1,7 @@
 ---
 name: microsoft-graph
 description: "Interact with Microsoft 365 services (Teams, Outlook, OneDrive, Calendar) via the Microsoft Graph API."
-metadata: {"moltbot":{"emoji":"Ⓜ️","requires":{"bins":["curl","jq"],"env":["MS_GRAPH_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"Ⓜ️","requires":{"bins":["curl","jq"],"env":["MS_GRAPH_TOKEN"]}}}
 ---
 
 # Microsoft Graph
@@ -34,7 +34,7 @@ curl -s -X POST -H "Authorization: Bearer $MS_GRAPH_TOKEN" \
   "https://graph.microsoft.com/v1.0/me/sendMail" \
   -d '{
     "message": {
-      "subject": "Hello from Moltbot",
+      "subject": "Hello from ThinkFleetBot",
       "body": {"contentType": "Text", "content": "Message body here"},
       "toRecipients": [{"emailAddress": {"address": "recipient@example.com"}}]
     }
@@ -69,7 +69,7 @@ curl -s -X POST -H "Authorization: Bearer $MS_GRAPH_TOKEN" \
 curl -s -X POST -H "Authorization: Bearer $MS_GRAPH_TOKEN" \
   -H "Content-Type: application/json" \
   "https://graph.microsoft.com/v1.0/teams/TEAM_ID/channels/CHANNEL_ID/messages" \
-  -d '{"body": {"content": "Hello from Moltbot!"}}' | jq '{id, createdDateTime}'
+  -d '{"body": {"content": "Hello from ThinkFleetBot!"}}' | jq '{id, createdDateTime}'
 ```
 
 ## List Teams channels

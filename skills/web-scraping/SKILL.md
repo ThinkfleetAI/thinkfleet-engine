@@ -2,7 +2,7 @@
 name: web-scraping
 description: Web scraping and data extraction from websites
 metadata:
-  moltbot_emoji: "🕷️"
+  thinkfleetbot_emoji: "🕷️"
   requires_bins:
     - curl
     - python3

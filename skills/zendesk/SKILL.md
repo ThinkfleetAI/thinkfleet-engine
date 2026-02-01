@@ -1,7 +1,7 @@
 ---
 name: zendesk
 description: "Manage Zendesk Support — tickets, users, organizations, and search via the REST API."
-metadata: {"moltbot":{"emoji":"🎟️","requires":{"bins":["curl","jq"],"env":["ZENDESK_SUBDOMAIN","ZENDESK_EMAIL","ZENDESK_API_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎟️","requires":{"bins":["curl","jq"],"env":["ZENDESK_SUBDOMAIN","ZENDESK_EMAIL","ZENDESK_API_TOKEN"]}}}
 ---
 
 # Zendesk

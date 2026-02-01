@@ -1,7 +1,7 @@
 ---
 name: qdrant
 description: "Manage Qdrant vector database — collections, points, and vector search via the REST API."
-metadata: {"moltbot":{"emoji":"🎯","requires":{"bins":["curl","jq"],"env":["QDRANT_URL","QDRANT_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎯","requires":{"bins":["curl","jq"],"env":["QDRANT_URL","QDRANT_API_KEY"]}}}
 ---
 
 # Qdrant

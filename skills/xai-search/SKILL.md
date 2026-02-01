@@ -1,7 +1,7 @@
 ---
 name: xai-search
 description: Search X/Twitter and the web in real-time using xAI's Grok API with agentic search tools.
-metadata: {"clawdbot":{"emoji":"🔍"}}
+metadata: {"thinkfleetbot":{"emoji":"🔍"}}
 ---
 
 # xAI Search (Grok API)
@@ -62,13 +62,13 @@ For convenience, use the `xai-search.py` script in the `scripts/` folder:
 
 ```bash
 # Web search (adjust path to your skill location)
-python ~/.clawdbot/skills/xai-search/scripts/xai-search.py web "latest news about AI"
+python ~/.thinkfleetbot/skills/xai-search/scripts/xai-search.py web "latest news about AI"
 
 # X/Twitter search  
-python ~/.clawdbot/skills/xai-search/scripts/xai-search.py x "what are people saying about Clawdbot"
+python ~/.thinkfleetbot/skills/xai-search/scripts/xai-search.py x "what are people saying about ThinkFleetBot"
 
 # Both
-python ~/.clawdbot/skills/xai-search/scripts/xai-search.py both "current events today"
+python ~/.thinkfleetbot/skills/xai-search/scripts/xai-search.py both "current events today"
 ```
 
 ## Models

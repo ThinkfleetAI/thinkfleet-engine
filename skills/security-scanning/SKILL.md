@@ -1,7 +1,7 @@
 ---
 name: security-scanning
 description: "Static analysis, dependency vulnerability scanning, secret detection, and container image scanning using open-source tools."
-metadata: {"moltbot":{"emoji":"🛡️","requires":{"anyBins":["semgrep","trivy","trufflehog","snyk","grype"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🛡️","requires":{"anyBins":["semgrep","trivy","trufflehog","snyk","grype"]}}}
 ---
 
 # Security Scanning

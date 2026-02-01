@@ -1,7 +1,7 @@
 ---
 name: twitter
 description: "Query Twitter/X — search tweets, get user profiles, timelines, and followers via the API v2."
-metadata: {"moltbot":{"emoji":"🐦","requires":{"bins":["curl","jq"],"env":["TWITTER_BEARER_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐦","requires":{"bins":["curl","jq"],"env":["TWITTER_BEARER_TOKEN"]}}}
 ---
 
 # Twitter / X

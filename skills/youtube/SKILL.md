@@ -1,7 +1,7 @@
 ---
 name: youtube
 description: "Query YouTube — search videos, get channel stats, list playlists, and manage comments via the Data API v3."
-metadata: {"moltbot":{"emoji":"▶️","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"▶️","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
 ---
 
 # YouTube

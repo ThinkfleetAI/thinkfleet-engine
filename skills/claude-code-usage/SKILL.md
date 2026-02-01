@@ -2,7 +2,7 @@
 name: claude-code-usage
 description: Check Claude Code OAuth usage limits (session & weekly quotas). Use when user asks about Claude Code usage, remaining limits, rate limits, or how much Claude usage they have left. Includes automated session refresh reminders and reset detection monitoring.
 metadata:
-  clawdbot:
+  thinkfleetbot:
     emoji: "📊"
     os:
       - darwin
@@ -181,10 +181,10 @@ Get automatic notifications when your Claude Code quotas reset by polling usage.
 ./scripts/setup-monitoring.sh
 ```
 
-Or add via Clawdbot directly:
+Or add via ThinkFleetBot directly:
 ```bash
 # Check every 30 minutes
-clawdbot cron add --cron "*/30 * * * *" \
+thinkfleetbot cron add --cron "*/30 * * * *" \
   --message "cd /Users/ali/clawd/skills/claude-code-usage && ./scripts/monitor-usage.sh" \
   --name "Claude Code Usage Monitor" \
   --session isolated --deliver --channel telegram
@@ -210,8 +210,8 @@ Fresh usage available! 🦞
 **Customization:**
 ```bash
 # Change check interval
-clawdbot cron add --cron "*/15 * * * *" ...  # Every 15 minutes
-clawdbot cron add --cron "0 * * * *" ...      # Every hour
+thinkfleetbot cron add --cron "*/15 * * * *" ...  # Every 15 minutes
+thinkfleetbot cron add --cron "0 * * * *" ...      # Every hour
 
 # Custom state file location
 STATE_FILE=/path/to/state.json ./scripts/monitor-usage.sh

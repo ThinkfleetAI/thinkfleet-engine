@@ -2,7 +2,7 @@
 name: image-processing
 description: Image processing and manipulation
 metadata:
-  moltbot_emoji: "🖼️"
+  thinkfleetbot_emoji: "🖼️"
   requires_bins:
     - python3
   requires_env: []

@@ -1,7 +1,7 @@
 ---
 name: woocommerce
 description: "Manage WooCommerce stores — products, orders, customers, and coupons via the REST API."
-metadata: {"moltbot":{"emoji":"🛒","requires":{"bins":["curl","jq"],"env":["WOOCOMMERCE_URL","WOOCOMMERCE_KEY","WOOCOMMERCE_SECRET"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🛒","requires":{"bins":["curl","jq"],"env":["WOOCOMMERCE_URL","WOOCOMMERCE_KEY","WOOCOMMERCE_SECRET"]}}}
 ---
 
 # WooCommerce

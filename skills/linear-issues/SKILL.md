@@ -9,7 +9,7 @@ Manage Linear issues via `scripts/linear.sh`.
 
 ## Setup
 
-Store API key in `~/.clawdbot/credentials/linear.json`:
+Store API key in `~/.thinkfleetbot/credentials/linear.json`:
 ```json
 {"apiKey": "lin_api_..."}
 ```

@@ -366,7 +366,7 @@ importers:
         specifier: ^10.5.0
         version: 10.5.0
     devDependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
 
@@ -374,7 +374,7 @@ importers:
 
   extensions/line:
     devDependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
 
@@ -400,7 +400,7 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
 
@@ -408,7 +408,7 @@ importers:
 
   extensions/memory-core:
     devDependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
 
@@ -438,7 +438,7 @@ importers:
       express:
         specifier: ^5.2.1
         version: 5.2.1
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
       proper-lockfile:
@@ -449,7 +449,7 @@ importers:
 
   extensions/nostr:
     dependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
       nostr-tools:
@@ -491,7 +491,7 @@ importers:
         specifier: ^4.3.5
         version: 4.3.6
     devDependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
 
@@ -511,7 +511,7 @@ importers:
 
   extensions/zalo:
     dependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
       undici:
@@ -523,13 +523,13 @@ importers:
       '@sinclair/typebox':
         specifier: 0.34.47
         version: 0.34.47
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
 
-  packages/clawdbot:
+  packages/thinkfleetbot:
     dependencies:
-      moltbot:
+      thinkfleetbot:
         specifier: workspace:*
         version: link:../..
 

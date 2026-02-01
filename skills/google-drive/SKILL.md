@@ -1,7 +1,7 @@
 ---
 name: google-drive
 description: "Upload, download, and manage files in Google Drive via the Drive API using curl."
-metadata: {"moltbot":{"emoji":"📁","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📁","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
 ---
 
 # Google Drive

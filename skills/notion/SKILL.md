@@ -1,7 +1,7 @@
 ---
 name: notion
 description: "Manage Notion pages, databases, and blocks via the REST API."
-metadata: {"moltbot":{"emoji":"📓","requires":{"bins":["curl","jq"],"env":["NOTION_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📓","requires":{"bins":["curl","jq"],"env":["NOTION_API_KEY"]}}}
 ---
 
 # Notion

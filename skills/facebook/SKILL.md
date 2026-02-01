@@ -1,7 +1,7 @@
 ---
 name: facebook
 description: "Query Facebook — pages, posts, insights, and comments via the Graph API."
-metadata: {"moltbot":{"emoji":"📘","requires":{"bins":["curl","jq"],"env":["FACEBOOK_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📘","requires":{"bins":["curl","jq"],"env":["FACEBOOK_ACCESS_TOKEN"]}}}
 ---
 
 # Facebook

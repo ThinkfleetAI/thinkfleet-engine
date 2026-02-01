@@ -1,7 +1,7 @@
 ---
 name: aws-cli
 description: "Manage AWS resources using the AWS CLI v2 (EC2, Lambda, ECS, CloudWatch, IAM, and more)."
-metadata: {"moltbot":{"emoji":"🟠","requires":{"bins":["aws"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🟠","requires":{"bins":["aws"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS CLI

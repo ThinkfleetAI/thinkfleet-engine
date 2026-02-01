@@ -1,7 +1,7 @@
 ---
 name: trello
 description: "Manage Trello boards, lists, and cards via the REST API."
-metadata: {"moltbot":{"emoji":"📝","requires":{"bins":["curl","jq"],"env":["TRELLO_API_KEY","TRELLO_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📝","requires":{"bins":["curl","jq"],"env":["TRELLO_API_KEY","TRELLO_TOKEN"]}}}
 ---
 
 # Trello

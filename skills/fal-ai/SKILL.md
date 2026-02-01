@@ -30,10 +30,10 @@ Generate images, videos, and transcripts using fal.ai's API with support for FLU
 export FAL_KEY="your-api-key"
 ```
 
-Or via clawdbot config:
+Or via thinkfleetbot config:
 
 ```bash
-clawdbot config set skill.fal_api.key YOUR_API_KEY
+thinkfleetbot config set skill.fal_api.key YOUR_API_KEY
 ```
 
 ## Usage

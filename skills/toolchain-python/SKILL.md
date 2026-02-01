@@ -1,7 +1,7 @@
 ---
 name: toolchain-python
 description: "Python project toolchain -- venv, pip, testing, linting, packaging, and debugging."
-metadata: {"moltbot":{"emoji":"🐍","requires":{"bins":["python3"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐍","requires":{"bins":["python3"]}}}
 ---
 
 # Python Toolchain

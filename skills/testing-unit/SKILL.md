@@ -1,7 +1,7 @@
 ---
 name: testing-unit
 description: "Unit testing across languages -- Jest, Vitest, pytest, Go test, Rust test, coverage, and watch mode."
-metadata: {"moltbot":{"emoji":"🧪","requires":{"bins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🧪","requires":{"bins":["npx","node"]}}}
 ---
 
 # Unit Testing

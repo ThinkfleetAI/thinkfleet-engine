@@ -1,7 +1,7 @@
 ---
 name: typescript-expert
 description: "Advanced TypeScript: generics, conditional types, mapped types, type guards, utility types, and strict type safety patterns."
-metadata: {"moltbot":{"emoji":"🔷","requires":{"anyBins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔷","requires":{"anyBins":["npx","node"]}}}
 ---
 
 # TypeScript Expert

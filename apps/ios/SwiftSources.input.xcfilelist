@@ -7,7 +7,7 @@ Sources/Auth/SessionStore.swift
 Sources/Camera/CameraController.swift
 Sources/Chat/ChatSheet.swift
 Sources/Chat/IOSGatewayChatTransport.swift
-Sources/ClawdbotApp.swift
+Sources/ThinkFleetBotApp.swift
 Sources/Config/ThinkFleetConfig.swift
 Sources/Credentials/CredentialListView.swift
 Sources/Documents/DocumentListView.swift
@@ -73,7 +73,7 @@ Sources/Workflows/WorkflowListView.swift
 ../shared/ThinkFleetKit/Sources/ThinkFleetKit/CanvasCommandParams.swift
 ../shared/ThinkFleetKit/Sources/ThinkFleetKit/CanvasCommands.swift
 ../shared/ThinkFleetKit/Sources/ThinkFleetKit/Capabilities.swift
-../shared/ThinkFleetKit/Sources/ThinkFleetKit/ClawdbotKitResources.swift
+../shared/ThinkFleetKit/Sources/ThinkFleetKit/ThinkFleetBotKitResources.swift
 ../shared/ThinkFleetKit/Sources/ThinkFleetKit/DeepLinks.swift
 ../shared/ThinkFleetKit/Sources/ThinkFleetKit/DeviceAuthStore.swift
 ../shared/ThinkFleetKit/Sources/ThinkFleetKit/DeviceIdentity.swift

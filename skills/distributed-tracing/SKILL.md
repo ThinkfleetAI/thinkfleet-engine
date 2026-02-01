@@ -1,7 +1,7 @@
 ---
 name: distributed-tracing
 description: "OpenTelemetry instrumentation, Jaeger/Tempo backends, trace analysis, and observability patterns for microservices."
-metadata: {"moltbot":{"emoji":"🔭","requires":{"anyBins":["docker","curl"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔭","requires":{"anyBins":["docker","curl"]}}}
 ---
 
 # Distributed Tracing

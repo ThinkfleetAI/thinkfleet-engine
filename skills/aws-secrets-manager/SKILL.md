@@ -1,7 +1,7 @@
 ---
 name: aws-secrets-manager
 description: "Manage AWS Secrets Manager secrets -- retrieve, create, and rotate."
-metadata: {"moltbot":{"emoji":"🔑","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔑","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS Secrets Manager

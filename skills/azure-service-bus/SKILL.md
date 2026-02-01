@@ -1,7 +1,7 @@
 ---
 name: azure-service-bus
 description: "Manage Azure Service Bus queues, topics, and subscriptions."
-metadata: {"moltbot":{"emoji":"🚌","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🚌","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure Service Bus

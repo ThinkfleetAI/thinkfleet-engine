@@ -1,7 +1,7 @@
 ---
 name: sap
 description: "Query SAP systems — business partners, sales orders, materials, and financials via OData APIs."
-metadata: {"moltbot":{"emoji":"🏢","requires":{"bins":["curl","jq"],"env":["SAP_BASE_URL","SAP_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🏢","requires":{"bins":["curl","jq"],"env":["SAP_BASE_URL","SAP_API_KEY"]}}}
 ---
 
 # SAP

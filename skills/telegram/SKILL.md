@@ -1,7 +1,7 @@
 ---
 name: telegram
 description: "Send messages and manage Telegram bots via the Bot API."
-metadata: {"moltbot":{"emoji":"✈️","requires":{"bins":["curl","jq"],"env":["TELEGRAM_BOT_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"✈️","requires":{"bins":["curl","jq"],"env":["TELEGRAM_BOT_TOKEN"]}}}
 ---
 
 # Telegram Bot
@@ -18,7 +18,7 @@ Send messages and manage bots via the Telegram Bot API.
 curl -s -X POST \
   "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
   -H "Content-Type: application/json" \
-  -d '{"chat_id":"CHAT_ID","text":"Hello from Clawdbot!"}' | jq '{ok, result: {message_id, chat: .result.chat.title}}'
+  -d '{"chat_id":"CHAT_ID","text":"Hello from ThinkFleetBot!"}' | jq '{ok, result: {message_id, chat: .result.chat.title}}'
 ```
 
 ## Get updates

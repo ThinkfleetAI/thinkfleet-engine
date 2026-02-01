@@ -1,7 +1,7 @@
 ---
 name: sendgrid
 description: "Send emails and manage contacts via the SendGrid API."
-metadata: {"moltbot":{"emoji":"📤","requires":{"bins":["curl","jq"],"env":["SENDGRID_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📤","requires":{"bins":["curl","jq"],"env":["SENDGRID_API_KEY"]}}}
 ---
 
 # SendGrid

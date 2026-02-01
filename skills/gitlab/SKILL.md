@@ -1,7 +1,7 @@
 ---
 name: gitlab
 description: "Manage GitLab projects, merge requests, pipelines, and issues via the REST API."
-metadata: {"moltbot":{"emoji":"🦊","requires":{"bins":["curl","jq"],"env":["GITLAB_URL","GITLAB_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🦊","requires":{"bins":["curl","jq"],"env":["GITLAB_URL","GITLAB_TOKEN"]}}}
 ---
 
 # GitLab

@@ -40,7 +40,7 @@ Supported keys:
 - `seed`, `normalize`, `lang`, `output_format`, `latency_tier`
 - `once`
 
-## Config (`~/.clawdbot/moltbot.json`)
+## Config (`~/.thinkfleetbot/thinkfleetbot.json`)
 ```json5
 {
   "talk": {

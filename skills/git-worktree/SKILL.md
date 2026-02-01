@@ -1,7 +1,7 @@
 ---
 name: git-worktree
 description: "Manage git worktrees for parallel development — create, list, and remove isolated working directories."
-metadata: {"moltbot":{"emoji":"🌳","requires":{"bins":["git"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌳","requires":{"bins":["git"]}}}
 ---
 
 # Git Worktree

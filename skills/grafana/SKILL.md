@@ -1,7 +1,7 @@
 ---
 name: grafana
 description: "Query Grafana dashboards, data sources, alerts, and annotations via the REST API."
-metadata: {"moltbot":{"emoji":"📈","requires":{"bins":["curl","jq"],"env":["GRAFANA_URL","GRAFANA_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📈","requires":{"bins":["curl","jq"],"env":["GRAFANA_URL","GRAFANA_TOKEN"]}}}
 ---
 
 # Grafana
@@ -86,8 +86,8 @@ curl -s -X POST -H "Authorization: Bearer $GRAFANA_TOKEN" \
     "matchers": [{"name": "alertname", "value": "HighCPU", "isRegex": false}],
     "startsAt": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
     "endsAt": "'$(date -u -d '+1 hour' +%Y-%m-%dT%H:%M:%SZ)'",
-    "comment": "Silenced by Moltbot",
-    "createdBy": "moltbot"
+    "comment": "Silenced by ThinkFleetBot",
+    "createdBy": "thinkfleetbot"
   }' | jq '{silenceID}'
 ```
 

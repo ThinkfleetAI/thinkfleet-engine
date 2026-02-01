@@ -1,7 +1,7 @@
 ---
 name: react-patterns
 description: "React best practices: hooks, composition, state management, performance optimization, Server Components, and testing patterns."
-metadata: {"moltbot":{"emoji":"⚛️","requires":{"anyBins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"⚛️","requires":{"anyBins":["npx","node"]}}}
 ---
 
 # React Patterns

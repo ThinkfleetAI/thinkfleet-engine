@@ -1,7 +1,7 @@
 ---
 name: kubectl
 description: "Manage Kubernetes clusters, deployments, pods, and services using kubectl."
-metadata: {"moltbot":{"emoji":"☸️","requires":{"bins":["kubectl"]}}}
+metadata: {"thinkfleetbot":{"emoji":"☸️","requires":{"bins":["kubectl"]}}}
 ---
 
 # kubectl

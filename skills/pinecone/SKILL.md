@@ -1,7 +1,7 @@
 ---
 name: pinecone
 description: "Manage Pinecone vector database — indexes, upsert vectors, query, and delete via the REST API."
-metadata: {"moltbot":{"emoji":"🌲","requires":{"bins":["curl","jq"],"env":["PINECONE_API_KEY","PINECONE_INDEX_URL"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌲","requires":{"bins":["curl","jq"],"env":["PINECONE_API_KEY","PINECONE_INDEX_URL"]}}}
 ---
 
 # Pinecone

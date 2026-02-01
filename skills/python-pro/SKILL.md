@@ -1,7 +1,7 @@
 ---
 name: python-pro
 description: "Advanced Python: async/await, type hints, dataclasses, context managers, decorators, testing patterns, and performance optimization."
-metadata: {"moltbot":{"emoji":"🐍","requires":{"bins":["python3"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐍","requires":{"bins":["python3"]}}}
 ---
 
 # Python Pro

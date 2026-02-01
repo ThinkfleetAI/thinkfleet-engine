@@ -1,6 +1,6 @@
 import SwiftUI
 import Testing
-@testable import Moltbot
+@testable import ThinkFleetBot
 
 @Suite struct AppCoverageTests {
     @Test @MainActor func nodeAppModelUpdatesBackgroundedState() {

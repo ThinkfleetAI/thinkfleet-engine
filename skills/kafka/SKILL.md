@@ -1,7 +1,7 @@
 ---
 name: kafka
 description: "Manage Apache Kafka — topics, consumer groups, and produce/consume messages via the Confluent REST Proxy."
-metadata: {"moltbot":{"emoji":"📨","requires":{"bins":["curl","jq"],"env":[]}}}
+metadata: {"thinkfleetbot":{"emoji":"📨","requires":{"bins":["curl","jq"],"env":[]}}}
 ---
 
 # Apache Kafka

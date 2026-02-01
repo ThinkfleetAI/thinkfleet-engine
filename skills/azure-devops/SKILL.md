@@ -1,7 +1,7 @@
 ---
 name: azure-devops
 description: "Manage Azure DevOps work items, pipelines, and repos via the REST API."
-metadata: {"moltbot":{"emoji":"🔷","requires":{"bins":["curl","jq"],"env":["AZDO_ORG_URL","AZDO_PAT"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔷","requires":{"bins":["curl","jq"],"env":["AZDO_ORG_URL","AZDO_PAT"]}}}
 ---
 
 # Azure DevOps

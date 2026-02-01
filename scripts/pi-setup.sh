@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Clawdbot Pi Setup Script
+# ThinkFleetBot Pi Setup Script
 # Run on a fresh Raspberry Pi OS (64-bit, Bookworm+):
 #   curl -fsSL https://your-domain.com/pi-setup.sh | bash
 set -euo pipefail
 
-echo "=== Clawdbot Pi Setup ==="
+echo "=== ThinkFleetBot Pi Setup ==="
 
 # --- System packages ---
 sudo apt-get update
@@ -30,9 +30,9 @@ if ! command -v pnpm &>/dev/null; then
 fi
 
 # --- Clone repo ---
-INSTALL_DIR="$HOME/clawdbot"
+INSTALL_DIR="$HOME/thinkfleetbot"
 if [ ! -d "$INSTALL_DIR" ]; then
-  echo "Clone the clawdbot repo to $INSTALL_DIR before running this script."
+  echo "Clone the thinkfleetbot repo to $INSTALL_DIR before running this script."
   echo "  git clone <your-repo-url> $INSTALL_DIR"
   exit 1
 fi
@@ -49,9 +49,9 @@ cd "$INSTALL_DIR"
 pnpm run build
 
 # --- Systemd service for gateway ---
-sudo tee /etc/systemd/system/clawdbot-gateway.service > /dev/null <<EOF
+sudo tee /etc/systemd/system/thinkfleetbot-gateway.service > /dev/null <<EOF
 [Unit]
-Description=Clawdbot Gateway
+Description=ThinkFleetBot Gateway
 After=network.target
 
 [Service]
@@ -68,15 +68,15 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable clawdbot-gateway.service
-sudo systemctl start clawdbot-gateway.service
+sudo systemctl enable thinkfleetbot-gateway.service
+sudo systemctl start thinkfleetbot-gateway.service
 
 # --- Chromium kiosk autostart ---
 mkdir -p "$HOME/.config/autostart"
-cat > "$HOME/.config/autostart/clawdbot-kiosk.desktop" <<EOF
+cat > "$HOME/.config/autostart/thinkfleetbot-kiosk.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=Clawdbot Kiosk
+Name=ThinkFleetBot Kiosk
 Exec=chromium-browser --kiosk --noerrdialogs --disable-infobars --no-first-run --autoplay-policy=no-user-gesture-required http://localhost:18789/kiosk/
 X-GNOME-Autostart-enabled=true
 EOF
@@ -92,5 +92,5 @@ echo "Gateway running on port 18789"
 echo "Kiosk will launch on next reboot (or run Chromium manually):"
 echo "  chromium-browser --kiosk http://localhost:18789/kiosk/"
 echo ""
-echo "To check gateway status: sudo systemctl status clawdbot-gateway"
-echo "To view logs:            sudo journalctl -u clawdbot-gateway -f"
+echo "To check gateway status: sudo systemctl status thinkfleetbot-gateway"
+echo "To view logs:            sudo journalctl -u thinkfleetbot-gateway -f"

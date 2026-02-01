@@ -1,7 +1,7 @@
 ---
 name: aws-cloudwatch
 description: "Query AWS CloudWatch metrics, alarms, and log groups."
-metadata: {"moltbot":{"emoji":"📊","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📊","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS CloudWatch

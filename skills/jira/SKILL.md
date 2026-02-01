@@ -1,7 +1,7 @@
 ---
 name: jira
 description: "Manage Jira issues, projects, and boards via the Atlassian REST API."
-metadata: {"moltbot":{"emoji":"📋","requires":{"bins":["curl","jq"],"env":["JIRA_BASE_URL","JIRA_EMAIL","JIRA_API_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📋","requires":{"bins":["curl","jq"],"env":["JIRA_BASE_URL","JIRA_EMAIL","JIRA_API_TOKEN"]}}}
 ---
 
 # Jira
@@ -73,7 +73,7 @@ curl -s -X POST -H "Authorization: Basic $(echo -n "$JIRA_EMAIL:$JIRA_API_TOKEN"
 curl -s -X POST -H "Authorization: Basic $(echo -n "$JIRA_EMAIL:$JIRA_API_TOKEN" | base64)" \
   -H "Content-Type: application/json" \
   "$JIRA_BASE_URL/rest/api/3/issue/DEV-123/comment" \
-  -d '{"body": {"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Comment from Moltbot"}]}]}}' | jq '{id: .id, created: .created}'
+  -d '{"body": {"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Comment from ThinkFleetBot"}]}]}}' | jq '{id: .id, created: .created}'
 ```
 
 ## List projects

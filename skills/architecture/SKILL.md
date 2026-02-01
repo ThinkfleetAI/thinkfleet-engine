@@ -1,7 +1,7 @@
 ---
 name: architecture
 description: "Software architecture tools -- generate diagrams (Mermaid, PlantUML), write ADRs, and document design decisions."
-metadata: {"moltbot":{"emoji":"🏛️","requires":{"bins":["python3"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🏛️","requires":{"bins":["python3"]}}}
 ---
 
 # Architecture

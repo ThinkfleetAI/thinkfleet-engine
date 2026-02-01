@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import Moltbot
+@testable import ThinkFleetBot
 
 private struct KeychainEntry: Hashable {
     let service: String

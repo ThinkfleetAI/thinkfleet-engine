@@ -1,5 +1,5 @@
 import Testing
-@testable import Moltbot
+@testable import ThinkFleetBot
 
 @Suite(.serialized) struct GatewayDiscoveryModelTests {
     @Test @MainActor func debugLoggingCapturesLifecycleAndResets() {

@@ -1,7 +1,7 @@
 ---
 name: n8n
 description: "Manage n8n workflows — list, execute, activate/deactivate, and monitor executions via the n8n REST API."
-metadata: {"moltbot":{"emoji":"⚡","requires":{"bins":["curl","jq"],"env":["N8N_API_URL","N8N_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"⚡","requires":{"bins":["curl","jq"],"env":["N8N_API_URL","N8N_API_KEY"]}}}
 ---
 
 # n8n Workflow Management

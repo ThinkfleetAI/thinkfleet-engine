@@ -1,7 +1,7 @@
 ---
 name: salesforce
 description: "Query and manage Salesforce CRM — accounts, contacts, leads, opportunities, and cases via the REST API."
-metadata: {"moltbot":{"emoji":"☁️","requires":{"bins":["curl","jq"],"env":["SALESFORCE_INSTANCE_URL","SALESFORCE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"☁️","requires":{"bins":["curl","jq"],"env":["SALESFORCE_INSTANCE_URL","SALESFORCE_ACCESS_TOKEN"]}}}
 ---
 
 # Salesforce

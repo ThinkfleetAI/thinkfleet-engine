@@ -1,7 +1,7 @@
 ---
 name: redis
 description: Redis database management. Key-value operations, caching, pub/sub, and data structure commands.
-metadata: {"clawdbot":{"emoji":"🔴","always":true,"requires":{"bins":["curl","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔴","always":true,"requires":{"bins":["curl","jq"]}}}
 ---
 
 # Redis 🔴

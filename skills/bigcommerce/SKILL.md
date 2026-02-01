@@ -1,7 +1,7 @@
 ---
 name: bigcommerce
 description: "Manage BigCommerce stores — products, orders, and customers via the REST API."
-metadata: {"moltbot":{"emoji":"🏬","requires":{"bins":["curl","jq"],"env":["BIGCOMMERCE_STORE_HASH","BIGCOMMERCE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🏬","requires":{"bins":["curl","jq"],"env":["BIGCOMMERCE_STORE_HASH","BIGCOMMERCE_ACCESS_TOKEN"]}}}
 ---
 
 # BigCommerce

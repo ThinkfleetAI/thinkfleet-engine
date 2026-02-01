@@ -1,7 +1,7 @@
 ---
 name: zoho-crm
 description: "Manage Zoho CRM — leads, contacts, deals, and accounts via the REST API."
-metadata: {"moltbot":{"emoji":"📊","requires":{"bins":["curl","jq"],"env":["ZOHO_ACCESS_TOKEN","ZOHO_API_DOMAIN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📊","requires":{"bins":["curl","jq"],"env":["ZOHO_ACCESS_TOKEN","ZOHO_API_DOMAIN"]}}}
 ---
 
 # Zoho CRM

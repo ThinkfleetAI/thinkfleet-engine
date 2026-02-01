@@ -1,7 +1,7 @@
 ---
 name: snowflake
 description: "Query Snowflake data warehouse — execute SQL, manage warehouses, and query metadata via the SQL API."
-metadata: {"moltbot":{"emoji":"❄️","requires":{"bins":["curl","jq"],"env":["SNOWFLAKE_ACCOUNT","SNOWFLAKE_USER","SNOWFLAKE_PASSWORD"]}}}
+metadata: {"thinkfleetbot":{"emoji":"❄️","requires":{"bins":["curl","jq"],"env":["SNOWFLAKE_ACCOUNT","SNOWFLAKE_USER","SNOWFLAKE_PASSWORD"]}}}
 ---
 
 # Snowflake

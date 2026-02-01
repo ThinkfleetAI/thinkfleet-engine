@@ -1,7 +1,7 @@
 ---
 name: aws-sns
 description: "Manage AWS SNS topics, subscriptions, and publish notifications."
-metadata: {"moltbot":{"emoji":"🔔","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔔","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS SNS

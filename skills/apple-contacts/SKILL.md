@@ -1,7 +1,7 @@
 ---
 name: apple-contacts
 description: Look up contacts from macOS Contacts.app. Use when resolving phone numbers to names, finding contact info, or searching the address book.
-metadata: {"clawdbot":{"emoji":"👤","os":["darwin"]}}
+metadata: {"thinkfleetbot":{"emoji":"👤","os":["darwin"]}}
 ---
 
 # Apple Contacts

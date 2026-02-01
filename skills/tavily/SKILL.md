@@ -132,9 +132,9 @@ scripts/tavily_search.py "Eiffel Tower architecture" --images
 
 ## API Key Setup
 
-### Option 1: Clawdbot Config (Recommended)
+### Option 1: ThinkFleetBot Config (Recommended)
 
-Add to your Clawdbot config:
+Add to your ThinkFleetBot config:
 
 ```json
 {
@@ -149,7 +149,7 @@ Add to your Clawdbot config:
 }
 ```
 
-Access in scripts via Clawdbot's config system.
+Access in scripts via ThinkFleetBot's config system.
 
 ### Option 2: Environment Variable
 
@@ -157,7 +157,7 @@ Access in scripts via Clawdbot's config system.
 export TAVILY_API_KEY="tvly-YOUR_API_KEY_HERE"
 ```
 
-Add to `~/.clawdbot/.env` or your shell profile.
+Add to `~/.thinkfleetbot/.env` or your shell profile.
 
 ### Getting an API Key
 

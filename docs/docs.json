@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "Moltbot",
+  "name": "ThinkFleetBot",
   "theme": "mint",
   "logo": {
     "light": "/assets/pixel-lobster.svg",
@@ -13,11 +13,11 @@
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/moltbot/moltbot"
+      "url": "https://github.com/thinkfleetbot/thinkfleetbot"
     },
     {
       "name": "Releases",
-      "url": "https://github.com/moltbot/moltbot/releases"
+      "url": "https://github.com/thinkfleetbot/thinkfleetbot/releases"
     }
   ],
   "redirects": [

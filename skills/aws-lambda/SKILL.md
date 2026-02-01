@@ -1,7 +1,7 @@
 ---
 name: aws-lambda
 description: "Manage AWS Lambda functions -- deploy, invoke, view logs, and configure."
-metadata: {"moltbot":{"emoji":"⚡","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"⚡","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS Lambda

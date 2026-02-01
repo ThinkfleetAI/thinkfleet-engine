@@ -1,7 +1,7 @@
 ---
 name: firebase
 description: "Manage Firebase — Firestore documents, Realtime Database, and Auth users via the REST API."
-metadata: {"moltbot":{"emoji":"🔥","requires":{"bins":["curl","jq"],"env":["FIREBASE_PROJECT_ID","GOOGLE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔥","requires":{"bins":["curl","jq"],"env":["FIREBASE_PROJECT_ID","GOOGLE_ACCESS_TOKEN"]}}}
 ---
 
 # Firebase

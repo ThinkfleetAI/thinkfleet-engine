@@ -30,7 +30,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         return .fullAccuracy
     }
 
-    func ensureAuthorization(mode: MoltbotLocationMode) async -> CLAuthorizationStatus {
+    func ensureAuthorization(mode: ThinkFleetBotLocationMode) async -> CLAuthorizationStatus {
         guard CLLocationManager.locationServicesEnabled() else { return .denied }
 
         let status = self.manager.authorizationStatus
@@ -53,8 +53,8 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     }
 
     func currentLocation(
-        params: MoltbotLocationGetParams,
-        desiredAccuracy: MoltbotLocationAccuracy,
+        params: ThinkFleetBotLocationGetParams,
+        desiredAccuracy: ThinkFleetBotLocationAccuracy,
         maxAgeMs: Int?,
         timeoutMs: Int?) async throws -> CLLocation
     {
@@ -93,7 +93,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         try await AsyncTimeout.withTimeoutMs(timeoutMs: timeoutMs, onTimeout: { Error.timeout }, operation: operation)
     }
 
-    private static func accuracyValue(_ accuracy: MoltbotLocationAccuracy) -> CLLocationAccuracy {
+    private static func accuracyValue(_ accuracy: ThinkFleetBotLocationAccuracy) -> CLLocationAccuracy {
         switch accuracy {
         case .coarse:
             kCLLocationAccuracyKilometer

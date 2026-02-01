@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: "Systematic code review: security checks, performance analysis, complexity assessment, best practice validation, and review checklists."
-metadata: {"moltbot":{"emoji":"🔍","requires":{"anyBins":["gh","git"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔍","requires":{"anyBins":["gh","git"]}}}
 ---
 
 # Code Review

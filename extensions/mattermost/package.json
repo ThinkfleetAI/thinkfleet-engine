@@ -1,9 +1,9 @@
 {
-  "name": "@moltbot/mattermost",
+  "name": "@thinkfleetbot/mattermost",
   "version": "2026.1.27-beta.1",
   "type": "module",
-  "description": "Moltbot Mattermost channel plugin",
-  "moltbot": {
+  "description": "ThinkFleetBot Mattermost channel plugin",
+  "thinkfleetbot": {
     "extensions": [
       "./index.ts"
     ],
@@ -17,7 +17,7 @@
       "order": 65
     },
     "install": {
-      "npmSpec": "@moltbot/mattermost",
+      "npmSpec": "@thinkfleetbot/mattermost",
       "localPath": "extensions/mattermost",
       "defaultChoice": "npm"
     }

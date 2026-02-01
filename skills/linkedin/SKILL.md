@@ -1,7 +1,7 @@
 ---
 name: linkedin
 description: "Query LinkedIn — profile, connections, posts, and organization pages via the REST API."
-metadata: {"moltbot":{"emoji":"💼","requires":{"bins":["curl","jq"],"env":["LINKEDIN_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"💼","requires":{"bins":["curl","jq"],"env":["LINKEDIN_ACCESS_TOKEN"]}}}
 ---
 
 # LinkedIn

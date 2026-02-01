@@ -16,7 +16,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
     setError("");
 
     try {
-      const saasUrl = localStorage.getItem("clawdbot-kiosk-saas-url") || "";
+      const saasUrl = localStorage.getItem("thinkfleetbot-kiosk-saas-url") || "";
       const res = await fetch(`${saasUrl}/api/assistants/devices/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -35,8 +35,8 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
       }
 
       const data = await res.json();
-      localStorage.setItem("clawdbot-kiosk-device-id", data.deviceId);
-      localStorage.setItem("clawdbot-kiosk-pairing-token", data.pairingToken);
+      localStorage.setItem("thinkfleetbot-kiosk-device-id", data.deviceId);
+      localStorage.setItem("thinkfleetbot-kiosk-pairing-token", data.pairingToken);
 
       setStatus("waiting");
       pollForApproval(data.deviceId, data.pairingToken, saasUrl);
@@ -60,10 +60,10 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
 
         if (data.status === "ACTIVE") {
           if (data.authToken) {
-            localStorage.setItem("clawdbot-kiosk-auth-token", data.authToken);
+            localStorage.setItem("thinkfleetbot-kiosk-auth-token", data.authToken);
           }
           if (data.config) {
-            localStorage.setItem("clawdbot-kiosk-config", JSON.stringify(data.config));
+            localStorage.setItem("thinkfleetbot-kiosk-config", JSON.stringify(data.config));
           }
           onComplete();
           return;
@@ -79,11 +79,11 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>Clawdbot Setup</h1>
+        <h1 style={styles.title}>ThinkFleetBot Setup</h1>
 
         {status === "input" || status === "error" ? (
           <>
-            <p style={styles.subtitle}>Enter the invite code from your Clawdbot dashboard</p>
+            <p style={styles.subtitle}>Enter the invite code from your ThinkFleetBot dashboard</p>
             <input
               style={styles.input}
               type="text"
@@ -103,9 +103,9 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             <input
               style={{ ...styles.input, fontSize: 14 }}
               type="url"
-              defaultValue={localStorage.getItem("clawdbot-kiosk-saas-url") || ""}
-              onChange={(e) => localStorage.setItem("clawdbot-kiosk-saas-url", e.target.value)}
-              placeholder="https://your-clawdbot.example.com"
+              defaultValue={localStorage.getItem("thinkfleetbot-kiosk-saas-url") || ""}
+              onChange={(e) => localStorage.setItem("thinkfleetbot-kiosk-saas-url", e.target.value)}
+              placeholder="https://your-thinkfleetbot.example.com"
             />
           </>
         ) : status === "registering" ? (
@@ -114,7 +114,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
           <>
             <div style={styles.waitingIcon}>⏳</div>
             <p style={styles.subtitle}>Waiting for admin approval</p>
-            <p style={styles.hint}>Ask an admin to approve this device in the Clawdbot dashboard</p>
+            <p style={styles.hint}>Ask an admin to approve this device in the ThinkFleetBot dashboard</p>
           </>
         )}
       </div>

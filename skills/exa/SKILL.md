@@ -1,7 +1,7 @@
 ---
 name: exa
 description: Neural web search and code context via Exa AI API. Requires EXA_API_KEY. Use for finding documentation, code examples, research papers, or company info.
-metadata: {"clawdbot":{"emoji":"🧠","requires":{"env":["EXA_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🧠","requires":{"env":["EXA_API_KEY"]}}}
 ---
 
 # Exa - Neural Web Search

@@ -1,7 +1,7 @@
 ---
 name: clean-code
 description: "Refactoring patterns, SOLID principles, code smell detection, and pragmatic coding standards."
-metadata: {"moltbot":{"emoji":"✨","requires":{"anyBins":["git"]}}}
+metadata: {"thinkfleetbot":{"emoji":"✨","requires":{"anyBins":["git"]}}}
 ---
 
 # Clean Code

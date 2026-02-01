@@ -1,12 +1,12 @@
 ---
 name: agent-zero
 description: "Create and manage Agent Zero autonomous tasks. Run goals, check status, cancel tasks, list history, and use pre-built templates."
-metadata: {"moltbot":{"emoji":"🧠","requires":{},"always":true}}
+metadata: {"thinkfleetbot":{"emoji":"🧠","requires":{},"always":true}}
 ---
 
 # Agent Zero Skill
 
-Agent Zero is an autonomous task execution engine running inside the Clawdbot container. It can execute multi-step goals using tools like shell commands, Python scripts, filesystem operations, and web access.
+Agent Zero is an autonomous task execution engine running inside the ThinkFleetBot container. It can execute multi-step goals using tools like shell commands, Python scripts, filesystem operations, and web access.
 
 ## Run a Task
 
@@ -87,7 +87,7 @@ Check if Agent Zero is running and healthy:
 
 ## Gateway Methods
 
-These RPC methods are available through the Clawdbot gateway:
+These RPC methods are available through the ThinkFleetBot gateway:
 
 | Method | Description |
 |--------|-------------|

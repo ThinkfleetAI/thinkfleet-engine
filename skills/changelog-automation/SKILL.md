@@ -1,7 +1,7 @@
 ---
 name: changelog-automation
 description: "Auto-generate changelogs from git commits and PRs using conventional commits, git-cliff, and GitHub releases."
-metadata: {"moltbot":{"emoji":"📝","requires":{"anyBins":["git","gh"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📝","requires":{"anyBins":["git","gh"]}}}
 ---
 
 # Changelog Automation

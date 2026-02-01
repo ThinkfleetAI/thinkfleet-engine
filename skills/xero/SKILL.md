@@ -1,7 +1,7 @@
 ---
 name: xero
 description: "Query Xero accounting — invoices, contacts, accounts, and bank transactions via the REST API."
-metadata: {"moltbot":{"emoji":"💰","requires":{"bins":["curl","jq"],"env":["XERO_ACCESS_TOKEN","XERO_TENANT_ID"]}}}
+metadata: {"thinkfleetbot":{"emoji":"💰","requires":{"bins":["curl","jq"],"env":["XERO_ACCESS_TOKEN","XERO_TENANT_ID"]}}}
 ---
 
 # Xero

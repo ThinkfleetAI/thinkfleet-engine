@@ -1,7 +1,7 @@
 ---
 name: local-whisper
 description: Local speech-to-text using OpenAI Whisper. Runs fully offline after model download. High quality transcription with multiple model sizes.
-metadata: {"clawdbot":{"emoji":"🎙️","requires":{"bins":["ffmpeg"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎙️","requires":{"bins":["ffmpeg"]}}}
 ---
 
 # Local Whisper STT
@@ -12,13 +12,13 @@ Local speech-to-text using OpenAI's Whisper. **Fully offline** after initial mod
 
 ```bash
 # Basic
-~/.clawdbot/skills/local-whisper/scripts/local-whisper audio.wav
+~/.thinkfleetbot/skills/local-whisper/scripts/local-whisper audio.wav
 
 # Better model
-~/.clawdbot/skills/local-whisper/scripts/local-whisper audio.wav --model turbo
+~/.thinkfleetbot/skills/local-whisper/scripts/local-whisper audio.wav --model turbo
 
 # With timestamps
-~/.clawdbot/skills/local-whisper/scripts/local-whisper audio.wav --timestamps --json
+~/.thinkfleetbot/skills/local-whisper/scripts/local-whisper audio.wav --timestamps --json
 ```
 
 ## Models
@@ -43,7 +43,7 @@ Local speech-to-text using OpenAI's Whisper. **Fully offline** after initial mod
 
 Uses uv-managed venv at `.venv/`. To reinstall:
 ```bash
-cd ~/.clawdbot/skills/local-whisper
+cd ~/.thinkfleetbot/skills/local-whisper
 uv venv .venv --python 3.12
 uv pip install --python .venv/bin/python click openai-whisper torch --index-url https://download.pytorch.org/whl/cpu
 ```

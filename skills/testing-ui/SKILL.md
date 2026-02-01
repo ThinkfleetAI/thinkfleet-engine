@@ -1,7 +1,7 @@
 ---
 name: testing-ui
 description: "UI testing with Playwright and Puppeteer -- browser automation, visual regression, screenshots, and accessibility audits."
-metadata: {"moltbot":{"emoji":"🎭","requires":{"bins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎭","requires":{"bins":["npx","node"]}}}
 ---
 
 # UI Testing

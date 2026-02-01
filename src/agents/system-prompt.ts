@@ -554,7 +554,7 @@ export function buildAgentSystemPrompt(params: {
   );
 
   // Inject reverse proxy URL instructions when running in SaaS mode
-  const proxyBaseUrl = process.env.CLAWDBOT_PROXY_BASE_URL;
+  const proxyBaseUrl = process.env.THINKFLEETBOT_PROXY_BASE_URL;
   if (proxyBaseUrl) {
     lines.push(
       "",

@@ -1,7 +1,7 @@
 ---
 name: aws-ecs
 description: "Manage AWS ECS clusters, services, tasks, and task definitions."
-metadata: {"moltbot":{"emoji":"📦","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📦","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS ECS

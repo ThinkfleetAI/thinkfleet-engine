@@ -1,7 +1,7 @@
 ---
 name: aws-rds
 description: "Manage AWS RDS database instances, snapshots, and clusters."
-metadata: {"moltbot":{"emoji":"🗄️","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🗄️","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS RDS

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import handler from "./handler.js";
 import { createHookEvent } from "../../hooks.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { ThinkFleetBotConfig } from "../../../config/config.js";
 import { makeTempWorkspace, writeWorkspaceFile } from "../../../test-helpers/workspace.js";
 
 /**
@@ -78,7 +78,7 @@ describe("session-memory hook", () => {
       content: sessionContent,
     });
 
-    const cfg: ClawdbotConfig = {
+    const cfg: ThinkFleetBotConfig = {
       agents: { defaults: { workspace: tempDir } },
     };
 
@@ -124,7 +124,7 @@ describe("session-memory hook", () => {
       content: sessionContent,
     });
 
-    const cfg: ClawdbotConfig = {
+    const cfg: ThinkFleetBotConfig = {
       agents: { defaults: { workspace: tempDir } },
     };
 
@@ -169,7 +169,7 @@ describe("session-memory hook", () => {
       content: sessionContent,
     });
 
-    const cfg: ClawdbotConfig = {
+    const cfg: ThinkFleetBotConfig = {
       agents: { defaults: { workspace: tempDir } },
     };
 
@@ -213,7 +213,7 @@ describe("session-memory hook", () => {
     });
 
     // Configure to only include last 3 messages
-    const cfg: ClawdbotConfig = {
+    const cfg: ThinkFleetBotConfig = {
       agents: { defaults: { workspace: tempDir } },
       hooks: {
         internal: {
@@ -274,7 +274,7 @@ describe("session-memory hook", () => {
 
     // Request 3 messages - if we sliced first, we'd only get 1-2 messages
     // because the last 3 lines include tool entries
-    const cfg: ClawdbotConfig = {
+    const cfg: ThinkFleetBotConfig = {
       agents: { defaults: { workspace: tempDir } },
       hooks: {
         internal: {
@@ -317,7 +317,7 @@ describe("session-memory hook", () => {
       content: "",
     });
 
-    const cfg: ClawdbotConfig = {
+    const cfg: ThinkFleetBotConfig = {
       agents: { defaults: { workspace: tempDir } },
     };
 
@@ -354,7 +354,7 @@ describe("session-memory hook", () => {
       content: sessionContent,
     });
 
-    const cfg: ClawdbotConfig = {
+    const cfg: ThinkFleetBotConfig = {
       agents: { defaults: { workspace: tempDir } },
     };
 

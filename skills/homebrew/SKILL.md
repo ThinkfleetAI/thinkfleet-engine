@@ -1,7 +1,7 @@
 ---
 name: homebrew
 description: Homebrew package manager for macOS. Search, install, manage, and troubleshoot packages and casks.
-metadata: {"clawdbot":{"emoji":"🍺","requires":{"bins":["brew"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🍺","requires":{"bins":["brew"]}}}
 ---
 
 # Homebrew Package Manager

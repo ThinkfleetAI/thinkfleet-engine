@@ -1,7 +1,7 @@
 ---
 name: nextjs-patterns
 description: "Next.js App Router patterns: Server Components, data fetching, routing, middleware, caching, and deployment."
-metadata: {"moltbot":{"emoji":"▲","requires":{"anyBins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"▲","requires":{"anyBins":["npx","node"]}}}
 ---
 
 # Next.js Patterns

@@ -1,7 +1,7 @@
 ---
 name: toolchain-rust
 description: "Rust project toolchain -- cargo build, test, clippy, formatting, and cross-compilation."
-metadata: {"moltbot":{"emoji":"🦀","requires":{"bins":["cargo"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🦀","requires":{"bins":["cargo"]}}}
 ---
 
 # Rust Toolchain

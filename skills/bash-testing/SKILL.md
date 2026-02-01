@@ -1,7 +1,7 @@
 ---
 name: bash-testing
 description: "Test shell scripts with BATS (Bash Automated Testing System). Write, run, and debug tests for bash scripts."
-metadata: {"moltbot":{"emoji":"🐚","requires":{"bins":["bats"]},"install":[{"kind":"brew","formula":"bats-core","bins":["bats"],"label":"BATS Core"}]}}
+metadata: {"thinkfleetbot":{"emoji":"🐚","requires":{"bins":["bats"]},"install":[{"kind":"brew","formula":"bats-core","bins":["bats"],"label":"BATS Core"}]}}
 ---
 
 # Bash Testing (BATS)

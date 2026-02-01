@@ -1,7 +1,7 @@
 ---
 name: azure-monitor
 description: "Query Azure Monitor metrics, alerts, and Log Analytics workspaces."
-metadata: {"moltbot":{"emoji":"📊","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📊","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure Monitor

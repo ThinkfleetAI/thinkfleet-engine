@@ -1,7 +1,7 @@
 ---
 name: google-analytics
 description: "Query Google Analytics 4 — reports, realtime data, dimensions, and metrics via the Data API."
-metadata: {"moltbot":{"emoji":"📈","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📈","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
 ---
 
 # Google Analytics 4

@@ -10,7 +10,7 @@ Hybrid skill using CLI for local operations and API for tailnet-wide management.
 
 ## Setup
 
-API config (optional, for tailnet-wide operations): `~/.clawdbot/credentials/tailscale/config.json`
+API config (optional, for tailnet-wide operations): `~/.thinkfleetbot/credentials/tailscale/config.json`
 
 ```json
 {

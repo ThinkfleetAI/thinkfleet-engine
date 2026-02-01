@@ -2,7 +2,7 @@
 name: ssh-essentials
 description: Essential SSH commands for secure remote access, key management, tunneling, and file transfers.
 homepage: https://www.openssh.com/
-metadata: {"clawdbot":{"emoji":"🔐","requires":{"bins":["ssh"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔐","requires":{"bins":["ssh"]}}}
 ---
 
 # SSH Essentials

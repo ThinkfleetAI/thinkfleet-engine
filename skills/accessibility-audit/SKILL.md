@@ -1,7 +1,7 @@
 ---
 name: accessibility-audit
 description: "WCAG 2.2 compliance auditing: automated scanning with axe-core, keyboard navigation testing, screen reader checks, and color contrast validation."
-metadata: {"moltbot":{"emoji":"♿","requires":{"anyBins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"♿","requires":{"anyBins":["npx","node"]}}}
 ---
 
 # Accessibility Audit

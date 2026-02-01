@@ -1,7 +1,7 @@
 ---
 name: paypal
 description: "Manage PayPal — orders, payments, refunds, and payouts via the REST API."
-metadata: {"moltbot":{"emoji":"💵","requires":{"bins":["curl","jq"],"env":["PAYPAL_CLIENT_ID","PAYPAL_CLIENT_SECRET"]}}}
+metadata: {"thinkfleetbot":{"emoji":"💵","requires":{"bins":["curl","jq"],"env":["PAYPAL_CLIENT_ID","PAYPAL_CLIENT_SECRET"]}}}
 ---
 
 # PayPal

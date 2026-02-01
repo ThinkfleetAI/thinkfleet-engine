@@ -1,17 +1,17 @@
 import ThinkFleetKit
 import Network
 import Testing
-@testable import Moltbot
+@testable import ThinkFleetBot
 
 @Suite struct GatewayEndpointIDTests {
     @Test func stableIDForServiceDecodesAndNormalizesName() {
         let endpoint = NWEndpoint.service(
-            name: "Moltbot\\032Gateway   \\032  Node\n",
-            type: "_moltbot-gw._tcp",
+            name: "ThinkFleetBot\\032Gateway   \\032  Node\n",
+            type: "_thinkfleetbot-gw._tcp",
             domain: "local.",
             interface: nil)
 
-        #expect(GatewayEndpointID.stableID(endpoint) == "_moltbot-gw._tcp|local.|Moltbot Gateway Node")
+        #expect(GatewayEndpointID.stableID(endpoint) == "_thinkfleetbot-gw._tcp|local.|ThinkFleetBot Gateway Node")
     }
 
     @Test func stableIDForNonServiceUsesEndpointDescription() {
@@ -21,8 +21,8 @@ import Testing
 
     @Test func prettyDescriptionDecodesBonjourEscapes() {
         let endpoint = NWEndpoint.service(
-            name: "Moltbot\\032Gateway",
-            type: "_moltbot-gw._tcp",
+            name: "ThinkFleetBot\\032Gateway",
+            type: "_thinkfleetbot-gw._tcp",
             domain: "local.",
             interface: nil)
 

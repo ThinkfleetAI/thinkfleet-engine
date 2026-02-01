@@ -1,6 +1,6 @@
 import ThinkFleetKit
 import Testing
-@testable import Moltbot
+@testable import ThinkFleetBot
 
 @Suite struct IOSGatewayChatTransportTests {
     @Test func requestsFailFastWhenGatewayNotConnected() async {

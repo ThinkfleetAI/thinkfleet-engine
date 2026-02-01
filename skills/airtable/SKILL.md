@@ -1,7 +1,7 @@
 ---
 name: airtable
 description: "Manage Airtable bases, tables, and records via the REST API."
-metadata: {"moltbot":{"emoji":"📊","requires":{"bins":["curl","jq"],"env":["AIRTABLE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📊","requires":{"bins":["curl","jq"],"env":["AIRTABLE_ACCESS_TOKEN"]}}}
 ---
 
 # Airtable

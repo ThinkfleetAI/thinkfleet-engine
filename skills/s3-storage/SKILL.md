@@ -1,7 +1,7 @@
 ---
 name: s3-storage
 description: "Upload, download, and list files in S3-compatible storage (AWS S3, Cloudflare R2) using Python boto3."
-metadata: {"moltbot":{"emoji":"☁️","requires":{"bins":["python3"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"☁️","requires":{"bins":["python3"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # S3 Storage

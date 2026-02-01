@@ -1,7 +1,7 @@
 ---
 name: twilio
 description: "Send SMS, make calls, and manage phone numbers via the Twilio REST API."
-metadata: {"moltbot":{"emoji":"📞","requires":{"bins":["curl","jq"],"env":["TWILIO_ACCOUNT_SID","TWILIO_AUTH_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📞","requires":{"bins":["curl","jq"],"env":["TWILIO_ACCOUNT_SID","TWILIO_AUTH_TOKEN"]}}}
 ---
 
 # Twilio
@@ -21,7 +21,7 @@ curl -s -X POST \
   -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN" \
   --data-urlencode "To=+15551234567" \
   --data-urlencode "From=+15559876543" \
-  --data-urlencode "Body=Hello from Clawdbot!" | jq '{sid, status, to, from}'
+  --data-urlencode "Body=Hello from ThinkFleetBot!" | jq '{sid, status, to, from}'
 ```
 
 ## Make voice call

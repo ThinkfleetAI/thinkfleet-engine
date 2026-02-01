@@ -1,7 +1,7 @@
 ---
 name: aws-ses
 description: "Send email via AWS Simple Email Service using Python boto3."
-metadata: {"moltbot":{"emoji":"📬","requires":{"bins":["python3"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📬","requires":{"bins":["python3"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS SES
@@ -50,7 +50,7 @@ ses.send_email(
     Destination={'ToAddresses': ['recipient@example.com']},
     Message={
         'Subject': {'Data': 'HTML Email'},
-        'Body': {'Html': {'Data': '<h1>Hello</h1><p>From Moltbot</p>'}}
+        'Body': {'Html': {'Data': '<h1>Hello</h1><p>From ThinkFleetBot</p>'}}
     }
 )
 print('Sent')

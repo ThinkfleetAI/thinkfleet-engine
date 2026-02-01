@@ -5,7 +5,7 @@ description: Send messages, reply to messages, and search message history in Dis
 
 # Discord Chat
 
-Interact with Discord channels using Clawdbot's `message` tool.
+Interact with Discord channels using ThinkFleetBot's `message` tool.
 
 ## Core Actions
 

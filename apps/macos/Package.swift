@@ -1,18 +1,18 @@
 // swift-tools-version: 6.2
-// Package manifest for the Moltbot macOS companion (menu bar app + IPC library).
+// Package manifest for the ThinkFleetBot macOS companion (menu bar app + IPC library).
 
 import PackageDescription
 
 let package = Package(
-    name: "Moltbot",
+    name: "ThinkFleetBot",
     platforms: [
         .macOS(.v15),
     ],
     products: [
-        .library(name: "MoltbotIPC", targets: ["MoltbotIPC"]),
-        .library(name: "MoltbotDiscovery", targets: ["MoltbotDiscovery"]),
-        .executable(name: "Moltbot", targets: ["Moltbot"]),
-        .executable(name: "moltbot-mac", targets: ["MoltbotMacCLI"]),
+        .library(name: "ThinkFleetBotIPC", targets: ["ThinkFleetBotIPC"]),
+        .library(name: "ThinkFleetBotDiscovery", targets: ["ThinkFleetBotDiscovery"]),
+        .executable(name: "ThinkFleetBot", targets: ["ThinkFleetBot"]),
+        .executable(name: "thinkfleetbot-mac", targets: ["ThinkFleetBotMacCLI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/orchetect/MenuBarExtraAccess", exact: "1.2.2"),
@@ -25,25 +25,25 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "MoltbotIPC",
+            name: "ThinkFleetBotIPC",
             dependencies: [],
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .target(
-            name: "MoltbotDiscovery",
+            name: "ThinkFleetBotDiscovery",
             dependencies: [
                 .product(name: "ThinkFleetKit", package: "ThinkFleetKit"),
             ],
-            path: "Sources/MoltbotDiscovery",
+            path: "Sources/ThinkFleetBotDiscovery",
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .executableTarget(
-            name: "Moltbot",
+            name: "ThinkFleetBot",
             dependencies: [
-                "MoltbotIPC",
-                "MoltbotDiscovery",
+                "ThinkFleetBotIPC",
+                "ThinkFleetBotDiscovery",
                 .product(name: "ThinkFleetKit", package: "ThinkFleetKit"),
                 .product(name: "ThinkFleetChatUI", package: "ThinkFleetKit"),
                 .product(name: "ThinkFleetProtocol", package: "ThinkFleetKit"),
@@ -59,29 +59,29 @@ let package = Package(
                 "Resources/Info.plist",
             ],
             resources: [
-                .copy("Resources/Moltbot.icns"),
+                .copy("Resources/ThinkFleetBot.icns"),
                 .copy("Resources/DeviceModels"),
             ],
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .executableTarget(
-            name: "MoltbotMacCLI",
+            name: "ThinkFleetBotMacCLI",
             dependencies: [
-                "MoltbotDiscovery",
+                "ThinkFleetBotDiscovery",
                 .product(name: "ThinkFleetKit", package: "ThinkFleetKit"),
                 .product(name: "ThinkFleetProtocol", package: "ThinkFleetKit"),
             ],
-            path: "Sources/MoltbotMacCLI",
+            path: "Sources/ThinkFleetBotMacCLI",
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .testTarget(
-            name: "MoltbotIPCTests",
+            name: "ThinkFleetBotIPCTests",
             dependencies: [
-                "MoltbotIPC",
-                "Moltbot",
-                "MoltbotDiscovery",
+                "ThinkFleetBotIPC",
+                "ThinkFleetBot",
+                "ThinkFleetBotDiscovery",
                 .product(name: "ThinkFleetProtocol", package: "ThinkFleetKit"),
                 .product(name: "SwabbleKit", package: "swabble"),
             ],

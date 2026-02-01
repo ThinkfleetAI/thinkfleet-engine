@@ -1,7 +1,7 @@
 ---
 name: webhook-trigger
 description: "Send HTTP requests to webhooks and APIs using curl. Supports GET, POST, PUT, DELETE with headers and JSON payloads."
-metadata: {"moltbot":{"emoji":"🪝","requires":{"bins":["curl","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🪝","requires":{"bins":["curl","jq"]}}}
 ---
 
 # Webhook Trigger

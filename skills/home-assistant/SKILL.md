@@ -1,7 +1,7 @@
 ---
 name: home-assistant
 description: Control Home Assistant smart home devices, run automations, and receive webhook events. Use when controlling lights, switches, climate, scenes, scripts, or any HA entity. Supports bidirectional communication via REST API (outbound) and webhooks (inbound triggers from HA automations).
-metadata: {"clawdbot":{"emoji":"🏠","requires":{"bins":["jq","curl"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🏠","requires":{"bins":["jq","curl"]}}}
 ---
 
 # Home Assistant
@@ -31,7 +31,7 @@ export HA_TOKEN="your-long-lived-access-token"
 
 1. Open Home Assistant → Profile (bottom left)
 2. Scroll to "Long-Lived Access Tokens"
-3. Click "Create Token", name it (e.g., "Clawdbot")
+3. Click "Create Token", name it (e.g., "ThinkFleetBot")
 4. Copy the token immediately (shown only once)
 
 ## Quick Reference
@@ -96,7 +96,7 @@ curl -X POST -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/services/scene/tu
 | `script` | `turn_on` | `script.welcome_home` |
 | `automation` | `trigger`, `turn_on`, `turn_off` | `automation.sunrise` |
 
-## Inbound Webhooks (HA → Clawdbot)
+## Inbound Webhooks (HA → ThinkFleetBot)
 
 To receive events from Home Assistant automations:
 
@@ -105,7 +105,7 @@ To receive events from Home Assistant automations:
 ```yaml
 # In HA automation
 action:
-  - service: rest_command.notify_clawdbot
+  - service: rest_command.notify_thinkfleetbot
     data:
       event: motion_detected
       area: living_room
@@ -116,8 +116,8 @@ action:
 ```yaml
 # configuration.yaml
 rest_command:
-  notify_clawdbot:
-    url: "https://your-clawdbot-url/webhook/home-assistant"
+  notify_thinkfleetbot:
+    url: "https://your-thinkfleetbot-url/webhook/home-assistant"
     method: POST
     headers:
       Authorization: "Bearer {{ webhook_secret }}"
@@ -125,9 +125,9 @@ rest_command:
     payload: '{"event": "{{ event }}", "area": "{{ area }}"}'
 ```
 
-### 3. Handle in Clawdbot
+### 3. Handle in ThinkFleetBot
 
-Clawdbot receives the webhook and can notify you or take action based on the event.
+ThinkFleetBot receives the webhook and can notify you or take action based on the event.
 
 ## CLI Wrapper
 

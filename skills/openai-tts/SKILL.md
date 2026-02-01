@@ -2,7 +2,7 @@
 name: openai-tts
 description: Text-to-speech via OpenAI Audio Speech API.
 homepage: https://platform.openai.com/docs/guides/text-to-speech
-metadata: {"clawdbot":{"emoji":"🔊","requires":{"bins":["curl"],"env":["OPENAI_API_KEY"]},"primaryEnv":"OPENAI_API_KEY"}}
+metadata: {"thinkfleetbot":{"emoji":"🔊","requires":{"bins":["curl"],"env":["OPENAI_API_KEY"]},"primaryEnv":"OPENAI_API_KEY"}}
 ---
 
 # OpenAI TTS (curl)
@@ -48,7 +48,7 @@ Options:
 
 ## API key
 
-Set `OPENAI_API_KEY`, or configure in `~/.clawdbot/clawdbot.json`:
+Set `OPENAI_API_KEY`, or configure in `~/.thinkfleetbot/thinkfleetbot.json`:
 
 ```json5
 {

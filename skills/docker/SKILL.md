@@ -1,7 +1,7 @@
 ---
 name: docker
 description: "Manage Docker containers, images, networks, and volumes using the Docker CLI."
-metadata: {"moltbot":{"emoji":"🐳","requires":{"bins":["docker"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐳","requires":{"bins":["docker"]}}}
 ---
 
 # Docker

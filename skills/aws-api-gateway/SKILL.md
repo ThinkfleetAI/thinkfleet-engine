@@ -1,7 +1,7 @@
 ---
 name: aws-api-gateway
 description: "Manage AWS API Gateway REST and HTTP APIs."
-metadata: {"moltbot":{"emoji":"🚪","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🚪","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS API Gateway
@@ -42,7 +42,7 @@ aws apigatewayv2 get-stages --api-id abc123 --query 'Items[].{Name:StageName,Aut
 
 ```bash
 aws apigateway create-deployment --rest-api-id abc123 --stage-name prod \
-  --description "Deploy from Moltbot" | jq '{Id: .id, CreatedDate: .createdDate}'
+  --description "Deploy from ThinkFleetBot" | jq '{Id: .id, CreatedDate: .createdDate}'
 ```
 
 ## Get usage plan

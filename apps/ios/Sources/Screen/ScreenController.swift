@@ -13,7 +13,7 @@ final class ScreenController {
     var urlString: String = ""
     var errorText: String?
 
-    /// Callback invoked when a moltbot:// deep link is tapped in the canvas
+    /// Callback invoked when a thinkfleetbot:// deep link is tapped in the canvas
     var onDeepLink: ((URL) -> Void)?
 
     /// Callback invoked when the user clicks an A2UI action (e.g. button) inside the canvas web UI.
@@ -101,7 +101,7 @@ final class ScreenController {
         let js = """
         (() => {
           try {
-            const api = globalThis.__moltbot;
+            const api = globalThis.__thinkfleetbot;
             if (!api) return;
             if (typeof api.setDebugStatusEnabled === 'function') {
               api.setDebugStatusEnabled(\(enabled ? "true" : "false"));
@@ -124,7 +124,7 @@ final class ScreenController {
                 let res = try await self.eval(javaScript: """
                 (() => {
                   try {
-                    return !!globalThis.clawdbotA2UI && typeof globalThis.clawdbotA2UI.applyMessages === 'function';
+                    return !!globalThis.thinkfleetbotA2UI && typeof globalThis.thinkfleetbotA2UI.applyMessages === 'function';
                   } catch (_) { return false; }
                 })()
                 """)
@@ -184,7 +184,7 @@ final class ScreenController {
 
     func snapshotBase64(
         maxWidth: CGFloat? = nil,
-        format: MoltbotCanvasSnapshotFormat,
+        format: ThinkFleetBotCanvasSnapshotFormat,
         quality: Double? = nil) async throws -> String
     {
         let config = WKSnapshotConfiguration()
@@ -342,7 +342,7 @@ extension Double {
 
 // MARK: - Navigation Delegate
 
-/// Handles navigation policy to intercept moltbot:// deep links from canvas
+/// Handles navigation policy to intercept thinkfleetbot:// deep links from canvas
 @MainActor
 private final class ScreenNavigationDelegate: NSObject, WKNavigationDelegate {
     weak var controller: ScreenController?
@@ -357,8 +357,8 @@ private final class ScreenNavigationDelegate: NSObject, WKNavigationDelegate {
             return
         }
 
-        // Intercept moltbot:// deep links
-        if url.scheme == "moltbot" {
+        // Intercept thinkfleetbot:// deep links
+        if url.scheme == "thinkfleetbot" {
             decisionHandler(.cancel)
             self.controller?.onDeepLink?(url)
             return
@@ -386,7 +386,7 @@ private final class ScreenNavigationDelegate: NSObject, WKNavigationDelegate {
 }
 
 private final class CanvasA2UIActionMessageHandler: NSObject, WKScriptMessageHandler {
-    static let messageName = "moltbotCanvasA2UIAction"
+    static let messageName = "thinkfleetbotCanvasA2UIAction"
     static let legacyMessageNames = ["canvas", "a2ui", "userAction", "action"]
     static let handlerNames = [messageName] + legacyMessageNames
 

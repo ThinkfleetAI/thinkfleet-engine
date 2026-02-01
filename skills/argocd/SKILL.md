@@ -1,7 +1,7 @@
 ---
 name: argocd
 description: "Manage Argo CD applications and sync operations via the REST API."
-metadata: {"moltbot":{"emoji":"🐙","requires":{"bins":["curl","jq"],"env":["ARGOCD_SERVER","ARGOCD_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐙","requires":{"bins":["curl","jq"],"env":["ARGOCD_SERVER","ARGOCD_TOKEN"]}}}
 ---
 
 # Argo CD

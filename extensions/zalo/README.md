@@ -1,17 +1,17 @@
-# @clawdbot/zalo
+# @thinkfleetbot/zalo
 
-Zalo channel plugin for Clawdbot (Bot API).
+Zalo channel plugin for ThinkFleetBot (Bot API).
 
 ## Install (local checkout)
 
 ```bash
-clawdbot plugins install ./extensions/zalo
+thinkfleetbot plugins install ./extensions/zalo
 ```
 
 ## Install (npm)
 
 ```bash
-clawdbot plugins install @clawdbot/zalo
+thinkfleetbot plugins install @thinkfleetbot/zalo
 ```
 
 Onboarding: select Zalo and confirm the install prompt to fetch the plugin automatically.

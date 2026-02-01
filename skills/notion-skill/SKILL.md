@@ -3,7 +3,7 @@ name: notion
 description: Work with Notion pages and databases via the official Notion API.
 homepage: https://developers.notion.com
 metadata:
-  clawdbot:
+  thinkfleetbot:
     emoji: 🧠
     requires:
       env:

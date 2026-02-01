@@ -321,4 +321,4 @@ Weather data provided by the National Weather Service (NOAA).
 
 ---
 
-**Built for OpenClaw** (formerly Clawdbot)
+**Built for OpenClaw** (formerly ThinkFleetBot)

@@ -1,7 +1,7 @@
 ---
 name: cloudflare
 description: "Manage Cloudflare — zones, DNS records, Workers, and analytics via the REST API."
-metadata: {"moltbot":{"emoji":"🌐","requires":{"bins":["curl","jq"],"env":["CLOUDFLARE_API_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌐","requires":{"bins":["curl","jq"],"env":["CLOUDFLARE_API_TOKEN"]}}}
 ---
 
 # Cloudflare

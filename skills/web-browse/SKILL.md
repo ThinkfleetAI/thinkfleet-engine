@@ -1,7 +1,7 @@
 ---
 name: web-browse
 description: "Fetch and parse web pages using curl + python for HTML-to-text extraction."
-metadata: {"moltbot":{"emoji":"🌐","requires":{"bins":["curl","python3"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌐","requires":{"bins":["curl","python3"]}}}
 ---
 
 # Web Browse

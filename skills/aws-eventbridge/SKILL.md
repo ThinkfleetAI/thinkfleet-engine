@@ -1,7 +1,7 @@
 ---
 name: aws-eventbridge
 description: "Manage AWS EventBridge rules, event buses, and targets."
-metadata: {"moltbot":{"emoji":"🚌","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🚌","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS EventBridge

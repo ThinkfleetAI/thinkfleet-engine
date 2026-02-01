@@ -1,7 +1,7 @@
 ---
 name: aws-cloudfront
 description: "Manage AWS CloudFront distributions and invalidations."
-metadata: {"moltbot":{"emoji":"🌍","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌍","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS CloudFront

@@ -12,7 +12,7 @@ Real-time Reddit search powered by OpenAI web_search with post enrichment (score
 Set your OpenAI API key:
 
 ```bash
-clawdbot config set skills.entries.search-reddit.apiKey "sk-YOUR-KEY"
+thinkfleetbot config set skills.entries.search-reddit.apiKey "sk-YOUR-KEY"
 ```
 
 Or use environment variable:
@@ -22,7 +22,7 @@ export OPENAI_API_KEY="sk-YOUR-KEY"
 
 You can also set a shared key:
 ```bash
-clawdbot config set skills.entries.openai.apiKey "sk-YOUR-KEY"
+thinkfleetbot config set skills.entries.openai.apiKey "sk-YOUR-KEY"
 ```
 
 ## Commands

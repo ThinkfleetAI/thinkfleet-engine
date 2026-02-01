@@ -1,7 +1,7 @@
 ---
 name: asana
 description: "Manage Asana workspaces, projects, tasks, and comments via the REST API."
-metadata: {"moltbot":{"emoji":"📌","requires":{"bins":["curl","jq"],"env":["ASANA_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📌","requires":{"bins":["curl","jq"],"env":["ASANA_ACCESS_TOKEN"]}}}
 ---
 
 # Asana

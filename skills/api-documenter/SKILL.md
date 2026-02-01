@@ -1,7 +1,7 @@
 ---
 name: api-documenter
 description: "Generate API documentation: OpenAPI 3.1 specs, interactive docs with Swagger/Redoc, SDK generation, and JSDoc/TSDoc extraction."
-metadata: {"moltbot":{"emoji":"📖","requires":{"anyBins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📖","requires":{"anyBins":["npx","node"]}}}
 ---
 
 # API Documentation

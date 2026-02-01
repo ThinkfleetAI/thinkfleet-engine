@@ -1,7 +1,7 @@
 ---
 name: prompt-engineering
 description: "Advanced prompting techniques: chain-of-thought, few-shot, system prompts, structured output, and prompt optimization."
-metadata: {"moltbot":{"emoji":"🧠","requires":{"anyBins":["curl","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🧠","requires":{"anyBins":["curl","jq"]}}}
 ---
 
 # Prompt Engineering

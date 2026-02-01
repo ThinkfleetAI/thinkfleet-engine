@@ -1,7 +1,7 @@
 ---
 name: aws-dynamodb
 description: "Query and manage AWS DynamoDB tables and items."
-metadata: {"moltbot":{"emoji":"⚙️","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"⚙️","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS DynamoDB

@@ -1,7 +1,7 @@
 ---
 name: aws-route53
 description: "Manage AWS Route 53 DNS zones and records."
-metadata: {"moltbot":{"emoji":"🌐","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌐","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS Route 53

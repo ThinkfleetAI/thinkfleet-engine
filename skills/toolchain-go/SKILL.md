@@ -1,7 +1,7 @@
 ---
 name: toolchain-go
 description: "Go project toolchain -- build, test, lint, module management, and debugging."
-metadata: {"moltbot":{"emoji":"🔵","requires":{"bins":["go"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔵","requires":{"bins":["go"]}}}
 ---
 
 # Go Toolchain

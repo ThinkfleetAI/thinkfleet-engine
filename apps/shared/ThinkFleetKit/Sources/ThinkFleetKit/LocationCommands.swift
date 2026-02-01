@@ -1,28 +1,28 @@
 import Foundation
 
-public enum MoltbotLocationCommand: String, Codable, Sendable {
+public enum ThinkFleetBotLocationCommand: String, Codable, Sendable {
     case get = "location.get"
 }
 
-public enum MoltbotLocationAccuracy: String, Codable, Sendable {
+public enum ThinkFleetBotLocationAccuracy: String, Codable, Sendable {
     case coarse
     case balanced
     case precise
 }
 
-public struct MoltbotLocationGetParams: Codable, Sendable, Equatable {
+public struct ThinkFleetBotLocationGetParams: Codable, Sendable, Equatable {
     public var timeoutMs: Int?
     public var maxAgeMs: Int?
-    public var desiredAccuracy: MoltbotLocationAccuracy?
+    public var desiredAccuracy: ThinkFleetBotLocationAccuracy?
 
-    public init(timeoutMs: Int? = nil, maxAgeMs: Int? = nil, desiredAccuracy: MoltbotLocationAccuracy? = nil) {
+    public init(timeoutMs: Int? = nil, maxAgeMs: Int? = nil, desiredAccuracy: ThinkFleetBotLocationAccuracy? = nil) {
         self.timeoutMs = timeoutMs
         self.maxAgeMs = maxAgeMs
         self.desiredAccuracy = desiredAccuracy
     }
 }
 
-public struct MoltbotLocationPayload: Codable, Sendable, Equatable {
+public struct ThinkFleetBotLocationPayload: Codable, Sendable, Equatable {
     public var lat: Double
     public var lon: Double
     public var accuracyMeters: Double

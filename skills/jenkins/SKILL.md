@@ -1,7 +1,7 @@
 ---
 name: jenkins
 description: "Manage Jenkins jobs, builds, and pipelines via the REST API."
-metadata: {"moltbot":{"emoji":"🏗️","requires":{"bins":["curl","jq"],"env":["JENKINS_URL","JENKINS_USER","JENKINS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🏗️","requires":{"bins":["curl","jq"],"env":["JENKINS_URL","JENKINS_USER","JENKINS_TOKEN"]}}}
 ---
 
 # Jenkins

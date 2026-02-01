@@ -1,7 +1,7 @@
 ---
 name: hubspot
 description: "Manage HubSpot CRM — contacts, companies, deals, and tickets via the REST API."
-metadata: {"moltbot":{"emoji":"🧲","requires":{"bins":["curl","jq"],"env":["HUBSPOT_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🧲","requires":{"bins":["curl","jq"],"env":["HUBSPOT_ACCESS_TOKEN"]}}}
 ---
 
 # HubSpot

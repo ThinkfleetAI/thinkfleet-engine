@@ -1,7 +1,7 @@
 ---
 name: azure-cosmosdb
 description: "Query and manage Azure Cosmos DB accounts, databases, and containers."
-metadata: {"moltbot":{"emoji":"🌌","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🌌","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure Cosmos DB

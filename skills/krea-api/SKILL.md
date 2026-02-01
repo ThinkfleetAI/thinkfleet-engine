@@ -22,8 +22,8 @@ Generate images using Krea.ai's API with support for multiple models including F
 2. Configure with:
 
 ```bash
-clawdbot config set skill.krea_api.key_id YOUR_KEY_ID
-clawdbot config set skill.krea_api.secret YOUR_SECRET
+thinkfleetbot config set skill.krea_api.key_id YOUR_KEY_ID
+thinkfleetbot config set skill.krea_api.secret YOUR_SECRET
 ```
 
 3. Or pass credentials directly as arguments.

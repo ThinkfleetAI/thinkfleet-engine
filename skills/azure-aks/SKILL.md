@@ -1,7 +1,7 @@
 ---
 name: azure-aks
 description: "Manage Azure Kubernetes Service clusters via Azure CLI and kubectl."
-metadata: {"moltbot":{"emoji":"☸️","requires":{"bins":["az","kubectl","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"☸️","requires":{"bins":["az","kubectl","jq"]}}}
 ---
 
 # Azure AKS

@@ -1,6 +1,6 @@
 import Foundation
 
-public enum MoltbotCapability: String, Codable, Sendable {
+public enum ThinkFleetBotCapability: String, Codable, Sendable {
     case canvas
     case camera
     case screen

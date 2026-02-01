@@ -1,7 +1,7 @@
 ---
 name: datadog
 description: "Query Datadog metrics, monitors, events, and logs via the REST API."
-metadata: {"moltbot":{"emoji":"🐕","requires":{"bins":["curl","jq"],"env":["DD_API_KEY","DD_APP_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐕","requires":{"bins":["curl","jq"],"env":["DD_API_KEY","DD_APP_KEY"]}}}
 ---
 
 # Datadog

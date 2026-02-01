@@ -1,9 +1,9 @@
 {
-  "name": "@moltbot/diagnostics-otel",
+  "name": "@thinkfleetbot/diagnostics-otel",
   "version": "2026.1.27-beta.1",
   "type": "module",
-  "description": "Moltbot diagnostics OpenTelemetry exporter",
-  "moltbot": {
+  "description": "ThinkFleetBot diagnostics OpenTelemetry exporter",
+  "thinkfleetbot": {
     "extensions": [
       "./index.ts"
     ]

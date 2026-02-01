@@ -1,7 +1,7 @@
 ---
 name: elasticsearch
 description: "Query Elasticsearch — search, index management, aggregations, and cluster health."
-metadata: {"moltbot":{"emoji":"🔍","requires":{"bins":["curl","jq"],"env":["ELASTICSEARCH_URL"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔍","requires":{"bins":["curl","jq"],"env":["ELASTICSEARCH_URL"]}}}
 ---
 
 # Elasticsearch

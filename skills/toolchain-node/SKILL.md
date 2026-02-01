@@ -1,7 +1,7 @@
 ---
 name: toolchain-node
 description: "Node.js/TypeScript project toolchain -- npm/pnpm/yarn, testing, linting, building, and debugging."
-metadata: {"moltbot":{"emoji":"🟢","requires":{"bins":["node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🟢","requires":{"bins":["node"]}}}
 ---
 
 # Node.js / TypeScript Toolchain

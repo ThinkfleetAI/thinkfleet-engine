@@ -1,7 +1,7 @@
 ---
 name: docker-expert
 description: "Advanced Docker: multi-stage builds, BuildKit, image optimization, security scanning, layer caching, and production patterns."
-metadata: {"moltbot":{"emoji":"🐳","requires":{"bins":["docker"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🐳","requires":{"bins":["docker"]}}}
 ---
 
 # Docker Expert

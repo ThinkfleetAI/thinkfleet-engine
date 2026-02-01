@@ -14,7 +14,7 @@ Requires `uptime-kuma-api` Python package:
 pip install uptime-kuma-api
 ```
 
-Environment variables (set in shell or Clawdbot config):
+Environment variables (set in shell or ThinkFleetBot config):
 - `UPTIME_KUMA_URL` - Server URL (e.g., `http://localhost:3001`)
 - `UPTIME_KUMA_USERNAME` - Login username
 - `UPTIME_KUMA_PASSWORD` - Login password

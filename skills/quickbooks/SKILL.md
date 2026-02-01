@@ -1,7 +1,7 @@
 ---
 name: quickbooks
 description: "Query QuickBooks Online — invoices, customers, payments, accounts, and reports via the REST API."
-metadata: {"moltbot":{"emoji":"📒","requires":{"bins":["curl","jq"],"env":["QUICKBOOKS_ACCESS_TOKEN","QUICKBOOKS_REALM_ID"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📒","requires":{"bins":["curl","jq"],"env":["QUICKBOOKS_ACCESS_TOKEN","QUICKBOOKS_REALM_ID"]}}}
 ---
 
 # QuickBooks Online

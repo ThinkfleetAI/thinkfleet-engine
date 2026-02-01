@@ -1,7 +1,7 @@
 ---
 name: azure-container-apps
 description: "Manage Azure Container Apps -- deploy, scale, and configure containerized applications."
-metadata: {"moltbot":{"emoji":"📦","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📦","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure Container Apps

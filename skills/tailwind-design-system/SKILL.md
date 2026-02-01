@@ -1,7 +1,7 @@
 ---
 name: tailwind-design-system
 description: "Build design systems with Tailwind CSS: component patterns, responsive design, dark mode, custom themes, and animation."
-metadata: {"moltbot":{"emoji":"🎨","requires":{"anyBins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎨","requires":{"anyBins":["npx","node"]}}}
 ---
 
 # Tailwind Design System

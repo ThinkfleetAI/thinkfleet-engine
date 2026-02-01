@@ -1,7 +1,7 @@
 ---
 name: database-query
 description: "Execute SQL queries against PostgreSQL (psql) or MySQL (mysql) databases using their CLI clients."
-metadata: {"moltbot":{"emoji":"🗄️","requires":{"bins":["psql"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🗄️","requires":{"bins":["psql"]}}}
 ---
 
 # Database Query

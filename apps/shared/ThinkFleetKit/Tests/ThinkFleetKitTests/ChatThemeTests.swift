@@ -19,8 +19,8 @@ private func luminance(_ color: NSColor) throws -> CGFloat {
         let lightAppearance = try #require(NSAppearance(named: .aqua))
         let darkAppearance = try #require(NSAppearance(named: .darkAqua))
 
-        let lightResolved = MoltbotChatTheme.resolvedAssistantBubbleColor(for: lightAppearance)
-        let darkResolved = MoltbotChatTheme.resolvedAssistantBubbleColor(for: darkAppearance)
+        let lightResolved = ThinkFleetBotChatTheme.resolvedAssistantBubbleColor(for: lightAppearance)
+        let darkResolved = ThinkFleetBotChatTheme.resolvedAssistantBubbleColor(for: darkAppearance)
         #expect(try luminance(lightResolved) > luminance(darkResolved))
         #else
         #expect(Bool(true))

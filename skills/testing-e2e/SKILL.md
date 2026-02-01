@@ -1,7 +1,7 @@
 ---
 name: testing-e2e
 description: "End-to-end testing -- Playwright E2E suites, Cypress E2E, API testing with supertest, load testing with k6, and test reporting."
-metadata: {"moltbot":{"emoji":"🔬","requires":{"bins":["npx","node"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔬","requires":{"bins":["npx","node"]}}}
 ---
 
 # End-to-End Testing

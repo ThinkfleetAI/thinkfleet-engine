@@ -4,7 +4,7 @@ Control your Pi-hole DNS ad blocker via the Pi-hole v6 API.
 
 ## Setup
 
-Set your Pi-hole API configuration in Clawdbot config:
+Set your Pi-hole API configuration in ThinkFleetBot config:
 
 ```yaml
 skills:
@@ -214,7 +214,7 @@ The `insecure` flag adds the `-k` option to curl to bypass certificate validatio
 - Verify API password is correct
 
 ### Network Errors
-- Ensure clawdbot's machine can reach the Pi-hole
+- Ensure thinkfleetbot's machine can reach the Pi-hole
 - Check firewall rules allow API access
 - Verify URL scheme (http vs https)
 

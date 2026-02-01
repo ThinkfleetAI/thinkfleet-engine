@@ -1,17 +1,17 @@
 ---
-summary: "CLI reference for `moltbot health` (gateway health endpoint via RPC)"
+summary: "CLI reference for `thinkfleetbot health` (gateway health endpoint via RPC)"
 read_when:
   - You want to quickly check the running Gateway’s health
 ---
 
-# `moltbot health`
+# `thinkfleetbot health`
 
 Fetch health from the running Gateway.
 
 ```bash
-moltbot health
-moltbot health --json
-moltbot health --verbose
+thinkfleetbot health
+thinkfleetbot health --json
+thinkfleetbot health --verbose
 ```
 
 Notes:

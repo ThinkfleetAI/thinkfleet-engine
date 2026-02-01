@@ -1,7 +1,7 @@
 ---
 name: azure-key-vault
 description: "Manage Azure Key Vault secrets, keys, and certificates."
-metadata: {"moltbot":{"emoji":"🔐","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔐","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure Key Vault

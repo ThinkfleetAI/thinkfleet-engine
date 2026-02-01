@@ -1,7 +1,7 @@
 ---
 name: pipedrive
 description: "Manage Pipedrive CRM — persons, organizations, deals, and activities via the REST API."
-metadata: {"moltbot":{"emoji":"🔧","requires":{"bins":["curl","jq"],"env":["PIPEDRIVE_API_TOKEN","PIPEDRIVE_DOMAIN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔧","requires":{"bins":["curl","jq"],"env":["PIPEDRIVE_API_TOKEN","PIPEDRIVE_DOMAIN"]}}}
 ---
 
 # Pipedrive

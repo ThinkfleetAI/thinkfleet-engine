@@ -1,7 +1,7 @@
 ---
 name: stripe
 description: "Manage Stripe payments — customers, charges, subscriptions, invoices, and refunds."
-metadata: {"moltbot":{"emoji":"💳","requires":{"bins":["curl","jq"],"env":["STRIPE_SECRET_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"💳","requires":{"bins":["curl","jq"],"env":["STRIPE_SECRET_KEY"]}}}
 ---
 
 # Stripe

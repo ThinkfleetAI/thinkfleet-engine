@@ -1,7 +1,7 @@
 ---
 name: architecture-decision-records
 description: "Create and manage Architecture Decision Records (ADRs): document technical decisions, alternatives considered, and rationale."
-metadata: {"moltbot":{"emoji":"📋","requires":{"anyBins":["git"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📋","requires":{"anyBins":["git"]}}}
 ---
 
 # Architecture Decision Records

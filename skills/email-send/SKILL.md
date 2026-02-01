@@ -1,7 +1,7 @@
 ---
 name: email-send
 description: "Send emails via SMTP using curl or Python's smtplib."
-metadata: {"moltbot":{"emoji":"📧","requires":{"bins":["curl"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📧","requires":{"bins":["curl"]}}}
 ---
 
 # Email Send

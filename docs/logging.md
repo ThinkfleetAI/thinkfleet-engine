@@ -8,7 +8,7 @@ read_when:
 
 # Logging
 
-Moltbot logs in two places:
+ThinkFleetBot logs in two places:
 
 - **File logs** (JSON lines) written by the Gateway.
 - **Console output** shown in terminals and the Control UI.
@@ -20,16 +20,16 @@ levels and formats.
 
 By default, the Gateway writes a rolling log file under:
 
-`/tmp/moltbot/moltbot-YYYY-MM-DD.log`
+`/tmp/thinkfleetbot/thinkfleetbot-YYYY-MM-DD.log`
 
 The date uses the gateway host's local timezone.
 
-You can override this in `~/.clawdbot/moltbot.json`:
+You can override this in `~/.thinkfleetbot/thinkfleetbot.json`:
 
 ```json
 {
   "logging": {
-    "file": "/path/to/moltbot.log"
+    "file": "/path/to/thinkfleetbot.log"
   }
 }
 ```
@@ -41,7 +41,7 @@ You can override this in `~/.clawdbot/moltbot.json`:
 Use the CLI to tail the gateway log file via RPC:
 
 ```bash
-moltbot logs --follow
+thinkfleetbot logs --follow
 ```
 
 Output modes:
@@ -62,7 +62,7 @@ In JSON mode, the CLI emits `type`-tagged objects:
 If the Gateway is unreachable, the CLI prints a short hint to run:
 
 ```bash
-moltbot doctor
+thinkfleetbot doctor
 ```
 
 ### Control UI (web)
@@ -75,7 +75,7 @@ See [/web/control-ui](/web/control-ui) for how to open it.
 To filter channel activity (WhatsApp/Telegram/etc), use:
 
 ```bash
-moltbot channels logs --channel whatsapp
+thinkfleetbot channels logs --channel whatsapp
 ```
 
 ## Log formats
@@ -97,13 +97,13 @@ Console formatting is controlled by `logging.consoleStyle`.
 
 ## Configuring logging
 
-All logging configuration lives under `logging` in `~/.clawdbot/moltbot.json`.
+All logging configuration lives under `logging` in `~/.thinkfleetbot/thinkfleetbot.json`.
 
 ```json
 {
   "logging": {
     "level": "info",
-    "file": "/tmp/moltbot/moltbot-YYYY-MM-DD.log",
+    "file": "/tmp/thinkfleetbot/thinkfleetbot-YYYY-MM-DD.log",
     "consoleLevel": "info",
     "consoleStyle": "pretty",
     "redactSensitive": "tools",
@@ -151,7 +151,7 @@ diagnostics + the exporter plugin are enabled.
 
 - **OpenTelemetry (OTel)**: the data model + SDKs for traces, metrics, and logs.
 - **OTLP**: the wire protocol used to export OTel data to a collector/backend.
-- Moltbot exports via **OTLP/HTTP (protobuf)** today.
+- ThinkFleetBot exports via **OTLP/HTTP (protobuf)** today.
 
 ### Signals exported
 
@@ -208,7 +208,7 @@ Flags are case-insensitive and support wildcards (e.g. `telegram.*` or `*`).
 Env override (one-off):
 
 ```
-CLAWDBOT_DIAGNOSTICS=telegram.http,telegram.payload
+THINKFLEETBOT_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
 Notes:
@@ -237,7 +237,7 @@ works with any OpenTelemetry collector/backend that accepts OTLP/HTTP.
       "enabled": true,
       "endpoint": "http://otel-collector:4318",
       "protocol": "http/protobuf",
-      "serviceName": "moltbot-gateway",
+      "serviceName": "thinkfleetbot-gateway",
       "traces": true,
       "metrics": true,
       "logs": true,
@@ -249,7 +249,7 @@ works with any OpenTelemetry collector/backend that accepts OTLP/HTTP.
 ```
 
 Notes:
-- You can also enable the plugin with `moltbot plugins enable diagnostics-otel`.
+- You can also enable the plugin with `thinkfleetbot plugins enable diagnostics-otel`.
 - `protocol` currently supports `http/protobuf` only. `grpc` is ignored.
 - Metrics include token usage, cost, context size, run duration, and message-flow
   counters/histograms (webhooks, queueing, session state, queue depth/wait).
@@ -262,58 +262,58 @@ Notes:
 ### Exported metrics (names + types)
 
 Model usage:
-- `moltbot.tokens` (counter, attrs: `moltbot.token`, `moltbot.channel`,
-  `moltbot.provider`, `moltbot.model`)
-- `moltbot.cost.usd` (counter, attrs: `moltbot.channel`, `moltbot.provider`,
-  `moltbot.model`)
-- `moltbot.run.duration_ms` (histogram, attrs: `moltbot.channel`,
-  `moltbot.provider`, `moltbot.model`)
-- `moltbot.context.tokens` (histogram, attrs: `moltbot.context`,
-  `moltbot.channel`, `moltbot.provider`, `moltbot.model`)
+- `thinkfleetbot.tokens` (counter, attrs: `thinkfleetbot.token`, `thinkfleetbot.channel`,
+  `thinkfleetbot.provider`, `thinkfleetbot.model`)
+- `thinkfleetbot.cost.usd` (counter, attrs: `thinkfleetbot.channel`, `thinkfleetbot.provider`,
+  `thinkfleetbot.model`)
+- `thinkfleetbot.run.duration_ms` (histogram, attrs: `thinkfleetbot.channel`,
+  `thinkfleetbot.provider`, `thinkfleetbot.model`)
+- `thinkfleetbot.context.tokens` (histogram, attrs: `thinkfleetbot.context`,
+  `thinkfleetbot.channel`, `thinkfleetbot.provider`, `thinkfleetbot.model`)
 
 Message flow:
-- `moltbot.webhook.received` (counter, attrs: `moltbot.channel`,
-  `moltbot.webhook`)
-- `moltbot.webhook.error` (counter, attrs: `moltbot.channel`,
-  `moltbot.webhook`)
-- `moltbot.webhook.duration_ms` (histogram, attrs: `moltbot.channel`,
-  `moltbot.webhook`)
-- `moltbot.message.queued` (counter, attrs: `moltbot.channel`,
-  `moltbot.source`)
-- `moltbot.message.processed` (counter, attrs: `moltbot.channel`,
-  `moltbot.outcome`)
-- `moltbot.message.duration_ms` (histogram, attrs: `moltbot.channel`,
-  `moltbot.outcome`)
+- `thinkfleetbot.webhook.received` (counter, attrs: `thinkfleetbot.channel`,
+  `thinkfleetbot.webhook`)
+- `thinkfleetbot.webhook.error` (counter, attrs: `thinkfleetbot.channel`,
+  `thinkfleetbot.webhook`)
+- `thinkfleetbot.webhook.duration_ms` (histogram, attrs: `thinkfleetbot.channel`,
+  `thinkfleetbot.webhook`)
+- `thinkfleetbot.message.queued` (counter, attrs: `thinkfleetbot.channel`,
+  `thinkfleetbot.source`)
+- `thinkfleetbot.message.processed` (counter, attrs: `thinkfleetbot.channel`,
+  `thinkfleetbot.outcome`)
+- `thinkfleetbot.message.duration_ms` (histogram, attrs: `thinkfleetbot.channel`,
+  `thinkfleetbot.outcome`)
 
 Queues + sessions:
-- `moltbot.queue.lane.enqueue` (counter, attrs: `moltbot.lane`)
-- `moltbot.queue.lane.dequeue` (counter, attrs: `moltbot.lane`)
-- `moltbot.queue.depth` (histogram, attrs: `moltbot.lane` or
-  `moltbot.channel=heartbeat`)
-- `moltbot.queue.wait_ms` (histogram, attrs: `moltbot.lane`)
-- `moltbot.session.state` (counter, attrs: `moltbot.state`, `moltbot.reason`)
-- `moltbot.session.stuck` (counter, attrs: `moltbot.state`)
-- `moltbot.session.stuck_age_ms` (histogram, attrs: `moltbot.state`)
-- `moltbot.run.attempt` (counter, attrs: `moltbot.attempt`)
+- `thinkfleetbot.queue.lane.enqueue` (counter, attrs: `thinkfleetbot.lane`)
+- `thinkfleetbot.queue.lane.dequeue` (counter, attrs: `thinkfleetbot.lane`)
+- `thinkfleetbot.queue.depth` (histogram, attrs: `thinkfleetbot.lane` or
+  `thinkfleetbot.channel=heartbeat`)
+- `thinkfleetbot.queue.wait_ms` (histogram, attrs: `thinkfleetbot.lane`)
+- `thinkfleetbot.session.state` (counter, attrs: `thinkfleetbot.state`, `thinkfleetbot.reason`)
+- `thinkfleetbot.session.stuck` (counter, attrs: `thinkfleetbot.state`)
+- `thinkfleetbot.session.stuck_age_ms` (histogram, attrs: `thinkfleetbot.state`)
+- `thinkfleetbot.run.attempt` (counter, attrs: `thinkfleetbot.attempt`)
 
 ### Exported spans (names + key attributes)
 
-- `moltbot.model.usage`
-  - `moltbot.channel`, `moltbot.provider`, `moltbot.model`
-  - `moltbot.sessionKey`, `moltbot.sessionId`
-  - `moltbot.tokens.*` (input/output/cache_read/cache_write/total)
-- `moltbot.webhook.processed`
-  - `moltbot.channel`, `moltbot.webhook`, `moltbot.chatId`
-- `moltbot.webhook.error`
-  - `moltbot.channel`, `moltbot.webhook`, `moltbot.chatId`,
-    `moltbot.error`
-- `moltbot.message.processed`
-  - `moltbot.channel`, `moltbot.outcome`, `moltbot.chatId`,
-    `moltbot.messageId`, `moltbot.sessionKey`, `moltbot.sessionId`,
-    `moltbot.reason`
-- `moltbot.session.stuck`
-  - `moltbot.state`, `moltbot.ageMs`, `moltbot.queueDepth`,
-    `moltbot.sessionKey`, `moltbot.sessionId`
+- `thinkfleetbot.model.usage`
+  - `thinkfleetbot.channel`, `thinkfleetbot.provider`, `thinkfleetbot.model`
+  - `thinkfleetbot.sessionKey`, `thinkfleetbot.sessionId`
+  - `thinkfleetbot.tokens.*` (input/output/cache_read/cache_write/total)
+- `thinkfleetbot.webhook.processed`
+  - `thinkfleetbot.channel`, `thinkfleetbot.webhook`, `thinkfleetbot.chatId`
+- `thinkfleetbot.webhook.error`
+  - `thinkfleetbot.channel`, `thinkfleetbot.webhook`, `thinkfleetbot.chatId`,
+    `thinkfleetbot.error`
+- `thinkfleetbot.message.processed`
+  - `thinkfleetbot.channel`, `thinkfleetbot.outcome`, `thinkfleetbot.chatId`,
+    `thinkfleetbot.messageId`, `thinkfleetbot.sessionKey`, `thinkfleetbot.sessionId`,
+    `thinkfleetbot.reason`
+- `thinkfleetbot.session.stuck`
+  - `thinkfleetbot.state`, `thinkfleetbot.ageMs`, `thinkfleetbot.queueDepth`,
+    `thinkfleetbot.sessionKey`, `thinkfleetbot.sessionId`
 
 ### Sampling + flushing
 
@@ -337,7 +337,7 @@ Queues + sessions:
 
 ## Troubleshooting tips
 
-- **Gateway not reachable?** Run `moltbot doctor` first.
+- **Gateway not reachable?** Run `thinkfleetbot doctor` first.
 - **Logs empty?** Check that the Gateway is running and writing to the file path
   in `logging.file`.
 - **Need more detail?** Set `logging.level` to `debug` or `trace` and retry.

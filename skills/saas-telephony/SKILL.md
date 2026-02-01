@@ -1,12 +1,12 @@
 ---
 name: saas-telephony
-description: "Make voice calls and send SMS/MMS via the Clawdbot SaaS telephony API. Check if telephony is enabled for the current agent."
-metadata: {"moltbot":{"emoji":"📞","requires":{"bins":["curl","jq"],"env":["SAAS_API_URL","SAAS_API_KEY"]}}}
+description: "Make voice calls and send SMS/MMS via the ThinkFleetBot SaaS telephony API. Check if telephony is enabled for the current agent."
+metadata: {"thinkfleetbot":{"emoji":"📞","requires":{"bins":["curl","jq"],"env":["SAAS_API_URL","SAAS_API_KEY"]}}}
 ---
 
 # SaaS Telephony
 
-Make voice calls and send text messages through the Clawdbot SaaS API.
+Make voice calls and send text messages through the ThinkFleetBot SaaS API.
 
 ## Check If Telephony Is Enabled
 

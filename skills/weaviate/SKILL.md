@@ -1,7 +1,7 @@
 ---
 name: weaviate
 description: "Manage Weaviate vector database — classes, objects, and vector search via the REST API."
-metadata: {"moltbot":{"emoji":"🔮","requires":{"bins":["curl","jq"],"env":["WEAVIATE_URL","WEAVIATE_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔮","requires":{"bins":["curl","jq"],"env":["WEAVIATE_URL","WEAVIATE_API_KEY"]}}}
 ---
 
 # Weaviate

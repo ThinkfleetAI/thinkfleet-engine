@@ -1,7 +1,7 @@
 ---
 name: api-security
 description: "Audit APIs for OWASP top 10 vulnerabilities, test authentication flows, validate input handling, and check rate limiting."
-metadata: {"moltbot":{"emoji":"🔐","requires":{"bins":["curl","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔐","requires":{"bins":["curl","jq"]}}}
 ---
 
 # API Security

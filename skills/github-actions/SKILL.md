@@ -1,7 +1,7 @@
 ---
 name: github-actions
 description: "Manage GitHub Actions workflows -- trigger runs, view status, manage secrets, and debug failures."
-metadata: {"moltbot":{"emoji":"🎬","requires":{"bins":["gh","jq"]},"env":["GITHUB_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎬","requires":{"bins":["gh","jq"]},"env":["GITHUB_TOKEN"]}}}
 ---
 
 # GitHub Actions

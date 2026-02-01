@@ -74,9 +74,9 @@ describe("state + config path candidates", () => {
     const previousHomeDrive = process.env.HOMEDRIVE;
     const previousHomePath = process.env.HOMEPATH;
     const previousThinkfleetConfig = process.env.THINKFLEET_CONFIG_PATH;
-    const previousClawdbotConfig = process.env.THINKFLEET_CONFIG_PATH;
+    const previousThinkFleetBotConfig = process.env.THINKFLEET_CONFIG_PATH;
     const previousThinkfleetState = process.env.THINKFLEET_STATE_DIR;
-    const previousClawdbotState = process.env.THINKFLEET_STATE_DIR;
+    const previousThinkFleetBotState = process.env.THINKFLEET_STATE_DIR;
     try {
       const legacyDir = path.join(root, ".thinkfleet");
       await fs.mkdir(legacyDir, { recursive: true });
@@ -112,12 +112,12 @@ describe("state + config path candidates", () => {
       else process.env.HOMEPATH = previousHomePath;
       if (previousThinkfleetConfig === undefined) delete process.env.THINKFLEET_CONFIG_PATH;
       else process.env.THINKFLEET_CONFIG_PATH = previousThinkfleetConfig;
-      if (previousClawdbotConfig === undefined) delete process.env.THINKFLEET_CONFIG_PATH;
-      else process.env.THINKFLEET_CONFIG_PATH = previousClawdbotConfig;
+      if (previousThinkFleetBotConfig === undefined) delete process.env.THINKFLEET_CONFIG_PATH;
+      else process.env.THINKFLEET_CONFIG_PATH = previousThinkFleetBotConfig;
       if (previousThinkfleetState === undefined) delete process.env.THINKFLEET_STATE_DIR;
       else process.env.THINKFLEET_STATE_DIR = previousThinkfleetState;
-      if (previousClawdbotState === undefined) delete process.env.THINKFLEET_STATE_DIR;
-      else process.env.THINKFLEET_STATE_DIR = previousClawdbotState;
+      if (previousThinkFleetBotState === undefined) delete process.env.THINKFLEET_STATE_DIR;
+      else process.env.THINKFLEET_STATE_DIR = previousThinkFleetBotState;
       await fs.rm(root, { recursive: true, force: true });
       vi.resetModules();
     }

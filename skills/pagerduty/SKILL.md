@@ -1,7 +1,7 @@
 ---
 name: pagerduty
 description: "Manage PagerDuty incidents, services, and on-call schedules via the REST API."
-metadata: {"moltbot":{"emoji":"🚨","requires":{"bins":["curl","jq"],"env":["PAGERDUTY_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🚨","requires":{"bins":["curl","jq"],"env":["PAGERDUTY_TOKEN"]}}}
 ---
 
 # PagerDuty

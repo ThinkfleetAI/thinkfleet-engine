@@ -1,7 +1,7 @@
 ---
 name: twitch
 description: "Query Twitch — streams, users, games, and clips via the Helix API."
-metadata: {"moltbot":{"emoji":"🎮","requires":{"bins":["curl","jq"],"env":["TWITCH_CLIENT_ID","TWITCH_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎮","requires":{"bins":["curl","jq"],"env":["TWITCH_CLIENT_ID","TWITCH_ACCESS_TOKEN"]}}}
 ---
 
 # Twitch

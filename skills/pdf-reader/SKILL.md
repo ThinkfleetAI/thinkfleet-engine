@@ -2,7 +2,7 @@
 name: pdf-reader
 description: PDF reading and extraction
 metadata:
-  moltbot_emoji: "📄"
+  thinkfleetbot_emoji: "📄"
   requires_bins:
     - python3
   requires_env: []

@@ -1,7 +1,7 @@
 ---
 name: performance-testing
 description: "Load testing with k6, web performance auditing with Lighthouse, profiling, and benchmark analysis."
-metadata: {"moltbot":{"emoji":"⚡","requires":{"anyBins":["k6","lighthouse","curl"]}}}
+metadata: {"thinkfleetbot":{"emoji":"⚡","requires":{"anyBins":["k6","lighthouse","curl"]}}}
 ---
 
 # Performance Testing

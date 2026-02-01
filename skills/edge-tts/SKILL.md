@@ -16,9 +16,9 @@ Generate high-quality text-to-speech audio using Microsoft Edge's neural TTS ser
 
 When you detect TTS intent from triggers or user request:
 
-1. **Call the tts tool** (Clawdbot built-in) to convert text to speech
+1. **Call the tts tool** (ThinkFleetBot built-in) to convert text to speech
 2. The tool returns a MEDIA: path
-3. Clawdbot routes the audio to the current channel
+3. ThinkFleetBot routes the audio to the current channel
 
 ```javascript
 // Example: Built-in tts tool usage
@@ -146,7 +146,7 @@ This installs:
 1. **Detect intent**: Check for "tts" trigger or keyword in user message
 2. **Choose method**: Use built-in `tts` tool for simple requests, or `scripts/tts-converter.js` for customization
 3. **Generate audio**: Convert the target text (message, search results, summary)
-4. **Return to user**: The tts tool returns a MEDIA: path; Clawdbot handles delivery
+4. **Return to user**: The tts tool returns a MEDIA: path; ThinkFleetBot handles delivery
 
 ## Testing
 
@@ -191,7 +191,7 @@ node config-manager.js --get
 - Output is MP3 format by default
 - Requires internet connection
 - Supports subtitle generation (JSON format with word-level timing)
-- **Temporary File Handling**: By default, audio files are saved to the system's temporary directory (`/tmp/edge-tts-temp/` on Unix, `C:\Users\<user>\AppData\Local\Temp\edge-tts-temp\` on Windows) with unique filenames (e.g., `tts_1234567890_abc123.mp3`). Files are not automatically deleted - the calling application (Clawdbot) should handle cleanup after use. You can specify a custom output path with the `--output` option if permanent storage is needed.
+- **Temporary File Handling**: By default, audio files are saved to the system's temporary directory (`/tmp/edge-tts-temp/` on Unix, `C:\Users\<user>\AppData\Local\Temp\edge-tts-temp\` on Windows) with unique filenames (e.g., `tts_1234567890_abc123.mp3`). Files are not automatically deleted - the calling application (ThinkFleetBot) should handle cleanup after use. You can specify a custom output path with the `--output` option if permanent storage is needed.
 - **TTS keyword filtering**: The skill automatically filters out TTS-related keywords (tts, TTS, text-to-speech) from text before conversion to avoid converting the trigger words themselves to audio
 - For repeated preferences, use `config-manager.js` to set defaults
 - **Default voice**: `en-US-MichelleNeural` (female, natural)

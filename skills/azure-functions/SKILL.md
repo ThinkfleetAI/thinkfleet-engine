@@ -1,7 +1,7 @@
 ---
 name: azure-functions
 description: "Manage Azure Functions apps and invocations via Azure CLI."
-metadata: {"moltbot":{"emoji":"⚡","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"⚡","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure Functions

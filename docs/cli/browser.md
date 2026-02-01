@@ -1,14 +1,14 @@
 ---
-summary: "CLI reference for `moltbot browser` (profiles, tabs, actions, extension relay)"
+summary: "CLI reference for `thinkfleetbot browser` (profiles, tabs, actions, extension relay)"
 read_when:
-  - You use `moltbot browser` and want examples for common tasks
+  - You use `thinkfleetbot browser` and want examples for common tasks
   - You want to control a browser running on another machine via a node host
   - You want to use the Chrome extension relay (attach/detach via toolbar button)
 ---
 
-# `moltbot browser`
+# `thinkfleetbot browser`
 
-Manage Moltbot’s browser control server and run browser actions (tabs, snapshots, screenshots, navigation, clicks, typing).
+Manage ThinkFleetBot’s browser control server and run browser actions (tabs, snapshots, screenshots, navigation, clicks, typing).
 
 Related:
 - Browser tool + API: [Browser tool](/tools/browser)
@@ -25,37 +25,37 @@ Related:
 ## Quick start (local)
 
 ```bash
-moltbot browser --browser-profile chrome tabs
-moltbot browser --browser-profile clawd start
-moltbot browser --browser-profile clawd open https://example.com
-moltbot browser --browser-profile clawd snapshot
+thinkfleetbot browser --browser-profile chrome tabs
+thinkfleetbot browser --browser-profile clawd start
+thinkfleetbot browser --browser-profile clawd open https://example.com
+thinkfleetbot browser --browser-profile clawd snapshot
 ```
 
 ## Profiles
 
 Profiles are named browser routing configs. In practice:
-- `clawd`: launches/attaches to a dedicated Moltbot-managed Chrome instance (isolated user data dir).
+- `clawd`: launches/attaches to a dedicated ThinkFleetBot-managed Chrome instance (isolated user data dir).
 - `chrome`: controls your existing Chrome tab(s) via the Chrome extension relay.
 
 ```bash
-moltbot browser profiles
-moltbot browser create-profile --name work --color "#FF5A36"
-moltbot browser delete-profile --name work
+thinkfleetbot browser profiles
+thinkfleetbot browser create-profile --name work --color "#FF5A36"
+thinkfleetbot browser delete-profile --name work
 ```
 
 Use a specific profile:
 
 ```bash
-moltbot browser --browser-profile work tabs
+thinkfleetbot browser --browser-profile work tabs
 ```
 
 ## Tabs
 
 ```bash
-moltbot browser tabs
-moltbot browser open https://docs.molt.bot
-moltbot browser focus <targetId>
-moltbot browser close <targetId>
+thinkfleetbot browser tabs
+thinkfleetbot browser open https://docs.molt.bot
+thinkfleetbot browser focus <targetId>
+thinkfleetbot browser close <targetId>
 ```
 
 ## Snapshot / screenshot / actions
@@ -63,21 +63,21 @@ moltbot browser close <targetId>
 Snapshot:
 
 ```bash
-moltbot browser snapshot
+thinkfleetbot browser snapshot
 ```
 
 Screenshot:
 
 ```bash
-moltbot browser screenshot
+thinkfleetbot browser screenshot
 ```
 
 Navigate/click/type (ref-based UI automation):
 
 ```bash
-moltbot browser navigate https://example.com
-moltbot browser click <ref>
-moltbot browser type <ref> "hello"
+thinkfleetbot browser navigate https://example.com
+thinkfleetbot browser click <ref>
+thinkfleetbot browser type <ref> "hello"
 ```
 
 ## Chrome extension relay (attach via toolbar button)
@@ -87,8 +87,8 @@ This mode lets the agent control an existing Chrome tab that you attach manually
 Install the unpacked extension to a stable path:
 
 ```bash
-moltbot browser extension install
-moltbot browser extension path
+thinkfleetbot browser extension install
+thinkfleetbot browser extension path
 ```
 
 Then Chrome → `chrome://extensions` → enable “Developer mode” → “Load unpacked” → select the printed folder.

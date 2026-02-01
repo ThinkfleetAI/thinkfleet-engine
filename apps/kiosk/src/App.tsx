@@ -13,7 +13,7 @@ interface ContentPayload {
 
 export function App() {
   const [configured, setConfigured] = useState(() => {
-    return !!localStorage.getItem("clawdbot-kiosk-configured");
+    return !!localStorage.getItem("thinkfleetbot-kiosk-configured");
   });
 
   const [mood, setMood] = useState<AgentMood>("idle");
@@ -69,7 +69,7 @@ export function App() {
     return (
       <SetupWizard
         onComplete={() => {
-          localStorage.setItem("clawdbot-kiosk-configured", "true");
+          localStorage.setItem("thinkfleetbot-kiosk-configured", "true");
           setConfigured(true);
         }}
       />

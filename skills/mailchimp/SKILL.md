@@ -1,7 +1,7 @@
 ---
 name: mailchimp
 description: "Manage Mailchimp — lists, campaigns, subscribers, and templates via the Marketing API."
-metadata: {"moltbot":{"emoji":"📧","requires":{"bins":["curl","jq"],"env":["MAILCHIMP_API_KEY","MAILCHIMP_SERVER_PREFIX"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📧","requires":{"bins":["curl","jq"],"env":["MAILCHIMP_API_KEY","MAILCHIMP_SERVER_PREFIX"]}}}
 ---
 
 # Mailchimp

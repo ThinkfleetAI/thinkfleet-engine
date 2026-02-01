@@ -1,7 +1,7 @@
 ---
 name: azure-storage
 description: "Manage Azure Blob Storage, file shares, queues, and tables."
-metadata: {"moltbot":{"emoji":"☁️","requires":{"bins":["az","jq"]}}}
+metadata: {"thinkfleetbot":{"emoji":"☁️","requires":{"bins":["az","jq"]}}}
 ---
 
 # Azure Storage

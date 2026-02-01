@@ -9,7 +9,7 @@ triggers:
   - "search web"
   - "find information"
   - "look up"
-metadata: {"clawdbot":{"emoji":"🔍","requires":{"bins":["python3"]},"config":{"env":{"SEARXNG_URL":{"description":"SearXNG instance URL","default":"http://localhost:8080","required":true}}}}}
+metadata: {"thinkfleetbot":{"emoji":"🔍","requires":{"bins":["python3"]},"config":{"env":{"SEARXNG_URL":{"description":"SearXNG instance URL","default":"http://localhost:8080","required":true}}}}}
 ---
 
 # SearXNG Search
@@ -46,7 +46,7 @@ uv run {baseDir}/scripts/searxng.py search "query" --time-range day
 export SEARXNG_URL=https://your-searxng-instance.com
 ```
 
-Or configure in your Clawdbot config:
+Or configure in your ThinkFleetBot config:
 ```json
 {
   "env": {

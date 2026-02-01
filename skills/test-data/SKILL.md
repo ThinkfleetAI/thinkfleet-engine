@@ -1,7 +1,7 @@
 ---
 name: test-data
 description: "Generate realistic test data with Faker, create database seeds, manage fixtures, and build factory patterns."
-metadata: {"moltbot":{"emoji":"🎲","requires":{"anyBins":["python3","node","npx"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🎲","requires":{"anyBins":["python3","node","npx"]}}}
 ---
 
 # Test Data Generation

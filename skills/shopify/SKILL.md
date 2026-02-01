@@ -1,7 +1,7 @@
 ---
 name: shopify
 description: "Manage Shopify stores — products, orders, customers, inventory, and fulfillments via the Admin REST API."
-metadata: {"moltbot":{"emoji":"🛍️","requires":{"bins":["curl","jq"],"env":["SHOPIFY_STORE_URL","SHOPIFY_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🛍️","requires":{"bins":["curl","jq"],"env":["SHOPIFY_STORE_URL","SHOPIFY_ACCESS_TOKEN"]}}}
 ---
 
 # Shopify

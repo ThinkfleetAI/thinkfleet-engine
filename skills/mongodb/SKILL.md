@@ -1,7 +1,7 @@
 ---
 name: mongodb
 description: "Query MongoDB Atlas — collections, documents, and aggregations via the Data API."
-metadata: {"moltbot":{"emoji":"🍃","requires":{"bins":["curl","jq"],"env":["MONGODB_URI"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🍃","requires":{"bins":["curl","jq"],"env":["MONGODB_URI"]}}}
 ---
 
 # MongoDB Atlas

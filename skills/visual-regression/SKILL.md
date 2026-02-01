@@ -1,7 +1,7 @@
 ---
 name: visual-regression
 description: "Screenshot comparison testing with Playwright, Percy, and Chromatic for catching unintended UI changes."
-metadata: {"moltbot":{"emoji":"👁️","requires":{"anyBins":["npx","playwright"]}}}
+metadata: {"thinkfleetbot":{"emoji":"👁️","requires":{"anyBins":["npx","playwright"]}}}
 ---
 
 # Visual Regression Testing

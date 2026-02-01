@@ -4,7 +4,7 @@ import {
   mergeAllowlist,
   summarizeMapping,
   type RuntimeEnv,
-} from "clawdbot/plugin-sdk";
+} from "thinkfleetbot/plugin-sdk";
 import type { CoreConfig, ReplyToMode } from "../../types.js";
 import { setActiveMatrixClient } from "../active-client.js";
 import {

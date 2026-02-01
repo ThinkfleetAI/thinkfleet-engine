@@ -1,6 +1,6 @@
-# @clawdbot/voice-call
+# @thinkfleetbot/voice-call
 
-Official Voice Call plugin for **Clawdbot**.
+Official Voice Call plugin for **ThinkFleetBot**.
 
 Providers:
 - **Twilio** (Programmable Voice + Media Streams)
@@ -13,10 +13,10 @@ Plugin system: `https://docs.molt.bot/plugin`
 
 ## Install (local dev)
 
-### Option A: install via Clawdbot (recommended)
+### Option A: install via ThinkFleetBot (recommended)
 
 ```bash
-clawdbot plugins install @clawdbot/voice-call
+thinkfleetbot plugins install @thinkfleetbot/voice-call
 ```
 
 Restart the Gateway afterwards.
@@ -24,9 +24,9 @@ Restart the Gateway afterwards.
 ### Option B: copy into your global extensions folder (dev)
 
 ```bash
-mkdir -p ~/.clawdbot/extensions
-cp -R extensions/voice-call ~/.clawdbot/extensions/voice-call
-cd ~/.clawdbot/extensions/voice-call && pnpm install
+mkdir -p ~/.thinkfleetbot/extensions
+cp -R extensions/voice-call ~/.thinkfleetbot/extensions/voice-call
+cd ~/.thinkfleetbot/extensions/voice-call && pnpm install
 ```
 
 ## Config
@@ -100,13 +100,13 @@ Notes:
 ## CLI
 
 ```bash
-clawdbot voicecall call --to "+15555550123" --message "Hello from Clawdbot"
-clawdbot voicecall continue --call-id <id> --message "Any questions?"
-clawdbot voicecall speak --call-id <id> --message "One moment"
-clawdbot voicecall end --call-id <id>
-clawdbot voicecall status --call-id <id>
-clawdbot voicecall tail
-clawdbot voicecall expose --mode funnel
+thinkfleetbot voicecall call --to "+15555550123" --message "Hello from ThinkFleetBot"
+thinkfleetbot voicecall continue --call-id <id> --message "Any questions?"
+thinkfleetbot voicecall speak --call-id <id> --message "One moment"
+thinkfleetbot voicecall end --call-id <id>
+thinkfleetbot voicecall status --call-id <id>
+thinkfleetbot voicecall tail
+thinkfleetbot voicecall expose --mode funnel
 ```
 
 ## Tool

@@ -1,7 +1,7 @@
 ---
 name: terraform
 description: "Manage infrastructure as code using Terraform CLI (init, plan, apply, state)."
-metadata: {"moltbot":{"emoji":"🟣","requires":{"bins":["terraform"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🟣","requires":{"bins":["terraform"]}}}
 ---
 
 # Terraform

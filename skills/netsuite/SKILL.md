@@ -1,7 +1,7 @@
 ---
 name: netsuite
 description: "Query NetSuite ERP — records, saved searches, and SuiteQL via the REST API."
-metadata: {"moltbot":{"emoji":"📋","requires":{"bins":["curl","jq","python3"],"env":["NETSUITE_ACCOUNT_ID","NETSUITE_TOKEN_ID","NETSUITE_TOKEN_SECRET"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📋","requires":{"bins":["curl","jq","python3"],"env":["NETSUITE_ACCOUNT_ID","NETSUITE_TOKEN_ID","NETSUITE_TOKEN_SECRET"]}}}
 ---
 
 # NetSuite

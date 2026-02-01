@@ -5,7 +5,7 @@ import Testing
 @Suite struct CanvasSnapshotFormatTests {
     @Test func acceptsJpgAlias() throws {
         struct Wrapper: Codable {
-            var format: MoltbotCanvasSnapshotFormat
+            var format: ThinkFleetBotCanvasSnapshotFormat
         }
 
         let data = try #require("{\"format\":\"jpg\"}".data(using: .utf8))

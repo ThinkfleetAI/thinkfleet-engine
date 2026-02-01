@@ -1,7 +1,7 @@
 ---
 name: aws-sqs
 description: "Manage AWS SQS queues -- send, receive, and manage messages."
-metadata: {"moltbot":{"emoji":"📨","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📨","requires":{"bins":["aws","jq"],"env":["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY"]}}}
 ---
 
 # AWS SQS

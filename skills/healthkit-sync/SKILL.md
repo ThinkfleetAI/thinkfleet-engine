@@ -110,7 +110,7 @@ Tokens never stored in config file - always in Keychain with:
 ## Project Structure
 
 ```
-ai-health-sync-ios-clawdbot/
+ai-health-sync-ios-thinkfleetbot/
 ├── iOS Health Sync App/          # Swift 6 iOS app
 │   ├── Services/Security/        # CertificateService, KeychainStore, PairingService
 │   ├── Services/HealthKit/       # HealthKitService, HealthSampleMapper

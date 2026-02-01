@@ -1,7 +1,7 @@
 ---
 name: deployment-strategies
 description: "Blue-green, canary, rolling deployments, rollback procedures, and deployment verification patterns."
-metadata: {"moltbot":{"emoji":"🚀","requires":{"anyBins":["kubectl","gh","docker","curl"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🚀","requires":{"anyBins":["kubectl","gh","docker","curl"]}}}
 ---
 
 # Deployment Strategies

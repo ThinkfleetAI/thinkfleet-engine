@@ -1,7 +1,7 @@
 ---
 name: google-calendar
 description: "Manage Google Calendar events via the Google Calendar API using curl + OAuth tokens."
-metadata: {"moltbot":{"emoji":"📅","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
+metadata: {"thinkfleetbot":{"emoji":"📅","requires":{"bins":["curl","jq"],"env":["GOOGLE_ACCESS_TOKEN"]}}}
 ---
 
 # Google Calendar

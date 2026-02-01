@@ -1,7 +1,7 @@
 ---
 name: linear
 description: "Manage Linear issues, projects, and cycles via the GraphQL API."
-metadata: {"moltbot":{"emoji":"🔷","requires":{"bins":["curl","jq"],"env":["LINEAR_API_KEY"]}}}
+metadata: {"thinkfleetbot":{"emoji":"🔷","requires":{"bins":["curl","jq"],"env":["LINEAR_API_KEY"]}}}
 ---
 
 # Linear

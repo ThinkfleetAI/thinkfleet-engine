@@ -1,9 +1,9 @@
 {
-  "name": "@moltbot/line",
+  "name": "@thinkfleetbot/line",
   "version": "2026.1.27-beta.1",
   "type": "module",
-  "description": "Moltbot LINE channel plugin",
-  "moltbot": {
+  "description": "ThinkFleetBot LINE channel plugin",
+  "thinkfleetbot": {
     "extensions": [
       "./index.ts"
     ],
@@ -18,12 +18,12 @@
       "quickstartAllowFrom": true
     },
     "install": {
-      "npmSpec": "@moltbot/line",
+      "npmSpec": "@thinkfleetbot/line",
       "localPath": "extensions/line",
       "defaultChoice": "npm"
     }
   },
   "devDependencies": {
-    "moltbot": "workspace:*"
+    "thinkfleetbot": "workspace:*"
   }
 }
