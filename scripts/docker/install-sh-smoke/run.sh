@@ -4,15 +4,15 @@ set -euo pipefail
 INSTALL_URL="${THINKFLEETBOT_INSTALL_URL:-https://molt.bot/install.sh}"
 SMOKE_PREVIOUS_VERSION="${THINKFLEETBOT_INSTALL_SMOKE_PREVIOUS:-}"
 SKIP_PREVIOUS="${THINKFLEETBOT_INSTALL_SMOKE_SKIP_PREVIOUS:-0}"
-DEFAULT_PACKAGE="thinkfleetbot"
+DEFAULT_PACKAGE="thinkfleet"
 if [[ -z "${THINKFLEETBOT_INSTALL_PACKAGE:-}" && "$INSTALL_URL" == *"clawd.bot"* ]]; then
-  DEFAULT_PACKAGE="thinkfleetbot"
+  DEFAULT_PACKAGE="thinkfleet"
 fi
 PACKAGE_NAME="${THINKFLEETBOT_INSTALL_PACKAGE:-$DEFAULT_PACKAGE}"
-if [[ "$PACKAGE_NAME" == "thinkfleetbot" ]]; then
-  ALT_PACKAGE_NAME="thinkfleetbot"
+if [[ "$PACKAGE_NAME" == "thinkfleet" ]]; then
+  ALT_PACKAGE_NAME="thinkfleet"
 else
-  ALT_PACKAGE_NAME="thinkfleetbot"
+  ALT_PACKAGE_NAME="thinkfleet"
 fi
 
 echo "==> Resolve npm versions"
