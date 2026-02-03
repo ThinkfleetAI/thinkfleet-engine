@@ -53,7 +53,18 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Check MemU sidecar exists
+        id: memu-check
+        run: |
+          if [ -f tools/memu/Dockerfile ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping MemU sidecar build (tools/memu/Dockerfile not found)"
+          fi
+
       - name: Build and push MemU sidecar
+        if: steps.memu-check.outputs.exists == 'true'
         uses: docker/build-push-action@v6
         with:
           context: tools/memu
