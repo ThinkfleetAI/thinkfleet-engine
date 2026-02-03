@@ -6,6 +6,7 @@ import {
   resolveDefaultAgentId,
 } from "../../agents/agent-scope.js";
 import { runCliAgent } from "../../agents/cli-runner.js";
+import { isBudgetExhausted, isSaasMode } from "../../agents/saas-credential-client.js";
 import { getCliSessionId, setCliSessionId } from "../../agents/cli-session.js";
 import { lookupContextTokens } from "../../agents/context.js";
 import { DEFAULT_CONTEXT_TOKENS, DEFAULT_MODEL, DEFAULT_PROVIDER } from "../../agents/defaults.js";
@@ -94,6 +95,15 @@ export async function runCronIsolatedAgentTurn(params: {
   agentId?: string;
   lane?: string;
 }): Promise<RunCronAgentTurnResult> {
+  // Budget enforcement: Skip cron job execution when token limit exceeded (SaaS mode only)
+  if (isSaasMode() && isBudgetExhausted()) {
+    return {
+      status: "skipped",
+      summary: "Cron job skipped: organization token limit exceeded",
+      error: "Token budget exhausted",
+    };
+  }
+
   const defaultAgentId = resolveDefaultAgentId(params.cfg);
   const requestedAgentId =
     typeof params.agentId === "string" && params.agentId.trim()

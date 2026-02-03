@@ -5,6 +5,7 @@ import { DEFAULT_CONTEXT_TOKENS } from "../../agents/defaults.js";
 import { resolveModelAuthMode } from "../../agents/model-auth.js";
 import { isCliProvider } from "../../agents/model-selection.js";
 import { queueEmbeddedPiMessage } from "../../agents/pi-embedded.js";
+import { isBudgetExhausted, isSaasMode } from "../../agents/saas-credential-client.js";
 import { hasNonzeroUsage } from "../../agents/usage.js";
 import {
   resolveAgentIdFromSessionKey,
@@ -104,6 +105,14 @@ export async function runReplyAgent(params: {
   let activeSessionEntry = sessionEntry;
   const activeSessionStore = sessionStore;
   let activeIsNewSession = isNewSession;
+
+  // Budget enforcement: Block AI operations when token limit exceeded (SaaS mode only)
+  if (isSaasMode() && isBudgetExhausted()) {
+    typing.cleanup();
+    return {
+      text: "Your organization has reached its monthly token limit. Please upgrade your plan or wait until the next billing period to continue using AI features.",
+    };
+  }
 
   const isHeartbeat = opts?.isHeartbeat === true;
   const typingSignals = createTypingSignaler({

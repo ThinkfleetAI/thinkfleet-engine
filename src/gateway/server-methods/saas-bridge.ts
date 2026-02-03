@@ -295,4 +295,47 @@ export const saasBridgeHandlers: GatewayRequestHandlers = {
       respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
     }
   },
+
+  /**
+   * List connected OAuth integrations for the org.
+   * Returns which services (Google Drive, Slack, etc.) the user has connected.
+   */
+  "saas.integrations.list": async ({ respond }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/integrations", {
+        method: "POST",
+        body: { action: "list" },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to list integrations"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Initiate an OAuth connection for a service.
+   * Returns a redirect URL the user should visit to authorize.
+   */
+  "saas.integrations.connect": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/integrations", {
+        method: "POST",
+        body: {
+          action: "connect",
+          appName: params.appName,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to initiate connection"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
 };
