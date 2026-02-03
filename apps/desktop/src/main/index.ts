@@ -35,7 +35,7 @@ function createChatWindow(): BrowserWindow {
     trafficLightPosition: process.platform === "darwin" ? { x: 12, y: 12 } : undefined,
     transparent: false,
     backgroundColor: "#1a1a2e",
-    icon: path.join(__dirname, "../../assets/icon.png"),
+    icon: path.join(__dirname, "../../assets/favicon.png"),
     webPreferences: {
       preload: path.join(__dirname, "../preload/index.js"),
       contextIsolation: true,

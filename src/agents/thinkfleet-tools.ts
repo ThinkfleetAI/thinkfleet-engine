@@ -19,6 +19,11 @@ import { createSessionsSpawnTool } from "./tools/sessions-spawn-tool.js";
 import { createWebFetchTool, createWebSearchTool } from "./tools/web-tools.js";
 import { createTtsTool } from "./tools/tts-tool.js";
 import { createPublishFileTool } from "./tools/publish-file-tool.js";
+import {
+  createMemuMemorizeTool,
+  createMemuRetrieveTool,
+  createMemuStatusTool,
+} from "./tools/memu-tools.js";
 
 export function createThinkfleetTools(options?: {
   sandboxBrowserBridgeUrl?: string;
@@ -142,6 +147,15 @@ export function createThinkfleetTools(options?: {
       agentSessionKey: options?.agentSessionKey,
     }),
   ];
+
+  // MemU hierarchical memory tools (config-gated)
+  const memuOpts = { config: options?.config, agentSessionKey: options?.agentSessionKey };
+  const memuMemorize = createMemuMemorizeTool(memuOpts);
+  const memuRetrieve = createMemuRetrieveTool(memuOpts);
+  const memuStatus = createMemuStatusTool(memuOpts);
+  if (memuMemorize) tools.push(memuMemorize);
+  if (memuRetrieve) tools.push(memuRetrieve);
+  if (memuStatus) tools.push(memuStatus);
 
   const pluginTools = resolvePluginTools({
     context: {

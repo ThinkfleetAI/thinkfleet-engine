@@ -35,6 +35,11 @@ import { createReplyDispatcherWithTyping } from "../../auto-reply/reply/reply-di
 import { finalizeInboundContext } from "../../auto-reply/reply/inbound-context.js";
 import { resolveEffectiveMessagesConfig, resolveHumanDelayConfig } from "../../agents/identity.js";
 import { createMemoryGetTool, createMemorySearchTool } from "../../agents/tools/memory-tool.js";
+import {
+  createMemuMemorizeTool,
+  createMemuRetrieveTool,
+  createMemuStatusTool,
+} from "../../agents/tools/memu-tools.js";
 import { handleSlackAction } from "../../agents/tools/slack-actions.js";
 import { handleWhatsAppAction } from "../../agents/tools/whatsapp-actions.js";
 import { removeAckReactionAfterReply, shouldAckReaction } from "../../channels/ack-reactions.js";
@@ -188,6 +193,9 @@ export function createPluginRuntime(): PluginRuntime {
     tools: {
       createMemoryGetTool,
       createMemorySearchTool,
+      createMemuMemorizeTool,
+      createMemuRetrieveTool,
+      createMemuStatusTool,
       registerMemoryCli,
     },
     channel: {

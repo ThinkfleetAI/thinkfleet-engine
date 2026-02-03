@@ -5,6 +5,11 @@ import { resolve } from "node:path";
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
+    define: {
+      "process.env.THINKFLEET_API_URL": JSON.stringify(
+        process.env.THINKFLEET_API_URL || "http://localhost:3002",
+      ),
+    },
     build: {
       outDir: "dist/main",
       lib: {

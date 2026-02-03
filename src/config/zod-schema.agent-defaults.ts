@@ -53,6 +53,16 @@ export const AgentDefaultsSchema = z
     contextTokens: z.number().int().positive().optional(),
     cliBackends: z.record(z.string(), CliBackendSchema).optional(),
     memorySearch: MemorySearchSchema,
+    memu: z
+      .object({
+        enabled: z.boolean().optional(),
+        baseUrl: z.string().url().optional(),
+        autoMemorize: z.boolean().optional(),
+        proactive: z.boolean().optional(),
+        debounceMs: z.number().int().positive().optional(),
+      })
+      .strict()
+      .optional(),
     contextPruning: z
       .object({
         mode: z.union([z.literal("off"), z.literal("cache-ttl")]).optional(),

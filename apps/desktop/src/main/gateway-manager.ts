@@ -144,6 +144,17 @@ export class GatewayManager {
       }
     }
 
+    // Proxy settings
+    const proxyUrl = this.store.get("proxyUrl") as string | undefined;
+    const proxyBypass = this.store.get("proxyBypass") as string | undefined;
+    if (proxyUrl) {
+      env.HTTP_PROXY = proxyUrl;
+      env.HTTPS_PROXY = proxyUrl;
+    }
+    if (proxyBypass) {
+      env.NO_PROXY = proxyBypass;
+    }
+
     const { bin, args: binArgs } = this.resolveGatewayCommand();
     this.process = spawn(
       bin,

@@ -71,6 +71,9 @@ const DEFAULT_SUBAGENT_TOOL_DENY = [
   // Memory - pass relevant info in spawn prompt instead
   "memory_search",
   "memory_get",
+  "memu_memorize",
+  "memu_retrieve",
+  "memu_status",
 ];
 
 export function resolveSubagentToolPolicy(cfg?: ThinkfleetConfig): SandboxToolPolicy {

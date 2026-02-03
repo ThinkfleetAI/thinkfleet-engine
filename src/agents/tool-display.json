@@ -286,6 +286,21 @@
       "title": "Memory Get",
       "detailKeys": ["path", "from", "lines"]
     },
+    "memu_memorize": {
+      "emoji": "🧬",
+      "title": "MemU Memorize",
+      "detailKeys": ["modality", "user_id"]
+    },
+    "memu_retrieve": {
+      "emoji": "💡",
+      "title": "MemU Retrieve",
+      "detailKeys": ["query", "method", "max_results"]
+    },
+    "memu_status": {
+      "emoji": "🔌",
+      "title": "MemU Status",
+      "detailKeys": []
+    },
     "web_search": {
       "emoji": "🔎",
       "title": "Web Search",

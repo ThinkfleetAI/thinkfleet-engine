@@ -1,5 +1,13 @@
 import { contextBridge, ipcRenderer } from "electron";
 
+export interface AgentInfo {
+  id: string;
+  name: string;
+  agentId: string;
+  status: string;
+  avatar: string | null;
+}
+
 export interface ElectronAPI {
   gateway: {
     start: () => Promise<string>;
@@ -11,13 +19,22 @@ export interface ElectronAPI {
     onMessage: (callback: (data: string) => void) => () => void;
   };
   auth: {
-    login: (saasUrl: string) => Promise<{ agentDbId: string; token: string }>;
+    registerDevice: (inviteCode: string) => Promise<{ deviceId: string; pairingToken: string }>;
+    pollStatus: (deviceId: string, pairingToken: string) => Promise<{
+      status: string;
+      authToken: string | null;
+      config: Record<string, unknown> | null;
+    }>;
     logout: () => Promise<void>;
     getSession: () => Promise<{
       isAuthenticated: boolean;
-      saasUrl: string;
+      deviceId: string;
       agentMode: string;
     }>;
+  };
+  agents: {
+    list: () => Promise<AgentInfo[]>;
+    select: (agentId: string) => Promise<{ success: boolean }>;
   };
   settings: {
     get: (key: string) => Promise<unknown>;
@@ -51,9 +68,14 @@ const api: ElectronAPI = {
     },
   },
   auth: {
-    login: (saasUrl) => ipcRenderer.invoke("auth:login", saasUrl),
+    registerDevice: (inviteCode) => ipcRenderer.invoke("auth:register-device", inviteCode),
+    pollStatus: (deviceId, pairingToken) => ipcRenderer.invoke("auth:poll-status", deviceId, pairingToken),
     logout: () => ipcRenderer.invoke("auth:logout"),
     getSession: () => ipcRenderer.invoke("auth:session"),
+  },
+  agents: {
+    list: () => ipcRenderer.invoke("agents:list"),
+    select: (agentId) => ipcRenderer.invoke("agents:select", agentId),
   },
   settings: {
     get: (key) => ipcRenderer.invoke("settings:get", key),

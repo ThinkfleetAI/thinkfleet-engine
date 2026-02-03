@@ -3,9 +3,10 @@ import type { useGateway } from "../hooks/useGateway";
 
 interface Props {
   gateway: ReturnType<typeof useGateway>;
+  agentId?: string;
 }
 
-export function ChatWindow({ gateway }: Props) {
+export function ChatWindow({ gateway, agentId }: Props) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);

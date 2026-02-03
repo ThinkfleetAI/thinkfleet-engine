@@ -9,6 +9,15 @@ export interface StoreSchema {
   selectedAgentId: string;
   onboardingComplete: boolean;
   windowBounds: { width: number; height: number; x?: number; y?: number };
+  // Device registration
+  deviceId: string;
+  deviceAuthToken: string;
+  deviceConfigVersion: number;
+  // Proxy
+  proxyUrl: string;
+  proxyBypass: string;
+  // Local agent
+  localAgentEnabled: boolean;
 }
 
 export type Store = ElectronStore<StoreSchema>;
@@ -25,6 +34,12 @@ export function createStore(): Store {
       selectedAgentId: "default",
       onboardingComplete: false,
       windowBounds: { width: 480, height: 680 },
+      deviceId: "",
+      deviceAuthToken: "",
+      deviceConfigVersion: 0,
+      proxyUrl: "",
+      proxyBypass: "",
+      localAgentEnabled: false,
     },
   });
 }

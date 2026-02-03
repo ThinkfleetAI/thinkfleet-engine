@@ -7,13 +7,17 @@ function getTrayIcon(): nativeImage {
   const iconName =
     process.platform === "darwin" ? "tray-iconTemplate.png" : "tray-icon.png";
   const iconPath = path.join(__dirname, "../../assets", iconName);
+  const fallbackPath = path.join(__dirname, "../../assets/favicon.png");
 
   try {
-    const icon = nativeImage.createFromPath(iconPath);
+    let icon = nativeImage.createFromPath(iconPath);
+    if (icon.isEmpty()) {
+      icon = nativeImage.createFromPath(fallbackPath);
+    }
     if (process.platform === "darwin") {
       icon.setTemplateImage(true);
     }
-    return icon;
+    return icon.resize({ width: 16, height: 16 });
   } catch {
     // Fallback: create a simple 16x16 icon
     return nativeImage.createEmpty();

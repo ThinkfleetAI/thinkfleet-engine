@@ -112,6 +112,66 @@ export const agentZeroHandlers: GatewayRequestHandlers = {
     }
   },
 
+  "agentzero.settings.update": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await azFetch("/api/settings_set", {
+        method: "POST",
+        body: params,
+      });
+      if (!ok) {
+        const msg = (data as Record<string, unknown>)?.detail ?? "Failed to update settings";
+        respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, String(msg)));
+        return;
+      }
+      respond(true, data, undefined);
+    } catch (err) {
+      respond(
+        false,
+        undefined,
+        errorShape(ErrorCodes.UNAVAILABLE, `Agent Zero unreachable: ${err}`),
+      );
+    }
+  },
+
+  "agentzero.memory.export": async ({ respond }) => {
+    try {
+      const { ok, data } = await azFetch("/api/memory/export", { method: "POST" });
+      if (!ok) {
+        const msg = (data as Record<string, unknown>)?.detail ?? "Failed to export memory";
+        respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, String(msg)));
+        return;
+      }
+      respond(true, data, undefined);
+    } catch (err) {
+      respond(
+        false,
+        undefined,
+        errorShape(ErrorCodes.UNAVAILABLE, `Agent Zero unreachable: ${err}`),
+      );
+    }
+  },
+
+  "agentzero.memory.import": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await azFetch("/api/memory/import", {
+        method: "POST",
+        body: params,
+      });
+      if (!ok) {
+        const msg = (data as Record<string, unknown>)?.detail ?? "Failed to import memory";
+        respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, String(msg)));
+        return;
+      }
+      respond(true, data, undefined);
+    } catch (err) {
+      respond(
+        false,
+        undefined,
+        errorShape(ErrorCodes.UNAVAILABLE, `Agent Zero unreachable: ${err}`),
+      );
+    }
+  },
+
   "agentzero.task.list": async ({ respond }) => {
     try {
       const { ok, data } = await azFetch("/tasks");

@@ -11,6 +11,7 @@ permissions:
 env:
   AWS_REGION: us-east-2
   ECR_REPO: thinkfleet-clawdbot
+  ECR_REPO_MEMU: thinkfleet-memu
 
 jobs:
   build:
@@ -49,5 +50,18 @@ jobs:
           tags: |
             ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO }}:${{ steps.meta.outputs.tag }}
             ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push MemU sidecar
+        uses: docker/build-push-action@v6
+        with:
+          context: tools/memu
+          file: tools/memu/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO_MEMU }}:${{ steps.meta.outputs.tag }}
+            ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO_MEMU }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -53,12 +53,17 @@ export function registerIpcHandlers(
     }
   });
 
-  // --- Auth ---
-  ipcMain.handle("auth:login", async (_event, saasUrl: string) => {
-    const result = await auth.login(saasUrl);
-    store.set("agentMode", "saas");
-    // Restart gateway in SaaS mode
-    await gateway.restart();
+  // --- Auth (device code flow) ---
+  ipcMain.handle("auth:register-device", async (_event, inviteCode: string) => {
+    return await auth.registerWithInviteCode(inviteCode);
+  });
+
+  ipcMain.handle("auth:poll-status", async (_event, deviceId: string, pairingToken: string) => {
+    const result = await auth.pollStatus(deviceId, pairingToken);
+    if (result.status === "ACTIVE") {
+      store.set("agentMode", "saas");
+      await gateway.restart();
+    }
     return result;
   });
 
@@ -69,9 +74,20 @@ export function registerIpcHandlers(
 
   ipcMain.handle("auth:session", () => ({
     isAuthenticated: auth.isAuthenticated,
-    saasUrl: auth.saasUrl,
+    deviceId: auth.deviceId,
     agentMode: store.get("agentMode", "standalone"),
   }));
+
+  // --- Agents ---
+  ipcMain.handle("agents:list", async () => {
+    return await auth.fetchAgents();
+  });
+
+  ipcMain.handle("agents:select", async (_event, agentId: string) => {
+    store.set("selectedAgentId", agentId);
+    await gateway.restart();
+    return { success: true };
+  });
 
   // --- Settings ---
   ipcMain.handle("settings:get", (_event, key: string) => {

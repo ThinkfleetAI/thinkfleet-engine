@@ -3,45 +3,44 @@ import { api } from "../lib/ipc";
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [saasUrl, setSaasUrl] = useState("");
+  const [deviceId, setDeviceId] = useState("");
   const [agentMode, setAgentMode] = useState<"standalone" | "saas">("standalone");
 
   useEffect(() => {
     api.auth.getSession().then((session) => {
       setIsAuthenticated(session.isAuthenticated);
-      setSaasUrl(session.saasUrl);
+      setDeviceId(session.deviceId);
       setAgentMode(session.agentMode as "standalone" | "saas");
     });
   }, []);
 
-  const login = useCallback(async (url: string) => {
-    await api.auth.login(url);
-    setIsAuthenticated(true);
-    setSaasUrl(url);
-    setAgentMode("saas");
+  const registerDevice = useCallback(async (inviteCode: string) => {
+    return await api.auth.registerDevice(inviteCode);
+  }, []);
+
+  const pollStatus = useCallback(async (devId: string, pairingToken: string) => {
+    const result = await api.auth.pollStatus(devId, pairingToken);
+    if (result.status === "ACTIVE") {
+      setIsAuthenticated(true);
+      setDeviceId(devId);
+      setAgentMode("saas");
+    }
+    return result;
   }, []);
 
   const logout = useCallback(async () => {
     await api.auth.logout();
     setIsAuthenticated(false);
-    setSaasUrl("");
+    setDeviceId("");
     setAgentMode("standalone");
   }, []);
 
-  const switchMode = useCallback(
-    async (mode: "standalone" | "saas") => {
-      await api.settings.set("agentMode", mode);
-      setAgentMode(mode);
-    },
-    [],
-  );
-
   return {
     isAuthenticated,
-    saasUrl,
+    deviceId,
     agentMode,
-    login,
+    registerDevice,
+    pollStatus,
     logout,
-    switchMode,
   };
 }
