@@ -23,10 +23,11 @@ export function resolveMemuConfig(
 ): ResolvedMemuConfig | null {
   if (!cfg) return null;
   // Check agent-level override first, then defaults
-  const agentCfg = agentId
-    ? (cfg as Record<string, unknown>).agents?.[agentId as string]?.memu
-    : undefined;
-  const defaultsCfg = (cfg as Record<string, unknown>).agents?.defaults?.memu;
+  const agents = (cfg as Record<string, unknown>).agents as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const agentCfg = agentId ? agents?.[agentId]?.memu : undefined;
+  const defaultsCfg = agents?.defaults?.memu;
   const raw = (agentCfg ?? defaultsCfg) as Partial<ResolvedMemuConfig> | undefined;
   if (!raw?.enabled) return null;
   return {
