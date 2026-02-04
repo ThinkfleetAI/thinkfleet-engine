@@ -81,14 +81,11 @@ type MediaKindFromMime = typeof import("../../media/constants.js").mediaKindFrom
 type IsVoiceCompatibleAudio = typeof import("../../media/audio.js").isVoiceCompatibleAudio;
 type GetImageMetadata = typeof import("../../media/image-ops.js").getImageMetadata;
 type ResizeToJpeg = typeof import("../../media/image-ops.js").resizeToJpeg;
+type CreateMemoryCategoriesTool =
+  typeof import("../../agents/tools/memory-tool.js").createMemoryCategoriesTool;
 type CreateMemoryGetTool = typeof import("../../agents/tools/memory-tool.js").createMemoryGetTool;
 type CreateMemorySearchTool =
   typeof import("../../agents/tools/memory-tool.js").createMemorySearchTool;
-type CreateMemuMemorizeTool =
-  typeof import("../../agents/tools/memu-tools.js").createMemuMemorizeTool;
-type CreateMemuRetrieveTool =
-  typeof import("../../agents/tools/memu-tools.js").createMemuRetrieveTool;
-type CreateMemuStatusTool = typeof import("../../agents/tools/memu-tools.js").createMemuStatusTool;
 type RegisterMemoryCli = typeof import("../../cli/memory-cli.js").registerMemoryCli;
 type DiscordMessageActions =
   typeof import("../../channels/plugins/actions/discord.js").discordMessageActions;
@@ -203,11 +200,9 @@ export type PluginRuntime = {
     textToSpeechTelephony: TextToSpeechTelephony;
   };
   tools: {
+    createMemoryCategoriesTool: CreateMemoryCategoriesTool;
     createMemoryGetTool: CreateMemoryGetTool;
     createMemorySearchTool: CreateMemorySearchTool;
-    createMemuMemorizeTool: CreateMemuMemorizeTool;
-    createMemuRetrieveTool: CreateMemuRetrieveTool;
-    createMemuStatusTool: CreateMemuStatusTool;
     registerMemoryCli: RegisterMemoryCli;
   };
   channel: {

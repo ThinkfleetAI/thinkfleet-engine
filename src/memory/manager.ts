@@ -40,6 +40,14 @@ import {
   normalizeRelPath,
   parseEmbedding,
 } from "./internal.js";
+import type {
+  CategorySummary,
+  ExtractedMemory,
+  MemoryItem,
+  MemoryItemSearchResult,
+  MemoryType,
+} from "./extraction-types.js";
+import { startExtractionWorker } from "./extraction-worker.js";
 import { bm25RankToScore, buildFtsQuery, mergeHybridResults } from "./hybrid.js";
 import { searchKeyword, searchVector } from "./manager-search.js";
 import { ensureMemoryIndexSchema } from "./memory-schema.js";
@@ -154,6 +162,8 @@ export class MemoryIndexManager {
     available: boolean;
     loadError?: string;
   };
+  private readonly memoryFts: { available: boolean };
+  private extractionWorker: { stop: () => void } | null = null;
   private vectorReady: Promise<boolean> | null = null;
   private watcher: FSWatcher | null = null;
   private watchTimer: NodeJS.Timeout | null = null;
@@ -231,6 +241,7 @@ export class MemoryIndexManager {
       maxEntries: params.settings.cache.maxEntries,
     };
     this.fts = { enabled: params.settings.query.hybrid.enabled, available: false };
+    this.memoryFts = { available: false };
     this.ensureSchema();
     this.vector = {
       enabled: params.settings.store.vector.enabled,
@@ -244,6 +255,7 @@ export class MemoryIndexManager {
     this.ensureWatcher();
     this.ensureSessionListener();
     this.ensureIntervalSync();
+    this.ensureExtractionWorker();
     this.dirty = this.sources.has("memory");
     this.batch = this.resolveBatchConfig();
   }
@@ -578,8 +590,403 @@ export class MemoryIndexManager {
       this.sessionUnsubscribe();
       this.sessionUnsubscribe = null;
     }
+    if (this.extractionWorker) {
+      this.extractionWorker.stop();
+      this.extractionWorker = null;
+    }
     this.db.close();
     INDEX_CACHE.delete(this.cacheKey);
+  }
+
+  // ── Memory Item CRUD (hierarchical memory-as-filesystem) ──────────
+
+  /** Expose the config for external consumers (extraction worker). */
+  getConfig(): ThinkfleetConfig {
+    return this.cfg;
+  }
+
+  /** Expose the agent ID for external consumers. */
+  getAgentId(): string {
+    return this.agentId;
+  }
+
+  /** Expose the settings for external consumers. */
+  getSettings(): ResolvedMemorySearchConfig {
+    return this.settings;
+  }
+
+  /**
+   * Insert or update a memory item. If an item with the same id exists,
+   * it will be updated. Also maintains FTS and category item counts.
+   */
+  async insertMemoryItem(params: { item: ExtractedMemory; sessionKey?: string }): Promise<string> {
+    const id = hashText(`memory:${params.item.memory_type}:${params.item.content}`);
+    const now = new Date().toISOString();
+
+    // Embed the content for vector search
+    let embeddingJson = "[]";
+    try {
+      const embedding = await this.embedQueryWithTimeout(params.item.content);
+      embeddingJson = JSON.stringify(embedding);
+
+      // Insert into vector table if available
+      const vectorReady = embedding.length > 0 && (await this.ensureVectorReady(embedding.length));
+      if (vectorReady) {
+        try {
+          this.db.prepare(`DELETE FROM memory_items_vec WHERE id = ?`).run(id);
+        } catch {}
+        try {
+          this.db
+            .prepare(`INSERT INTO memory_items_vec (id, embedding) VALUES (?, ?)`)
+            .run(id, vectorToBlob(embedding));
+        } catch {}
+      }
+    } catch (err) {
+      log.debug(`failed to embed memory item: ${String(err)}`);
+    }
+
+    this.db
+      .prepare(
+        `INSERT INTO memory_items (id, memory_type, category, content, importance, source_session, embedding, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET
+           content=excluded.content,
+           importance=excluded.importance,
+           embedding=excluded.embedding,
+           updated_at=excluded.updated_at`,
+      )
+      .run(
+        id,
+        params.item.memory_type,
+        params.item.category,
+        params.item.content,
+        params.item.importance,
+        params.sessionKey ?? null,
+        embeddingJson,
+        now,
+        now,
+      );
+
+    // Update FTS
+    if (this.memoryFts.available) {
+      try {
+        this.db.prepare(`DELETE FROM memory_items_fts WHERE id = ?`).run(id);
+      } catch {}
+      this.db
+        .prepare(
+          `INSERT INTO memory_items_fts (content, id, memory_type, category) VALUES (?, ?, ?, ?)`,
+        )
+        .run(params.item.content, id, params.item.memory_type, params.item.category);
+    }
+
+    // Update category item count
+    this.db
+      .prepare(
+        `INSERT INTO memory_categories (name, item_count, updated_at)
+         VALUES (?, 1, ?)
+         ON CONFLICT(name) DO UPDATE SET
+           item_count = (SELECT COUNT(*) FROM memory_items WHERE category = ?),
+           updated_at = ?`,
+      )
+      .run(params.item.category, now, params.item.category, now);
+
+    return id;
+  }
+
+  /**
+   * Get all memory items in a category, ordered by importance.
+   */
+  getItemsByCategory(category: string, limit = 50): MemoryItem[] {
+    return this.db
+      .prepare(
+        `SELECT id, memory_type, category, content, importance, source_session, created_at, updated_at
+         FROM memory_items WHERE category = ? ORDER BY importance DESC LIMIT ?`,
+      )
+      .all(category, limit) as MemoryItem[];
+  }
+
+  /**
+   * Get a category summary by name.
+   */
+  getCategorySummary(name: string): CategorySummary | null {
+    return (
+      (this.db
+        .prepare(
+          `SELECT name, summary, item_count, updated_at FROM memory_categories WHERE name = ?`,
+        )
+        .get(name) as CategorySummary | undefined) ?? null
+    );
+  }
+
+  /**
+   * List all categories with their summaries.
+   */
+  listCategories(): CategorySummary[] {
+    return this.db
+      .prepare(`SELECT name, summary, item_count, updated_at FROM memory_categories ORDER BY name`)
+      .all() as CategorySummary[];
+  }
+
+  /**
+   * Update a category summary.
+   */
+  updateCategorySummary(name: string, summary: string): void {
+    const now = new Date().toISOString();
+    this.db
+      .prepare(
+        `INSERT INTO memory_categories (name, summary, updated_at)
+         VALUES (?, ?, ?)
+         ON CONFLICT(name) DO UPDATE SET summary=excluded.summary, updated_at=excluded.updated_at`,
+      )
+      .run(name, summary, now);
+  }
+
+  /**
+   * Find memory items similar to the given content (for deduplication).
+   * Uses vector similarity if available, falls back to FTS.
+   */
+  async findSimilarItems(params: {
+    content: string;
+    category?: string;
+    limit?: number;
+  }): Promise<MemoryItemSearchResult[]> {
+    const limit = params.limit ?? 5;
+    const results: MemoryItemSearchResult[] = [];
+
+    // Try vector search first
+    try {
+      const queryVec = await this.embedQueryWithTimeout(params.content);
+      if (queryVec.some((v) => v !== 0)) {
+        const vectorReady = await this.ensureVectorReady();
+        if (vectorReady) {
+          const categoryFilter = params.category ? ` AND m.category = ?` : "";
+          const queryParams: Array<string | number | Uint8Array> = [
+            vectorToBlob(queryVec),
+            limit * 2,
+          ];
+          if (params.category) queryParams.push(params.category);
+
+          try {
+            const rows = this.db
+              .prepare(
+                `SELECT v.id, v.distance, m.memory_type, m.category, m.content, m.importance
+                 FROM memory_items_vec v
+                 JOIN memory_items m ON v.id = m.id
+                 WHERE v.embedding MATCH ? AND k = ?${categoryFilter}
+                 ORDER BY v.distance`,
+              )
+              .all(...queryParams) as Array<{
+              id: string;
+              distance: number;
+              memory_type: MemoryType;
+              category: string;
+              content: string;
+              importance: number;
+            }>;
+
+            for (const row of rows) {
+              results.push({
+                id: row.id,
+                memory_type: row.memory_type,
+                category: row.category,
+                content: row.content,
+                importance: row.importance,
+                score: 1 / (1 + row.distance),
+              });
+            }
+          } catch {
+            // Vector search may fail if table doesn't exist yet
+          }
+        }
+      }
+    } catch {
+      // Embedding failed — fall through to FTS
+    }
+
+    // FTS fallback if vector search returned nothing
+    if (results.length === 0 && this.memoryFts.available) {
+      const ftsQuery = buildFtsQuery(params.content);
+      if (ftsQuery) {
+        const categoryFilter = params.category ? ` AND f.category = ?` : "";
+        const queryParams: Array<string | number> = [ftsQuery, limit];
+        if (params.category) queryParams.push(params.category);
+
+        try {
+          const rows = this.db
+            .prepare(
+              `SELECT f.id, f.memory_type, f.category, rank,
+                      m.content, m.importance
+               FROM memory_items_fts f
+               JOIN memory_items m ON f.id = m.id
+               WHERE memory_items_fts MATCH ?${categoryFilter}
+               ORDER BY rank LIMIT ?`,
+            )
+            .all(...queryParams) as Array<{
+            id: string;
+            memory_type: MemoryType;
+            category: string;
+            rank: number;
+            content: string;
+            importance: number;
+          }>;
+
+          for (const row of rows) {
+            results.push({
+              id: row.id,
+              memory_type: row.memory_type,
+              category: row.category,
+              content: row.content,
+              importance: row.importance,
+              score: bm25RankToScore(row.rank),
+            });
+          }
+        } catch {}
+      }
+    }
+
+    return results.slice(0, limit);
+  }
+
+  /**
+   * Search memory items by query, with optional type and category filters.
+   * Used for proactive retrieval and agent tools.
+   */
+  async searchMemoryItems(params: {
+    query: string;
+    memoryType?: MemoryType;
+    category?: string;
+    maxResults?: number;
+    minScore?: number;
+  }): Promise<MemoryItemSearchResult[]> {
+    const maxResults = params.maxResults ?? 10;
+    const minScore = params.minScore ?? 0.3;
+    const results: MemoryItemSearchResult[] = [];
+
+    // Vector search
+    try {
+      const queryVec = await this.embedQueryWithTimeout(params.query);
+      if (queryVec.some((v) => v !== 0)) {
+        const vectorReady = await this.ensureVectorReady();
+        if (vectorReady) {
+          try {
+            const rows = this.db
+              .prepare(
+                `SELECT v.id, v.distance, m.memory_type, m.category, m.content, m.importance
+                 FROM memory_items_vec v
+                 JOIN memory_items m ON v.id = m.id
+                 WHERE v.embedding MATCH ? AND k = ?
+                 ORDER BY v.distance`,
+              )
+              .all(vectorToBlob(queryVec), maxResults * 3) as Array<{
+              id: string;
+              distance: number;
+              memory_type: MemoryType;
+              category: string;
+              content: string;
+              importance: number;
+            }>;
+
+            for (const row of rows) {
+              if (params.memoryType && row.memory_type !== params.memoryType) continue;
+              if (params.category && row.category !== params.category) continue;
+              const score = 1 / (1 + row.distance);
+              // Boost score based on importance (up to +0.1 for importance 10)
+              const boosted = score + row.importance / 100;
+              if (boosted >= minScore) {
+                results.push({
+                  id: row.id,
+                  memory_type: row.memory_type,
+                  category: row.category,
+                  content: row.content,
+                  importance: row.importance,
+                  score: boosted,
+                });
+              }
+            }
+          } catch {}
+        }
+      }
+    } catch {}
+
+    // FTS supplement
+    if (this.memoryFts.available) {
+      const ftsQuery = buildFtsQuery(params.query);
+      if (ftsQuery) {
+        try {
+          const rows = this.db
+            .prepare(
+              `SELECT f.id, f.memory_type, f.category, rank,
+                      m.content, m.importance
+               FROM memory_items_fts f
+               JOIN memory_items m ON f.id = m.id
+               WHERE memory_items_fts MATCH ?
+               ORDER BY rank LIMIT ?`,
+            )
+            .all(ftsQuery, maxResults * 3) as Array<{
+            id: string;
+            memory_type: MemoryType;
+            category: string;
+            rank: number;
+            content: string;
+            importance: number;
+          }>;
+
+          const existingIds = new Set(results.map((r) => r.id));
+          for (const row of rows) {
+            if (existingIds.has(row.id)) continue;
+            if (params.memoryType && row.memory_type !== params.memoryType) continue;
+            if (params.category && row.category !== params.category) continue;
+            const score = bm25RankToScore(row.rank);
+            const boosted = score + row.importance / 100;
+            if (boosted >= minScore) {
+              results.push({
+                id: row.id,
+                memory_type: row.memory_type,
+                category: row.category,
+                content: row.content,
+                importance: row.importance,
+                score: boosted,
+              });
+            }
+          }
+        } catch {}
+      }
+    }
+
+    return results.sort((a, b) => b.score - a.score).slice(0, maxResults);
+  }
+
+  /**
+   * Add a cross-reference between two memory items.
+   */
+  addXref(sourceId: string, targetId: string, relation = "related"): void {
+    this.db
+      .prepare(
+        `INSERT OR IGNORE INTO memory_xrefs (source_id, target_id, relation) VALUES (?, ?, ?)`,
+      )
+      .run(sourceId, targetId, relation);
+  }
+
+  /**
+   * Ensure the memory_items_vec table exists for the current embedding dimensions.
+   * Separate from chunks_vec because memory items have their own lifecycle.
+   */
+  async ensureMemoryVectorTable(): Promise<boolean> {
+    const vectorReady = await this.ensureVectorReady();
+    if (!vectorReady) return false;
+    const dims = this.vector.dims;
+    if (!dims) return false;
+    try {
+      this.db.exec(
+        `CREATE VIRTUAL TABLE IF NOT EXISTS memory_items_vec USING vec0(\n` +
+          `  id TEXT PRIMARY KEY,\n` +
+          `  embedding FLOAT[${dims}]\n` +
+          `)`,
+      );
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private async ensureVectorReady(dimensions?: number): Promise<boolean> {
@@ -761,6 +1168,7 @@ export class MemoryIndexManager {
       ftsEnabled: this.fts.enabled,
     });
     this.fts.available = result.ftsAvailable;
+    this.memoryFts.available = result.memoryFtsAvailable;
     if (result.ftsError) {
       this.fts.loadError = result.ftsError;
       log.warn(`fts unavailable: ${result.ftsError}`);
@@ -796,6 +1204,16 @@ export class MemoryIndexManager {
       const sessionFile = update.sessionFile;
       if (!this.isSessionFileForAgent(sessionFile)) return;
       this.scheduleSessionDirty(sessionFile);
+    });
+  }
+
+  private ensureExtractionWorker() {
+    const extraction = this.settings.extraction;
+    if (!extraction?.enabled || this.extractionWorker) return;
+    this.extractionWorker = startExtractionWorker({
+      manager: this,
+      cfg: this.cfg,
+      extractionConfig: extraction,
     });
   }
 

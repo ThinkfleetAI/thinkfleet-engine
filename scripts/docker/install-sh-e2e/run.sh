@@ -33,26 +33,31 @@ elif [[ "$MODELS_MODE" == "anthropic" && -z "$ANTHROPIC_API_TOKEN" && -z "$ANTHR
 fi
 
 echo "==> Resolve npm versions"
-EXPECTED_VERSION="$(npm view "thinkfleet@${INSTALL_TAG}" version)"
+EXPECTED_VERSION="$(npm view "thinkfleet@${INSTALL_TAG}" version 2>/dev/null || true)"
 if [[ -z "$EXPECTED_VERSION" || "$EXPECTED_VERSION" == "undefined" || "$EXPECTED_VERSION" == "null" ]]; then
-  echo "ERROR: unable to resolve thinkfleet@${INSTALL_TAG} version" >&2
-  exit 2
+  echo "WARN: unable to resolve thinkfleet@${INSTALL_TAG} — package may not be published yet"
+  EXPECTED_VERSION=""
 fi
-if [[ -n "$E2E_PREVIOUS_VERSION" ]]; then
-  PREVIOUS_VERSION="$E2E_PREVIOUS_VERSION"
-else
-  PREVIOUS_VERSION="$(node - <<'NODE'
+PREVIOUS_VERSION=""
+if [[ -n "$EXPECTED_VERSION" ]]; then
+  if [[ -n "$E2E_PREVIOUS_VERSION" ]]; then
+    PREVIOUS_VERSION="$E2E_PREVIOUS_VERSION"
+  else
+    PREVIOUS_VERSION="$(node - <<'NODE'
 const { execSync } = require("node:child_process");
-const versions = JSON.parse(execSync("npm view thinkfleet versions --json", { encoding: "utf8" }));
-if (!Array.isArray(versions) || versions.length === 0) process.exit(1);
-process.stdout.write(versions.length >= 2 ? versions[versions.length - 2] : versions[0]);
+try {
+  const versions = JSON.parse(execSync("npm view thinkfleet versions --json", { encoding: "utf8" }));
+  if (!Array.isArray(versions) || versions.length === 0) process.exit(1);
+  process.stdout.write(versions.length >= 2 ? versions[versions.length - 2] : versions[0]);
+} catch { process.exit(1); }
 NODE
-  )"
+    )" || true
+  fi
 fi
-echo "expected=$EXPECTED_VERSION previous=$PREVIOUS_VERSION"
+echo "expected=${EXPECTED_VERSION:-<not published>} previous=${PREVIOUS_VERSION:-<none>}"
 
-if [[ "$SKIP_PREVIOUS" == "1" ]]; then
-  echo "==> Skip preinstall previous (THINKFLEETBOT_INSTALL_E2E_SKIP_PREVIOUS=1)"
+if [[ "$SKIP_PREVIOUS" == "1" || -z "$EXPECTED_VERSION" ]]; then
+  echo "==> Skip preinstall previous (${SKIP_PREVIOUS:+THINKFLEETBOT_INSTALL_E2E_SKIP_PREVIOUS=1}${EXPECTED_VERSION:- package not on npm})"
 else
   echo "==> Preinstall previous (forces installer upgrade path; avoids read() prompt)"
   npm install -g "thinkfleet@${PREVIOUS_VERSION}"
@@ -69,8 +74,10 @@ fi
 
 echo "==> Verify installed version"
 INSTALLED_VERSION="$(thinkfleet --version 2>/dev/null | head -n 1 | tr -d '\r')"
-echo "installed=$INSTALLED_VERSION expected=$EXPECTED_VERSION"
-if [[ "$INSTALLED_VERSION" != "$EXPECTED_VERSION" ]]; then
+echo "installed=$INSTALLED_VERSION expected=${EXPECTED_VERSION:-<not published>}"
+if [[ -z "$EXPECTED_VERSION" ]]; then
+  echo "WARN: skipping version comparison — package not on npm"
+elif [[ "$INSTALLED_VERSION" != "$EXPECTED_VERSION" ]]; then
   echo "ERROR: expected thinkfleet@$EXPECTED_VERSION, got thinkfleet@$INSTALLED_VERSION" >&2
   exit 1
 fi

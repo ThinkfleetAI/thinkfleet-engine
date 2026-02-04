@@ -12,8 +12,7 @@ const TOOL_NAME_ALIASES: Record<string, string> = {
 
 export const TOOL_GROUPS: Record<string, string[]> = {
   // NOTE: Keep canonical (lowercase) tool names here.
-  "group:memory": ["memory_search", "memory_get"],
-  "group:memu": ["memu_memorize", "memu_retrieve", "memu_status"],
+  "group:memory": ["memory_search", "memory_get", "memory_categories"],
   "group:web": ["web_search", "web_fetch"],
   // Basic workspace/file tools
   "group:fs": ["read", "write", "edit", "apply_patch"],
@@ -54,9 +53,6 @@ export const TOOL_GROUPS: Record<string, string[]> = {
     "web_search",
     "web_fetch",
     "image",
-    "memu_memorize",
-    "memu_retrieve",
-    "memu_status",
   ],
 };
 

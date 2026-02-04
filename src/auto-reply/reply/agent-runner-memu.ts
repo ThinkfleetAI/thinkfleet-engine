@@ -1,13 +1,21 @@
 /**
- * MemU integration for the agent runner — proactive retrieval hook.
+ * Proactive memory retrieval hook for the agent runner.
  *
- * Resolves MemU config and, when proactive mode is enabled, fetches
- * relevant memories to prepend to the user's message before the agent turn.
+ * When extraction-based proactive retrieval is enabled, fetches relevant
+ * memories from the native memory system and prepends them to the user's
+ * message before the agent turn. This gives the agent personalized context
+ * without the user needing to explicitly request it.
  */
 
 import type { ThinkfleetConfig } from "../../config/config.js";
-import { resolveMemuConfigForSession } from "../../agents/memu-config.js";
-import { proactiveMemuRetrieve } from "../../agents/memu-sync/proactive-retrieve.js";
+import { resolveSessionAgentId } from "../../agents/agent-scope.js";
+import { resolveMemorySearchConfig } from "../../agents/memory-search.js";
+import { getMemorySearchManager } from "../../memory/index.js";
+import { createSubsystemLogger } from "../../logging/subsystem.js";
+
+const log = createSubsystemLogger("memory-proactive");
+
+const MAX_CONTEXT_CHARS = 2000;
 
 export async function runProactiveMemuRetrieveIfNeeded(params: {
   cfg: ThinkfleetConfig;
@@ -15,21 +23,64 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
   sessionKey?: string;
   senderId?: string;
 }): Promise<string> {
-  const memuCfg = resolveMemuConfigForSession({
-    config: params.cfg,
+  const agentId = resolveSessionAgentId({
     sessionKey: params.sessionKey,
+    config: params.cfg,
   });
 
-  if (!memuCfg || !memuCfg.proactive) return params.commandBody;
+  const searchConfig = resolveMemorySearchConfig(params.cfg, agentId);
+  if (!searchConfig?.extraction?.enabled || !searchConfig.extraction.proactiveRetrieval) {
+    return params.commandBody;
+  }
 
-  const memoryContext = await proactiveMemuRetrieve({
-    config: memuCfg,
-    userMessage: params.commandBody,
-    userId: params.senderId ?? "default",
-  });
+  const trimmed = params.commandBody.trim();
 
-  if (!memoryContext) return params.commandBody;
+  // Skip very short messages — not enough signal for meaningful retrieval
+  if (trimmed.length < 10) return params.commandBody;
 
-  // Prepend memory context before the user's message
-  return `${memoryContext}\n\n${params.commandBody}`;
+  // Skip obvious commands
+  if (trimmed.startsWith("/") || trimmed.startsWith("!")) return params.commandBody;
+
+  try {
+    const { manager } = await getMemorySearchManager({
+      cfg: params.cfg,
+      agentId,
+    });
+    if (!manager) return params.commandBody;
+
+    const maxItems = searchConfig.extraction.maxProactiveItems;
+    const minScore = searchConfig.extraction.minRelevanceScore;
+
+    const items = await manager.searchMemoryItems({
+      query: trimmed,
+      maxResults: maxItems,
+      minScore,
+    });
+
+    if (items.length === 0) return params.commandBody;
+
+    // Format memory context
+    const parts: string[] = [];
+    let totalChars = 0;
+
+    for (const item of items) {
+      const line = `- [${item.memory_type}] ${item.content}`;
+      if (totalChars + line.length > MAX_CONTEXT_CHARS) break;
+      parts.push(line);
+      totalChars += line.length;
+    }
+
+    if (parts.length === 0) return params.commandBody;
+
+    const memoryContext = [
+      "[Memory context — relevant information recalled from previous interactions]",
+      ...parts,
+      "[End memory context]",
+    ].join("\n");
+
+    return `${memoryContext}\n\n${params.commandBody}`;
+  } catch (err) {
+    log.debug(`proactive retrieval failed: ${String(err)}`);
+    return params.commandBody;
+  }
 }

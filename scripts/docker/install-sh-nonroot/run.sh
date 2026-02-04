@@ -32,7 +32,7 @@ EXPECTED_VERSION="${THINKFLEETBOT_INSTALL_EXPECT_VERSION:-}"
 if [[ -n "$EXPECTED_VERSION" ]]; then
   LATEST_VERSION="$EXPECTED_VERSION"
 else
-  LATEST_VERSION="$(npm view "$PACKAGE_NAME" version)"
+  LATEST_VERSION="$(npm view "$PACKAGE_NAME" version 2>/dev/null || true)"
 fi
 CLI_NAME="$PACKAGE_NAME"
 CMD_PATH="$(command -v "$CLI_NAME" || true)"
@@ -53,13 +53,15 @@ if [[ -z "$CMD_PATH" ]]; then
   exit 1
 fi
 if [[ -z "$EXPECTED_VERSION" && "$CLI_NAME" != "$PACKAGE_NAME" ]]; then
-  LATEST_VERSION="$(npm view "$CLI_NAME" version)"
+  LATEST_VERSION="$(npm view "$CLI_NAME" version 2>/dev/null || true)"
 fi
 echo "==> Verify CLI installed: $CLI_NAME"
 INSTALLED_VERSION="$("$CMD_PATH" --version 2>/dev/null | head -n 1 | tr -d '\r')"
 
-echo "cli=$CLI_NAME installed=$INSTALLED_VERSION expected=$LATEST_VERSION"
-if [[ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]]; then
+echo "cli=$CLI_NAME installed=$INSTALLED_VERSION expected=${LATEST_VERSION:-<not published>}"
+if [[ -z "$LATEST_VERSION" ]]; then
+  echo "WARN: skipping version comparison — package not on npm"
+elif [[ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]]; then
   echo "ERROR: expected ${CLI_NAME}@${LATEST_VERSION}, got ${CLI_NAME}@${INSTALLED_VERSION}" >&2
   exit 1
 fi

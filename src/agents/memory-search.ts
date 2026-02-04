@@ -2,6 +2,7 @@ import os from "node:os";
 import path from "node:path";
 
 import type { ThinkfleetConfig, MemorySearchConfig } from "../config/config.js";
+import type { MemorySearchConfig as MemorySearchConfigType } from "../config/types.tools.js";
 import { resolveStateDir } from "../config/paths.js";
 import { clampInt, clampNumber, resolveUserPath } from "../utils.js";
 import { resolveAgentConfig } from "./agent-scope.js";
@@ -67,6 +68,16 @@ export type ResolvedMemorySearchConfig = {
   cache: {
     enabled: boolean;
     maxEntries?: number;
+  };
+  extraction?: {
+    enabled: boolean;
+    provider?: string;
+    model?: string;
+    debounceMs: number;
+    maxItemsPerExtraction: number;
+    proactiveRetrieval: boolean;
+    maxProactiveItems: number;
+    minRelevanceScore: number;
   };
 };
 
@@ -270,6 +281,26 @@ function mergeConfig(
           ? Math.max(1, Math.floor(cache.maxEntries))
           : undefined,
     },
+    extraction: resolveExtractionConfig(defaults?.extraction, overrides?.extraction),
+  };
+}
+
+function resolveExtractionConfig(
+  defaults: MemorySearchConfigType["extraction"],
+  overrides: MemorySearchConfigType["extraction"],
+): ResolvedMemorySearchConfig["extraction"] {
+  const enabled = overrides?.enabled ?? defaults?.enabled ?? false;
+  if (!enabled) return undefined;
+  return {
+    enabled: true,
+    provider: overrides?.provider ?? defaults?.provider,
+    model: overrides?.model ?? defaults?.model,
+    debounceMs: overrides?.debounceMs ?? defaults?.debounceMs ?? 5000,
+    maxItemsPerExtraction:
+      overrides?.maxItemsPerExtraction ?? defaults?.maxItemsPerExtraction ?? 20,
+    proactiveRetrieval: overrides?.proactiveRetrieval ?? defaults?.proactiveRetrieval ?? true,
+    maxProactiveItems: overrides?.maxProactiveItems ?? defaults?.maxProactiveItems ?? 5,
+    minRelevanceScore: overrides?.minRelevanceScore ?? defaults?.minRelevanceScore ?? 0.4,
   };
 }
 

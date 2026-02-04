@@ -319,6 +319,25 @@ export type MemorySearchConfig = {
     /** Optional cap on cached embeddings (best-effort). */
     maxEntries?: number;
   };
+  /** Memory extraction pipeline configuration. */
+  extraction?: {
+    /** Enable LLM-based memory extraction from conversations (default: false). */
+    enabled?: boolean;
+    /** LLM provider for extraction calls (default: "openai"). */
+    provider?: string;
+    /** LLM model id for extraction calls (default: "gpt-4o-mini"). */
+    model?: string;
+    /** Debounce interval in ms before running extraction after session updates (default: 5000). */
+    debounceMs?: number;
+    /** Max memory items to extract per pipeline run (default: 20). */
+    maxItemsPerExtraction?: number;
+    /** Enable proactive context injection before agent turns (default: true). */
+    proactiveRetrieval?: boolean;
+    /** Max memory items to include in proactive context (default: 5). */
+    maxProactiveItems?: number;
+    /** Minimum relevance score for proactive retrieval (0-1, default: 0.4). */
+    minRelevanceScore?: number;
+  };
 };
 
 export type ToolsConfig = {

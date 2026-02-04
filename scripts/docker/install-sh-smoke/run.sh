@@ -16,12 +16,17 @@ else
 fi
 
 echo "==> Resolve npm versions"
-LATEST_VERSION="$(npm view "$PACKAGE_NAME" version)"
-if [[ -n "$SMOKE_PREVIOUS_VERSION" ]]; then
-  PREVIOUS_VERSION="$SMOKE_PREVIOUS_VERSION"
-else
-  VERSIONS_JSON="$(npm view "$PACKAGE_NAME" versions --json)"
-  PREVIOUS_VERSION="$(VERSIONS_JSON="$VERSIONS_JSON" LATEST_VERSION="$LATEST_VERSION" node - <<'NODE'
+LATEST_VERSION="$(npm view "$PACKAGE_NAME" version 2>/dev/null || true)"
+if [[ -z "$LATEST_VERSION" ]]; then
+  echo "WARN: $PACKAGE_NAME not found on npm registry — skipping version checks"
+fi
+PREVIOUS_VERSION=""
+if [[ -n "$LATEST_VERSION" ]]; then
+  if [[ -n "$SMOKE_PREVIOUS_VERSION" ]]; then
+    PREVIOUS_VERSION="$SMOKE_PREVIOUS_VERSION"
+  else
+    VERSIONS_JSON="$(npm view "$PACKAGE_NAME" versions --json 2>/dev/null || echo "[]")"
+    PREVIOUS_VERSION="$(VERSIONS_JSON="$VERSIONS_JSON" LATEST_VERSION="$LATEST_VERSION" node - <<'NODE'
 const raw = process.env.VERSIONS_JSON || "[]";
 const latest = process.env.LATEST_VERSION || "";
 let versions;
@@ -43,13 +48,14 @@ if (latestIndex > 0) {
 }
 process.stdout.write(String(latest || versions[versions.length - 1]));
 NODE
-)"
+  )" || true
+  fi
 fi
 
-echo "package=$PACKAGE_NAME latest=$LATEST_VERSION previous=$PREVIOUS_VERSION"
+echo "package=$PACKAGE_NAME latest=${LATEST_VERSION:-<not published>} previous=${PREVIOUS_VERSION:-<none>}"
 
-if [[ "$SKIP_PREVIOUS" == "1" ]]; then
-  echo "==> Skip preinstall previous (THINKFLEETBOT_INSTALL_SMOKE_SKIP_PREVIOUS=1)"
+if [[ "$SKIP_PREVIOUS" == "1" || -z "$LATEST_VERSION" ]]; then
+  echo "==> Skip preinstall previous (${SKIP_PREVIOUS:+THINKFLEETBOT_INSTALL_SMOKE_SKIP_PREVIOUS=1}${LATEST_VERSION:- package not on npm})"
 else
   echo "==> Preinstall previous (forces installer upgrade path)"
   npm install -g "${PACKAGE_NAME}@${PREVIOUS_VERSION}"
@@ -63,7 +69,7 @@ CLI_NAME="$PACKAGE_NAME"
 if ! command -v "$CLI_NAME" >/dev/null 2>&1; then
   if command -v "$ALT_PACKAGE_NAME" >/dev/null 2>&1; then
     CLI_NAME="$ALT_PACKAGE_NAME"
-    LATEST_VERSION="$(npm view "$CLI_NAME" version)"
+    LATEST_VERSION="$(npm view "$CLI_NAME" version 2>/dev/null || true)"
     echo "==> Detected alternate CLI: $CLI_NAME"
   else
     echo "ERROR: neither $PACKAGE_NAME nor $ALT_PACKAGE_NAME is on PATH" >&2
@@ -74,9 +80,11 @@ if [[ -n "${THINKFLEETBOT_INSTALL_LATEST_OUT:-}" ]]; then
   printf "%s" "$LATEST_VERSION" > "$THINKFLEETBOT_INSTALL_LATEST_OUT"
 fi
 INSTALLED_VERSION="$("$CLI_NAME" --version 2>/dev/null | head -n 1 | tr -d '\r')"
-echo "cli=$CLI_NAME installed=$INSTALLED_VERSION expected=$LATEST_VERSION"
+echo "cli=$CLI_NAME installed=$INSTALLED_VERSION expected=${LATEST_VERSION:-<not published>}"
 
-if [[ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]]; then
+if [[ -z "$LATEST_VERSION" ]]; then
+  echo "WARN: skipping version comparison — package not on npm"
+elif [[ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]]; then
   echo "ERROR: expected ${CLI_NAME}@${LATEST_VERSION}, got ${CLI_NAME}@${INSTALLED_VERSION}" >&2
   exit 1
 fi
