@@ -222,28 +222,38 @@ export async function runReplyAgent(params: {
 
   await typingSignals.signalRunStart();
 
-  activeSessionEntry = await runMemoryFlushIfNeeded({
-    cfg,
-    followupRun,
-    sessionCtx,
-    opts,
-    defaultModel,
-    agentCfgContextTokens,
-    resolvedVerboseLevel,
-    sessionEntry: activeSessionEntry,
-    sessionStore: activeSessionStore,
-    sessionKey,
-    storePath,
-    isHeartbeat,
-  });
+  try {
+    activeSessionEntry = await runMemoryFlushIfNeeded({
+      cfg,
+      followupRun,
+      sessionCtx,
+      opts,
+      defaultModel,
+      agentCfgContextTokens,
+      resolvedVerboseLevel,
+      sessionEntry: activeSessionEntry,
+      sessionStore: activeSessionStore,
+      sessionKey,
+      storePath,
+      isHeartbeat,
+    });
+  } catch (flushErr) {
+    defaultRuntime.error(`Memory flush failed (non-fatal, continuing): ${String(flushErr)}`);
+  }
 
   // Proactive MemU retrieval: inject relevant memories before the agent turn
-  commandBody = await runProactiveMemuRetrieveIfNeeded({
-    cfg,
-    commandBody,
-    sessionKey,
-    senderId: sessionCtx.SenderId?.trim(),
-  });
+  try {
+    commandBody = await runProactiveMemuRetrieveIfNeeded({
+      cfg,
+      commandBody,
+      sessionKey,
+      senderId: sessionCtx.SenderId?.trim(),
+    });
+  } catch (memuErr) {
+    defaultRuntime.error(
+      `Proactive memory retrieval failed (non-fatal, continuing): ${String(memuErr)}`,
+    );
+  }
 
   const runFollowupTurn = createFollowupRunner({
     opts,
