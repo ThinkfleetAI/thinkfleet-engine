@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN apt-get purge -y --auto-remove build-essential \
   && rm -rf /var/lib/apt/lists/*
 
-COPY server.py .
+COPY *.py .
 
 # Persistent memory storage
 VOLUME /data/memu
