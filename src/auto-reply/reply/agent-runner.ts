@@ -30,6 +30,7 @@ import {
   signalTypingIfNeeded,
 } from "./agent-runner-helpers.js";
 import { runMemoryFlushIfNeeded } from "./agent-runner-memory.js";
+import { runProactiveMemuRetrieveIfNeeded } from "./agent-runner-memu.js";
 import { buildReplyPayloads } from "./agent-runner-payloads.js";
 import { appendUsageLine, formatResponseUsageLine } from "./agent-runner-utils.js";
 import { createAudioAsVoiceBuffer, createBlockReplyPipeline } from "./block-reply-pipeline.js";
@@ -75,8 +76,8 @@ export async function runReplyAgent(params: {
   shouldInjectGroupIntro: boolean;
   typingMode: TypingMode;
 }): Promise<ReplyPayload | ReplyPayload[] | undefined> {
+  let { commandBody } = params;
   const {
-    commandBody,
     followupRun,
     queueKey,
     resolvedQueue,
@@ -220,6 +221,14 @@ export async function runReplyAgent(params: {
     sessionKey,
     storePath,
     isHeartbeat,
+  });
+
+  // Proactive MemU retrieval: inject relevant memories before the agent turn
+  commandBody = await runProactiveMemuRetrieveIfNeeded({
+    cfg,
+    commandBody,
+    sessionKey,
+    senderId: sessionCtx.SenderId?.trim(),
   });
 
   const runFollowupTurn = createFollowupRunner({

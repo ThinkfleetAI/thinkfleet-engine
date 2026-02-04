@@ -9,10 +9,11 @@ A sophisticated memory service implementing the MemU architecture:
   - CRUD operations for memory management
 
 REST endpoints consumed by the gateway's memu-tools:
-  POST /memorize   — ingest content into hierarchical memory
-  POST /retrieve   — query memory via vector similarity or LLM ranking
-  GET  /status     — health check and memory statistics
-  GET  /health     — simple health probe
+  POST /memorize    — ingest content into hierarchical memory
+  POST /retrieve    — query memory via vector similarity or LLM ranking
+  POST /anticipate  — proactive retrieval optimized for context injection
+  GET  /status      — health check and memory statistics
+  GET  /health      — simple health probe
 
 Additional CRUD endpoints:
   POST /memories/list       — list memory items with filtering
@@ -61,6 +62,8 @@ from memorize import (
     memorize_pipeline,
 )
 from models import (
+    AnticipateRequest,
+    AnticipateResponse,
     CategoryInfo,
     CreateMemoryRequest,
     CreateMemoryResponse,
@@ -233,6 +236,59 @@ async def retrieve(req: RetrieveRequest) -> RetrieveResponse:
     except Exception as e:
         logger.error("Retrieve failed: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"retrieve failed: {e}") from e
+
+
+@app.post("/anticipate", response_model=AnticipateResponse)
+async def anticipate(req: AnticipateRequest) -> AnticipateResponse:
+    """Proactive retrieval optimized for context injection.
+
+    Designed to be called automatically before each agent turn. Returns
+    relevant memories filtered by a minimum relevance score, along with
+    a pre-formatted context block ready for prompt injection.
+
+    Faster than /retrieve: always uses RAG mode, applies score filtering,
+    and generates the context block server-side.
+    """
+    if not req.query.strip():
+        return AnticipateResponse(ok=True, items=[], context_block="", query=req.query)
+
+    try:
+        result = await retrieve_pipeline(
+            query=req.query,
+            user_id=req.user_id,
+            method="rag",
+            max_results=req.max_results,
+            chroma=chroma,
+            config=config,
+            llm=llm,
+        )
+
+        # Filter by minimum score
+        items = [
+            MemoryItem(**item)
+            for item in result["items"]
+            if item.get("score", 0) >= req.min_score
+        ]
+
+        # Build formatted context block
+        context_block = ""
+        if items:
+            lines = ["[Memory context — relevant information from previous interactions]"]
+            for item in items:
+                mem_type = item.metadata.get("memory_type", "memory") if item.metadata else "memory"
+                lines.append(f"- [{mem_type}] {item.content}")
+            lines.append("[End memory context]")
+            context_block = "\n".join(lines)
+
+        return AnticipateResponse(
+            ok=True,
+            items=items,
+            context_block=context_block,
+            query=result["query"],
+        )
+    except Exception as e:
+        logger.error("Anticipate failed: %s", e, exc_info=True)
+        return AnticipateResponse(ok=False, items=[], context_block="", query=req.query)
 
 
 @app.get("/status", response_model=StatusResponse)

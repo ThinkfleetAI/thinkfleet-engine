@@ -124,6 +124,24 @@ class CreateMemoryResponse(BaseModel):
     id: str = ""
 
 
+class AnticipateRequest(BaseModel):
+    """Request for proactive retrieval — optimized for context injection."""
+
+    query: str
+    user_id: str = "default"
+    max_results: int = Field(default=5, ge=1, le=20)
+    min_score: float = Field(default=0.4, ge=0.0, le=1.0)
+
+
+class AnticipateResponse(BaseModel):
+    """Response for proactive retrieval — formatted for direct injection."""
+
+    ok: bool = True
+    items: list[MemoryItem] = []
+    context_block: str = ""
+    query: str = ""
+
+
 # ---------------------------------------------------------------------------
 # Internal data structures
 # ---------------------------------------------------------------------------
