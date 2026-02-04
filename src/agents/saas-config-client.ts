@@ -10,6 +10,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { isSaasMode } from "./saas-credential-client.js";
 
+export interface ReasoningOverrides {
+  thinkingLevel?: string;
+  blockStreaming?: boolean;
+  heartbeatEnabled?: boolean;
+  heartbeatInterval?: string;
+}
+
 export interface SaasAgentConfig {
   name: string;
   systemPrompt: string | null;
@@ -21,6 +28,8 @@ export interface SaasAgentConfig {
   toolProfile: string;
   characterType: string;
   proxyBaseUrl: string | null;
+  reasoningMode: boolean;
+  reasoningOverrides: ReasoningOverrides | null;
 }
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
@@ -53,7 +62,7 @@ export async function fetchAgentConfig(): Promise<SaasAgentConfig | null> {
 
     cachedConfig = (await response.json()) as SaasAgentConfig;
     console.log(
-      `[saas-config] Agent config loaded: name="${cachedConfig.name}", persona="${cachedConfig.personaId ?? "none"}"`,
+      `[saas-config] Agent config loaded: name="${cachedConfig.name}", persona="${cachedConfig.personaId ?? "none"}", reasoning=${cachedConfig.reasoningMode}`,
     );
     return cachedConfig;
   } catch (error) {
@@ -67,6 +76,7 @@ export async function fetchAgentConfig(): Promise<SaasAgentConfig | null> {
  * 1. Write persona system prompt to SOUL.md in workspace (if not already customized)
  * 2. Write agent name to IDENTITY.md
  * 3. Apply runtime config overrides for identity and model
+ * 4. Apply reasoning mode config overrides + seed workspace files
  */
 export async function applySaasAgentConfig(workspaceDir: string): Promise<void> {
   const config = await fetchAgentConfig();
@@ -83,6 +93,34 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
   if (config.modelId) {
     const modelString = `${config.modelProvider}/${config.modelId}`;
     setConfigOverride("agents.defaults.model", modelString);
+  }
+
+  // Apply reasoning mode config overrides
+  if (config.reasoningMode) {
+    const overrides = config.reasoningOverrides ?? {};
+    const thinkingLevel = overrides.thinkingLevel ?? "medium";
+    const blockStreaming = overrides.blockStreaming ?? true;
+    const heartbeatEnabled = overrides.heartbeatEnabled ?? true;
+    const heartbeatInterval = overrides.heartbeatInterval ?? "15m";
+
+    setConfigOverride("agents.defaults.thinkingDefault", thinkingLevel);
+    setConfigOverride("agents.defaults.blockStreamingDefault", blockStreaming ? "on" : "off");
+    setConfigOverride("agents.defaults.blockStreamingBreak", "message_end");
+
+    if (heartbeatEnabled) {
+      setConfigOverride("agents.defaults.heartbeat", {
+        every: heartbeatInterval,
+        includeReasoning: true,
+      });
+    }
+
+    setConfigOverride("agents.defaults.compaction", {
+      memoryFlush: { enabled: true },
+    });
+
+    console.log(
+      `[saas-config] Reasoning mode enabled: thinking=${thinkingLevel}, blockStreaming=${blockStreaming}, heartbeat=${heartbeatEnabled ? heartbeatInterval : "off"}`,
+    );
   }
 
   // Write persona system prompt to SOUL.md if the file doesn't exist or is the default template
@@ -176,6 +214,71 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
     } catch (error) {
       console.error("[saas-config] Error writing IDENTITY.md:", error);
     }
+  }
+
+  // Seed reasoning workspace files when reasoning mode is enabled
+  if (config.reasoningMode) {
+    seedReasoningWorkspaceFiles(workspaceDir);
+  }
+}
+
+/**
+ * Seed HEARTBEAT.md and TASKS.md workspace files for reasoning mode.
+ * Only writes if the files don't already exist (preserves user customizations).
+ */
+function seedReasoningWorkspaceFiles(workspaceDir: string): void {
+  // Seed HEARTBEAT.md with task-review instructions
+  const heartbeatPath = path.join(workspaceDir, "HEARTBEAT.md");
+  try {
+    if (!fs.existsSync(heartbeatPath)) {
+      const content = [
+        "# Heartbeat Protocol",
+        "",
+        "When this file exists, periodic heartbeats will review your current state.",
+        "",
+        "## On each heartbeat:",
+        "1. Read TASKS.md for pending items",
+        "2. Review any in-progress work",
+        "3. If a task is stale or blocked, update its status",
+        "4. If nothing needs attention, reply HEARTBEAT_OK",
+        "",
+        "## Guidelines:",
+        "- Do NOT infer tasks from prior conversations",
+        "- Only act on items explicitly listed in TASKS.md",
+        "- Keep status updates concise",
+        "",
+      ].join("\n");
+      fs.mkdirSync(path.dirname(heartbeatPath), { recursive: true });
+      fs.writeFileSync(heartbeatPath, content, "utf-8");
+      console.log(`[saas-config] Seeded heartbeat protocol to ${heartbeatPath}`);
+    }
+  } catch (error) {
+    console.error("[saas-config] Error writing HEARTBEAT.md:", error);
+  }
+
+  // Seed TASKS.md with inbox/active/done structure
+  const tasksPath = path.join(workspaceDir, "TASKS.md");
+  try {
+    if (!fs.existsSync(tasksPath)) {
+      const content = [
+        "# Tasks",
+        "",
+        "## Inbox",
+        "<!-- New tasks go here -->",
+        "",
+        "## Active",
+        "<!-- Tasks currently being worked on -->",
+        "",
+        "## Done",
+        "<!-- Completed tasks -->",
+        "",
+      ].join("\n");
+      fs.mkdirSync(path.dirname(tasksPath), { recursive: true });
+      fs.writeFileSync(tasksPath, content, "utf-8");
+      console.log(`[saas-config] Seeded task structure to ${tasksPath}`);
+    }
+  } catch (error) {
+    console.error("[saas-config] Error writing TASKS.md:", error);
   }
 }
 
