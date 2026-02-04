@@ -7,6 +7,7 @@ import {
 } from "../../agents/agent-scope.js";
 import { runCliAgent } from "../../agents/cli-runner.js";
 import {
+  fetchCredentialFromSaas,
   hasByokLlmCredential,
   isBudgetExhausted,
   isSaasMode,
@@ -99,6 +100,11 @@ export async function runCronIsolatedAgentTurn(params: {
   agentId?: string;
   lane?: string;
 }): Promise<RunCronAgentTurnResult> {
+  // Ensure SaaS credential cache is populated before checking budget.
+  if (isSaasMode()) {
+    await fetchCredentialFromSaas("anthropic");
+  }
+
   // Budget enforcement: Skip cron job execution when token limit exceeded (SaaS mode only).
   // BYOK users bypass this gate — they have their own keys and aren't consuming platform tokens.
   if (isSaasMode() && isBudgetExhausted() && !hasByokLlmCredential()) {

@@ -6,6 +6,7 @@ import { resolveModelAuthMode } from "../../agents/model-auth.js";
 import { isCliProvider } from "../../agents/model-selection.js";
 import { queueEmbeddedPiMessage } from "../../agents/pi-embedded.js";
 import {
+  fetchCredentialFromSaas,
   hasByokLlmCredential,
   isBudgetExhausted,
   isSaasMode,
@@ -110,6 +111,14 @@ export async function runReplyAgent(params: {
   let activeSessionEntry = sessionEntry;
   const activeSessionStore = sessionStore;
   let activeIsNewSession = isNewSession;
+
+  // Ensure SaaS credential cache is populated before checking budget.
+  // Without this, the first message after startup has an empty cache —
+  // isBudgetExhausted() returns false, the gate is skipped, and the agent
+  // later fails with a cryptic "No API key found" instead of the friendly budget message.
+  if (isSaasMode()) {
+    await fetchCredentialFromSaas("anthropic");
+  }
 
   // Budget enforcement: Block AI operations when token limit exceeded (SaaS mode only).
   // BYOK users bypass this gate — they have their own keys and aren't consuming platform tokens.
