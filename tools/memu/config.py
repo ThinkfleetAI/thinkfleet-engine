@@ -2,9 +2,11 @@
 MemU Sidecar — Configuration.
 
 All settings are driven by environment variables with sensible defaults.
-When MEMU_LLM_API_KEY is set, LLM-powered features are enabled (extraction,
-categorisation, query rewriting, sufficiency checking).  Without an API key
-the sidecar degrades gracefully to basic chunking + vector search.
+LLM-powered features activate when an API key is available — either from:
+  1. MEMU_LLM_API_KEY environment variable, or
+  2. SaaS backend credential fetch (when THINKFLEET_SAAS_API_URL is set)
+
+Without an API key the sidecar degrades gracefully to basic chunking + vector search.
 """
 
 from __future__ import annotations

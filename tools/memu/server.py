@@ -23,7 +23,11 @@ Additional CRUD endpoints:
 Storage is backed by ChromaDB (SQLite + HNSW vectors) persisted to
 /data/memu inside the container so memories survive restarts.
 
-When MEMU_LLM_API_KEY is configured, LLM-powered features activate:
+LLM-powered features activate when an API key is available:
+  - MEMU_LLM_API_KEY environment variable, or
+  - SaaS backend credential fetch (THINKFLEET_SAAS_API_URL set)
+
+Features enabled with LLM:
   - Memory extraction with 5 types
   - Conversation segmentation and document condensing
   - Automatic categorisation into 10 default categories
@@ -74,6 +78,7 @@ from models import (
     StatusResponse,
 )
 from retrieve import retrieve_pipeline
+from saas import fetch_agent_config, get_llm_api_key, get_llm_base_url, is_saas_mode
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -98,6 +103,7 @@ llm = LLMClient(config)
 _startup_time = time.time()
 
 logger.info("MemU sidecar starting — data_dir=%s llm_enabled=%s", config.data_dir, llm.enabled)
+logger.info("SaaS mode: %s", is_saas_mode())
 if llm.enabled:
     logger.info(
         "LLM config — model=%s embed=%s base_url=%s",
@@ -115,6 +121,42 @@ app = FastAPI(
     version="2.0.0",
     description="Hierarchical memory service with LLM-powered extraction and retrieval.",
 )
+
+
+@app.on_event("startup")
+async def _startup_fetch_saas_credentials() -> None:
+    """On startup, fetch LLM credentials from SaaS backend if available."""
+    if not is_saas_mode():
+        if not llm.enabled:
+            logger.warning(
+                "No LLM API key configured — running in basic mode. "
+                "Set MEMU_LLM_API_KEY or configure SaaS credentials."
+            )
+        return
+
+    logger.info("SaaS mode detected — fetching LLM credentials from platform...")
+    try:
+        api_key = await get_llm_api_key()
+        if api_key:
+            base_url = await get_llm_base_url()
+            llm.configure_from_saas(api_key, base_url)
+            logger.info("LLM credentials loaded from SaaS — LLM features enabled")
+        else:
+            logger.warning(
+                "No LLM credentials found in SaaS — "
+                "falling back to env var (MEMU_LLM_API_KEY=%s)",
+                "set" if config.llm_api_key else "not set",
+            )
+    except Exception as e:
+        logger.error("Failed to fetch SaaS credentials: %s", e)
+
+    # Also fetch agent config for any MemU-specific overrides
+    try:
+        agent_config = await fetch_agent_config()
+        if agent_config:
+            logger.info("Agent config loaded from SaaS: %s", list(agent_config.keys()))
+    except Exception as e:
+        logger.debug("Agent config fetch failed (non-critical): %s", e)
 
 
 # ---------------------------------------------------------------------------

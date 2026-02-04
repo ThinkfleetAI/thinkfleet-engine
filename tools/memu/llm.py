@@ -4,6 +4,10 @@ MemU Sidecar — LLM Client.
 Async OpenAI-compatible client for chat completions and embeddings.
 Supports any OpenAI-compatible API (OpenAI, Azure, local models, etc.)
 via configurable base URL and API key.
+
+Credential resolution order:
+  1. MEMU_LLM_API_KEY environment variable
+  2. SaaS backend credential fetch (when in SaaS mode)
 """
 
 from __future__ import annotations
@@ -20,21 +24,53 @@ logger = logging.getLogger(__name__)
 
 
 class LLMClient:
-    """Async wrapper around an OpenAI-compatible API."""
+    """Async wrapper around an OpenAI-compatible API with SaaS credential support."""
 
     def __init__(self, config: MemuConfig) -> None:
         self.config = config
         self._client: AsyncOpenAI | None = None
+        self._enabled: bool | None = None
+        # Overridable at runtime (set by SaaS credential fetch)
+        self._api_key: str | None = None
+        self._base_url: str | None = None
 
     @property
     def enabled(self) -> bool:
+        # If SaaS credentials were loaded, we might be enabled even without env var
+        if self._enabled is not None:
+            return self._enabled
         return self.config.llm_enabled
+
+    def configure_from_saas(self, api_key: str, base_url: str | None = None) -> None:
+        """Apply credentials fetched from SaaS backend at runtime."""
+        self._api_key = api_key
+        if base_url:
+            self._base_url = base_url
+        # Invalidate existing client so next call uses new credentials
+        self._client = None
+        self._enabled = True
+        logger.info(
+            "LLM configured from SaaS — base_url=%s",
+            base_url or self.config.llm_base_url,
+        )
+
+    def _resolve_api_key(self) -> str:
+        """Resolve the API key: SaaS override → env var config."""
+        if self._api_key:
+            return self._api_key
+        return self.config.llm_api_key
+
+    def _resolve_base_url(self) -> str:
+        """Resolve the base URL: SaaS override → env var config."""
+        if self._base_url:
+            return self._base_url
+        return self.config.llm_base_url
 
     def _get_client(self) -> AsyncOpenAI:
         if self._client is None:
             self._client = AsyncOpenAI(
-                api_key=self.config.llm_api_key,
-                base_url=self.config.llm_base_url,
+                api_key=self._resolve_api_key(),
+                base_url=self._resolve_base_url(),
             )
         return self._client
 
@@ -48,7 +84,9 @@ class LLMClient:
     ) -> str:
         """Send a chat completion request and return the assistant's text."""
         if not self.enabled:
-            raise RuntimeError("LLM not configured — set MEMU_LLM_API_KEY")
+            raise RuntimeError(
+                "LLM not configured — set MEMU_LLM_API_KEY or configure SaaS credentials"
+            )
 
         client = self._get_client()
         messages: list[ChatCompletionMessageParam] = [
@@ -68,7 +106,9 @@ class LLMClient:
     async def embed(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for a list of texts."""
         if not self.enabled:
-            raise RuntimeError("LLM not configured — set MEMU_LLM_API_KEY")
+            raise RuntimeError(
+                "LLM not configured — set MEMU_LLM_API_KEY or configure SaaS credentials"
+            )
         if not texts:
             return []
 
