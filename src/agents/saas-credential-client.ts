@@ -258,6 +258,29 @@ export function isBudgetExhausted(): boolean {
   return _budgetExhausted;
 }
 
+const LLM_PROVIDERS = new Set([
+  "anthropic",
+  "openai",
+  "google",
+  "groq",
+  "mistral",
+  "openrouter",
+  "xai",
+  "deepseek",
+  "perplexity",
+]);
+
+/**
+ * Returns true if the cache contains at least one BYOK credential for an LLM provider.
+ * Used to allow BYOK users to bypass the platform budget gate.
+ */
+export function hasByokLlmCredential(): boolean {
+  for (const [provider, entry] of cache) {
+    if (entry.source === "byok" && LLM_PROVIDERS.has(provider)) return true;
+  }
+  return false;
+}
+
 /**
  * Invalidate cache for a specific provider (called when auth.upsert pushes a new key).
  */
