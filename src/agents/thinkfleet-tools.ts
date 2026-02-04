@@ -19,6 +19,7 @@ import { createSessionsSpawnTool } from "./tools/sessions-spawn-tool.js";
 import { createWebFetchTool, createWebSearchTool } from "./tools/web-tools.js";
 import { createTtsTool } from "./tools/tts-tool.js";
 import { createPublishFileTool } from "./tools/publish-file-tool.js";
+import { createSaasTool } from "./tools/saas-tool.js";
 
 export function createThinkfleetTools(options?: {
   sandboxBrowserBridgeUrl?: string;
@@ -141,6 +142,7 @@ export function createThinkfleetTools(options?: {
     createPublishFileTool({
       agentSessionKey: options?.agentSessionKey,
     }),
+    createSaasTool(),
   ];
 
   const pluginTools = resolvePluginTools({

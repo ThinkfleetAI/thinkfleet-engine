@@ -338,4 +338,317 @@ export const saasBridgeHandlers: GatewayRequestHandlers = {
       respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
     }
   },
+
+  /**
+   * Fetch an ephemeral OAuth token for a connected integration.
+   * The token is retrieved live from Composio and should not be stored.
+   */
+  "saas.integrations.getToken": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/integrations", {
+        method: "POST",
+        body: {
+          action: "get_token",
+          appName: params.appName,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to get integration token"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  // ── Virtual Cards ──
+
+  /**
+   * List virtual cards assigned to this agent.
+   */
+  "saas.card.list": async ({ respond }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/card", {
+        method: "POST",
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to list cards"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Get card details (PAN, CVC, expiry) for an assigned virtual card.
+   * Card details are ephemeral and should not be stored.
+   */
+  "saas.card.get": async ({ respond, params }) => {
+    try {
+      const cardId = String(params.cardId ?? "");
+      if (!cardId) {
+        respond(false, undefined, errorShape(ErrorCodes.INVALID_REQUEST, "cardId required"));
+        return;
+      }
+      const { ok, data } = await saasFetch(
+        `/api/internal/bridge/card?cardId=${encodeURIComponent(cardId)}`,
+        {
+          method: "GET",
+        },
+      );
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to get card details"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  // ── Crew Orchestration ──
+
+  /**
+   * Master agent submits a task decomposition plan for the crew.
+   */
+  "saas.crew.decompose": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "decompose_result",
+          executionId: params.executionId,
+          tasks: params.tasks,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to submit decomposition"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Master agent queries execution progress.
+   */
+  "saas.crew.taskStatus": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "task_status",
+          executionId: params.executionId,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to get task status"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Master agent requests a task reassignment.
+   */
+  "saas.crew.reassign": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "reassign",
+          taskId: params.taskId,
+          reason: params.reason,
+          preferredPersona: params.preferredPersona,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to reassign task"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Master agent sends a message to a specific crew member.
+   */
+  "saas.crew.sendToMember": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "send_to_member",
+          executionId: params.executionId,
+          targetAgentId: params.targetAgentId,
+          message: params.message,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to send message to member"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Master agent submits final execution summary.
+   */
+  "saas.crew.summary": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "execution_summary",
+          executionId: params.executionId,
+          summary: params.summary,
+          artifacts: params.artifacts,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to submit summary"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Child agent acknowledges a delegated task.
+   */
+  "saas.crew.task.ack": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "task_ack",
+          taskId: params.taskId,
+          accepted: params.accepted,
+          reason: params.reason,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to acknowledge task"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Child agent reports task progress.
+   */
+  "saas.crew.task.progress": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "task_progress",
+          taskId: params.taskId,
+          status: params.status ?? "in_progress",
+          progress: params.progress,
+          message: params.message,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to report progress"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Child agent reports task completion.
+   */
+  "saas.crew.task.completed": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "task_completed",
+          taskId: params.taskId,
+          deliverables: params.deliverables,
+          completionReport: params.completionReport,
+          artifacts: params.artifacts,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to report completion"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Child agent reports a blocker.
+   */
+  "saas.crew.task.blocked": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "task_blocked",
+          taskId: params.taskId,
+          blockerDescription: params.blockerDescription,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to report blocker"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Child agent requests lateral collaboration (e.g. dev asks QA for review).
+   */
+  "saas.crew.lateral.request": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/crew", {
+        method: "POST",
+        body: {
+          action: "lateral_request",
+          taskId: params.taskId,
+          targetPersona: params.targetPersona,
+          requestType: params.requestType,
+          payload: params.payload,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok
+          ? undefined
+          : errorShape(ErrorCodes.UNAVAILABLE, "Failed to request lateral collaboration"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
 };
