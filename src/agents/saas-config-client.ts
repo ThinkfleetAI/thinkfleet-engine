@@ -93,7 +93,22 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
   if (config.modelId) {
     const modelString = `${config.modelProvider}/${config.modelId}`;
     setConfigOverride("agents.defaults.model", modelString);
+
+    // Ensure prompt caching is enabled for Anthropic models.
+    // applyContextPruningDefaults runs before runtime overrides, so the SaaS-configured
+    // model doesn't get cacheControlTtl automatically. Set it explicitly here.
+    if (config.modelProvider === "anthropic") {
+      setConfigOverride("agents.defaults.models", {
+        [modelString]: { params: { cacheControlTtl: "1h" } },
+      });
+    }
   }
+
+  // Set a global DM history limit to reduce token usage.
+  // Without this, full conversation history is sent on every request, which can
+  // consume 5-10K+ tokens on long sessions. 15 user turns is enough context
+  // for continuity while keeping costs manageable across all providers.
+  setConfigOverride("agents.defaults.dmHistoryLimit", 15);
 
   // Apply reasoning mode config overrides
   if (config.reasoningMode) {

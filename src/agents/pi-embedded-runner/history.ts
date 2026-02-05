@@ -81,5 +81,11 @@ export function getDmHistoryLimitFromSessionKey(
     return entry as { dmHistoryLimit?: number; dms?: Record<string, { historyLimit?: number }> };
   };
 
-  return getLimit(resolveProviderConfig(config, provider));
+  const channelLimit = getLimit(resolveProviderConfig(config, provider));
+  if (channelLimit !== undefined) return channelLimit;
+
+  // Global fallback: check agents.defaults.dmHistoryLimit (set by SaaS config or operator).
+  const agentDefaults = config?.agents?.defaults as Record<string, unknown> | undefined;
+  const globalLimit = agentDefaults?.dmHistoryLimit;
+  return typeof globalLimit === "number" && globalLimit > 0 ? globalLimit : undefined;
 }
