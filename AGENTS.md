@@ -2,6 +2,89 @@
 - Repo: https://github.com/thinkfleetbot/thinkfleetbot
 - GitHub issues/comments/PR comments: use literal multiline strings or `-F - <<'EOF'` (or $'...') for real newlines; never embed "\\n".
 
+## SaaS Integration Architecture
+
+This bot runs as a **stateless AI worker** managed by the Clawdbot SaaS platform (sibling repo at `../saas/`). The SaaS platform is the gateway and control plane — it owns credentials, billing, channels, reverse proxy, authentication, and organization tenancy.
+
+### SaaS Mode vs Standalone Mode
+
+**SaaS Mode** (K8s managed deployment):
+- Detected when all three env vars are set: `THINKFLEET_SAAS_API_URL`, `THINKFLEET_AGENT_DB_ID`, `THINKFLEET_GATEWAY_TOKEN`
+- Credentials fetched via HTTP from SaaS backend (5-min in-memory cache, never persisted to disk)
+- Token budget enforcement (platform keys withheld if budget exhausted; BYOK keys bypass)
+- SaaS-managed channels emit `channel.outbound` events via gateway instead of sending directly
+- Config fetched from SaaS on startup (system prompt, model settings, persona, tool profile)
+- Check: `isSaasMode()` in `src/agents/saas-credential-client.ts`
+
+**Standalone Mode** (desktop, mobile, self-hosted):
+- No SaaS env vars set
+- Credentials from `.env` or `~/.thinkfleetbot/`
+- Full local control, no platform limits
+- Channels managed directly by bot extensions
+
+### Three Credential Systems (SaaS-Side)
+
+1. **API Keys** — LLM provider keys + service API keys. Encrypted at rest in SaaS DB. Resolution: agent-level → org-assigned → org-wide → platform keys (budget-gated). Fetched via `GET {SAAS_API_URL}/api/internal/credentials/{agentDbId}`.
+
+2. **Composio** — OAuth and API key management for 800+ services. Bot discovers available integrations at runtime via SaaS.
+
+3. **Stripe Virtual Cards** — Generated with spending limits. Shared with bots for purchases.
+
+### Network Model (K8s Deployment)
+
+- Bots **CAN** access the internet (outbound)
+- Internet **CANNOT** reach bots (no inbound ports)
+- Bots **CANNOT** communicate across K8s namespaces (tenant isolation)
+- Bots in the **same namespace CAN** talk (multi-agent orchestration)
+- SaaS reaches bots via **gateway WebSocket** (bot connects outbound to SaaS)
+
+### Internal API Endpoints (SaaS socket server, port 3003)
+
+| Endpoint | Purpose | Used By |
+|----------|---------|---------|
+| `GET /api/internal/credentials/:agentDbId` | Fetch API keys | `saas-credential-client.ts` |
+| `GET /api/internal/agent-config/:agentDbId` | Fetch agent config | `saas-config-client.ts` |
+| `POST /api/internal/usage/report` | Report token usage | Usage reporter after LLM calls |
+
+### Channel Architecture
+
+**SaaS-managed channels** (inbound webhook → SaaS → `chat.send` RPC → bot → SaaS outbound):
+SMS, Email, Telegram, LINE, WeChat, Matrix, Voice, WebChat (primary chat)
+
+**Bot-managed channels** (bot polls/connects directly, still being migrated):
+Discord, Slack, WhatsApp, Signal, iMessage, Google Chat, MS Teams, Nostr
+
+When `saasManaged: true` in channel config, the extension skips its own monitor/polling and relies on `chat.send` RPC for inbound + `channel.outbound` event for replies.
+
+Key files: `src/agents/saas-credential-client.ts`, `src/agents/saas-config-client.ts`, `src/infra/outbound/saas-outbound.ts`
+
+### Kubernetes Operations (kubectl)
+
+You have kubectl access for debugging bot pods in production.
+
+**Bot pod debugging:**
+```bash
+# Find bot pods (each org gets its own namespace)
+kubectl get pods -n clawdbot-org-<orgId>
+
+# Check bot pod logs
+kubectl logs -n clawdbot-org-<orgNs> deployment/agent-<id> --tail=100
+
+# Check bot env vars
+kubectl exec -n clawdbot-org-<orgNs> <pod-name> -- env | grep THINKFLEET_
+
+# Restart a bot pod
+kubectl rollout restart deployment/agent-<id> -n clawdbot-org-<orgNs>
+
+# Patch an env var
+kubectl set env deployment/agent-<id> -n clawdbot-org-<orgNs> THINKFLEET_SAAS_API_URL=http://saas-socket.thinkfleet-saas.svc.cluster.local:3003
+
+# SaaS pods (for checking internal API health)
+kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
+```
+
+**Key point:** Bot container env vars are baked inline on the K8s deployment spec when the container is first created (by SaaS `container-manager.ts`). They are NOT from a configmap. The `restartContainer()` flow re-syncs env vars before restarting. CI/CD pushes only restart SaaS pods, not bot pods.
+
 ## Project Structure & Module Organization
 - Source code: `src/` (CLI wiring in `src/cli`, commands in `src/commands`, web provider in `src/provider-web.ts`, infra in `src/infra`, media pipeline in `src/media`).
 - Tests: colocated `*.test.ts`.

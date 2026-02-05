@@ -1,0 +1,60 @@
+# ThinkFleetBot (Clawdbot)
+
+Multi-channel AI agent runtime. TypeScript/Node.js ESM. 31+ channel extensions, 341+ skills.
+
+## SaaS Integration
+This bot is a **stateless AI worker** managed by the SaaS platform (sibling repo: ../saas/).
+SaaS mode detected when: THINKFLEET_SAAS_API_URL + THINKFLEET_AGENT_DB_ID + THINKFLEET_GATEWAY_TOKEN are all set.
+
+### Credential Fetch
+- SaaS mode: HTTP fetch from SaaS backend, 5-min in-memory cache, never persisted to disk
+- Standalone: `.env` or `~/.thinkfleetbot/`
+- Key file: `src/agents/saas-credential-client.ts`
+
+### Channel Architecture
+- SaaS-managed channels: bot receives `chat.send` RPC, replies via `channel.outbound` event
+- Bot-managed channels: bot polls/connects directly (being migrated to SaaS)
+- `saasManaged: true` flag in channel config skips bot's own monitor
+
+### Network (K8s)
+- Outbound OK, inbound blocked, cross-namespace blocked, same-namespace OK
+
+## Structure
+- `src/` — Core (CLI, gateway, agents, channels, routing, infra)
+- `extensions/` — Channel plugins (31+)
+- `skills/` — Skill packages (341+)
+- `apps/` — Native apps (iOS, Android, macOS, Desktop)
+- `packages/` — Workspace packages
+
+## Key Patterns
+- Gateway: WebSocket/HTTP server on port 18789
+- Plugin system: `thinkfleetbot` key in package.json
+- Config: `~/.thinkfleetbot/config.json5`, validated by Zod
+- Tools via Pi agent library with policy filtering
+- Singleton state: `setXxx()`/`getXxx()` to avoid circular imports
+
+## Commands
+```bash
+pnpm dev           # Dev mode
+pnpm build         # TypeScript compile
+pnpm test          # Vitest (70% coverage)
+pnpm lint          # Oxlint
+pnpm format        # Oxfmt
+```
+
+## Conventions
+- TypeScript ESM, strict typing, no `any`
+- Node 22+, Bun for dev execution
+- Files under ~500-700 LOC
+- Commits via `scripts/committer "<msg>" <file...>`
+- Product name: ThinkFleetBot (headings), thinkfleetbot (CLI/paths)
+
+## kubectl Access
+- Bot pod logs: `kubectl -n clawdbot-org-<orgId> logs deployment/agent-<id> --tail=100`
+- Bot env: `kubectl exec -n clawdbot-org-<orgNs> <pod> -- env | grep THINKFLEET_`
+- Restart: `kubectl rollout restart deployment/agent-<id> -n clawdbot-org-<orgNs>`
+- Patch env: `kubectl set env deployment/agent-<id> -n <ns> KEY=value`
+- SaaS logs: `kubectl -n thinkfleet-saas logs deployment/saas-socket --tail=50`
+- Bot env vars are baked inline on K8s deployment (not configmap). CI/CD doesn't restart bot pods.
+
+See CLAUDE.md for full details.
