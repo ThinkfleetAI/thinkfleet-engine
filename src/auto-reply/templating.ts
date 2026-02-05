@@ -121,6 +121,17 @@ export type MsgContext = {
    * Used for hook confirmation messages like "Session context saved to memory".
    */
   HookMessages?: string[];
+  /**
+   * Whether this message originated from a SaaS-managed channel.
+   * When true, replies should be emitted via `channel.outbound` gateway event
+   * instead of direct channel API calls.
+   */
+  SaasManaged?: boolean;
+  /**
+   * Opaque channel-specific metadata passed through from the SaaS webhook handler.
+   * Forwarded back via `channel.outbound` so the SaaS outbound service can use it.
+   */
+  ChannelMetadata?: Record<string, unknown>;
 };
 
 export type FinalizedMsgContext = Omit<MsgContext, "CommandAuthorized"> & {

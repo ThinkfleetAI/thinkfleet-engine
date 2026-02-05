@@ -41,6 +41,16 @@ export const ChatSendParamsSchema = Type.Object(
     attachments: Type.Optional(Type.Array(Type.Unknown())),
     timeoutMs: Type.Optional(Type.Integer({ minimum: 0 })),
     idempotencyKey: NonEmptyString,
+    // SaaS-managed channel context (optional — when present, overrides webchat defaults)
+    channelType: Type.Optional(Type.String()),
+    sender: Type.Optional(Type.String()),
+    senderName: Type.Optional(Type.String()),
+    senderUsername: Type.Optional(Type.String()),
+    chatType: Type.Optional(Type.String()),
+    platformMessageId: Type.Optional(Type.String()),
+    threadId: Type.Optional(Type.String()),
+    mediaUrls: Type.Optional(Type.Array(Type.String())),
+    metadata: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
   },
   { additionalProperties: false },
 );

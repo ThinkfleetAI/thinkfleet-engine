@@ -35,6 +35,10 @@ export type RouteReplyParams = {
   abortSignal?: AbortSignal;
   /** Mirror reply into session transcript (default: true when sessionKey is set). */
   mirror?: boolean;
+  /** Whether the channel is SaaS-managed (emit channel.outbound instead of direct send). */
+  saasManaged?: boolean;
+  /** Opaque channel metadata to forward back via channel.outbound. */
+  metadata?: Record<string, unknown>;
 };
 
 export type RouteReplyResult = {
@@ -92,6 +96,33 @@ export async function routeReply(params: RouteReplyParams): Promise<RouteReplyRe
       ok: false,
       error: "Webchat routing not supported for queued replies",
     };
+  }
+
+  // SaaS-managed channels: emit channel.outbound event via gateway instead of direct send.
+  if (params.saasManaged) {
+    if (abortSignal?.aborted) {
+      return { ok: false, error: "Reply routing aborted" };
+    }
+    try {
+      const { emitChannelOutbound } = await import("../../infra/outbound/saas-outbound.js");
+      const emitted = emitChannelOutbound({
+        channelType: String(channel),
+        target: to,
+        text: text.trim(),
+        mediaUrl: mediaUrls[0],
+        replyToMessageId: undefined,
+        threadId,
+        metadata: params.metadata,
+        kind: "final",
+      });
+      if (!emitted) {
+        return { ok: false, error: "Gateway broadcaster not available for SaaS outbound" };
+      }
+      return { ok: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return { ok: false, error: `SaaS outbound failed: ${message}` };
+    }
   }
 
   const channelId = normalizeChannelId(channel) ?? null;

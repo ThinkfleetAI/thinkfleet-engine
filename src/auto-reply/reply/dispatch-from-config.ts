@@ -222,6 +222,8 @@ export async function dispatchReplyFromConfig(params: {
       cfg,
       abortSignal,
       mirror,
+      saasManaged: ctx.SaasManaged,
+      metadata: ctx.ChannelMetadata,
     });
     if (!result.ok) {
       logVerbose(`dispatch-from-config: route-reply failed: ${result.error ?? "unknown error"}`);
@@ -247,6 +249,8 @@ export async function dispatchReplyFromConfig(params: {
           accountId: ctx.AccountId,
           threadId: ctx.MessageThreadId,
           cfg,
+          saasManaged: ctx.SaasManaged,
+          metadata: ctx.ChannelMetadata,
         });
         queuedFinal = result.ok;
         if (result.ok) routedFinalCount += 1;
@@ -329,6 +333,8 @@ export async function dispatchReplyFromConfig(params: {
           accountId: ctx.AccountId,
           threadId: ctx.MessageThreadId,
           cfg,
+          saasManaged: ctx.SaasManaged,
+          metadata: ctx.ChannelMetadata,
         });
         if (!result.ok) {
           logVerbose(
@@ -377,6 +383,8 @@ export async function dispatchReplyFromConfig(params: {
               accountId: ctx.AccountId,
               threadId: ctx.MessageThreadId,
               cfg,
+              saasManaged: ctx.SaasManaged,
+              metadata: ctx.ChannelMetadata,
             });
             queuedFinal = result.ok || queuedFinal;
             if (result.ok) routedFinalCount += 1;

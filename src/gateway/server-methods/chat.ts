@@ -318,6 +318,16 @@ export const chatHandlers: GatewayRequestHandlers = {
       }>;
       timeoutMs?: number;
       idempotencyKey: string;
+      // SaaS-managed channel context
+      channelType?: string;
+      sender?: string;
+      senderName?: string;
+      senderUsername?: string;
+      chatType?: string;
+      platformMessageId?: string;
+      threadId?: string;
+      mediaUrls?: string[];
+      metadata?: Record<string, unknown>;
     };
     const stopCommand = isChatStopCommandText(p.message);
     const normalizedAttachments =
@@ -443,6 +453,8 @@ export const chatHandlers: GatewayRequestHandlers = {
       );
       const commandBody = injectThinking ? `/think ${p.thinking} ${parsedMessage}` : parsedMessage;
       const clientInfo = client?.connect?.client;
+      const isSaasChannel = Boolean(p.channelType);
+      const channelProvider = p.channelType ?? INTERNAL_MESSAGE_CHANNEL;
       const ctx: MsgContext = {
         Body: parsedMessage,
         BodyForAgent: parsedMessage,
@@ -450,15 +462,19 @@ export const chatHandlers: GatewayRequestHandlers = {
         RawBody: parsedMessage,
         CommandBody: commandBody,
         SessionKey: p.sessionKey,
-        Provider: INTERNAL_MESSAGE_CHANNEL,
-        Surface: INTERNAL_MESSAGE_CHANNEL,
-        OriginatingChannel: INTERNAL_MESSAGE_CHANNEL,
-        ChatType: "direct",
+        Provider: channelProvider,
+        Surface: channelProvider,
+        OriginatingChannel: channelProvider,
+        OriginatingTo: isSaasChannel ? p.sessionKey : undefined,
+        MessageThreadId: p.threadId,
+        ChatType: p.chatType ?? "direct",
         CommandAuthorized: true,
-        MessageSid: clientRunId,
-        SenderId: clientInfo?.id,
-        SenderName: clientInfo?.displayName,
-        SenderUsername: clientInfo?.displayName,
+        MessageSid: p.platformMessageId ?? clientRunId,
+        SenderId: p.sender ?? clientInfo?.id,
+        SenderName: p.senderName ?? clientInfo?.displayName,
+        SenderUsername: p.senderUsername ?? clientInfo?.displayName,
+        SaasManaged: isSaasChannel,
+        ChannelMetadata: p.metadata,
       };
 
       const agentId = resolveSessionAgentId({
@@ -476,6 +492,25 @@ export const chatHandlers: GatewayRequestHandlers = {
           context.logGateway.warn(`webchat dispatch failed: ${formatForLog(err)}`);
         },
         deliver: async (payload, info) => {
+          // For SaaS-managed channels, emit channel.outbound so SaaS delivers via platform API
+          if (isSaasChannel) {
+            const text = payload.text?.trim() ?? "";
+            if (!text && !payload.mediaUrl) return;
+            context.broadcast("channel.outbound", {
+              channelType: p.channelType,
+              target: p.sessionKey,
+              text,
+              mediaUrl: payload.mediaUrl,
+              replyToMessageId: p.platformMessageId,
+              threadId: p.threadId,
+              metadata: p.metadata,
+              kind: info.kind,
+            });
+            if (info.kind === "final" && text) {
+              finalReplyParts.push(text);
+            }
+            return;
+          }
           if (info.kind !== "final") return;
           const text = payload.text?.trim() ?? "";
           if (!text) return;

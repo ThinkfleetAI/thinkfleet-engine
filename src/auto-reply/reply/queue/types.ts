@@ -41,6 +41,10 @@ export type FollowupRun = {
   originatingThreadId?: string | number;
   /** Chat type for context-aware threading (e.g., DM vs channel). */
   originatingChatType?: string;
+  /** Whether the originating channel is SaaS-managed (replies via channel.outbound). */
+  originatingSaasManaged?: boolean;
+  /** Opaque channel metadata to forward back via channel.outbound. */
+  originatingMetadata?: Record<string, unknown>;
   run: {
     agentId: string;
     agentDir: string;

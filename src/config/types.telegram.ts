@@ -130,6 +130,12 @@ export type TelegramAccountConfig = {
   heartbeat?: ChannelHeartbeatVisibilityConfig;
   /** Controls whether link previews are shown in outbound messages. Default: true. */
   linkPreview?: boolean;
+  /**
+   * If true, skip local polling/webhook startup. Channel I/O is managed by
+   * the SaaS platform which forwards messages via `chat.send` RPC and receives
+   * replies via `channel.outbound` gateway events.
+   */
+  saasManaged?: boolean;
 };
 
 export type TelegramTopicConfig = {

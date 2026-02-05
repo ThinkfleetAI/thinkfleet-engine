@@ -378,6 +378,11 @@ export const telegramPlugin: ChannelPlugin<ResolvedTelegramAccount> = {
   gateway: {
     startAccount: async (ctx) => {
       const account = ctx.account;
+      // SaaS-managed: skip local polling — channel I/O handled by SaaS platform.
+      if (account.config.saasManaged) {
+        ctx.log?.info(`[${account.accountId}] saasManaged=true, skipping local monitor startup`);
+        return;
+      }
       const token = account.token.trim();
       let telegramBotLabel = "";
       try {

@@ -65,7 +65,8 @@ export function createFollowupRunner(params: {
   const sendFollowupPayloads = async (payloads: ReplyPayload[], queued: FollowupRun) => {
     // Check if we should route to originating channel.
     const { originatingChannel, originatingTo } = queued;
-    const shouldRouteToOriginating = isRoutableChannel(originatingChannel) && originatingTo;
+    const shouldRouteToOriginating =
+      (isRoutableChannel(originatingChannel) || queued.originatingSaasManaged) && originatingTo;
 
     if (!shouldRouteToOriginating && !opts?.onBlockReply) {
       logVerbose("followup queue: no onBlockReply handler; dropping payloads");
@@ -86,7 +87,7 @@ export function createFollowupRunner(params: {
       await typingSignals.signalTextDelta(payload.text);
 
       // Route to originating channel if set, otherwise fall back to dispatcher.
-      if (shouldRouteToOriginating) {
+      if (shouldRouteToOriginating && originatingChannel) {
         const result = await routeReply({
           payload,
           channel: originatingChannel,
@@ -95,6 +96,8 @@ export function createFollowupRunner(params: {
           accountId: queued.originatingAccountId,
           threadId: queued.originatingThreadId,
           cfg: queued.run.config,
+          saasManaged: queued.originatingSaasManaged,
+          metadata: queued.originatingMetadata,
         });
         if (!result.ok) {
           // Log error and fall back to dispatcher if available.

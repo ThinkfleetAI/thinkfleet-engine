@@ -360,6 +360,8 @@ export async function runPreparedReply(
     originatingAccountId: ctx.AccountId,
     originatingThreadId: ctx.MessageThreadId,
     originatingChatType: ctx.ChatType,
+    originatingSaasManaged: ctx.SaasManaged,
+    originatingMetadata: ctx.ChannelMetadata,
     run: {
       agentId,
       agentDir,

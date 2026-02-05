@@ -43,7 +43,7 @@ export function scheduleFollowupDrain(
             if (!channel && !to && !accountId && typeof threadId !== "number") {
               return {};
             }
-            if (!isRoutableChannel(channel) || !to) {
+            if ((!isRoutableChannel(channel) && !item.originatingSaasManaged) || !to) {
               return { cross: true };
             }
             const threadKey = typeof threadId === "number" ? String(threadId) : "";
@@ -81,6 +81,11 @@ export function scheduleFollowupDrain(
             summary,
             renderItem: (item, idx) => `---\nQueued #${idx + 1}\n${item.prompt}`.trim(),
           });
+          const originatingSaasManaged = items.find(
+            (i) => i.originatingSaasManaged,
+          )?.originatingSaasManaged;
+          const originatingMetadata = items.find((i) => i.originatingMetadata)?.originatingMetadata;
+
           await runFollowup({
             prompt,
             run,
@@ -89,6 +94,8 @@ export function scheduleFollowupDrain(
             originatingTo,
             originatingAccountId,
             originatingThreadId,
+            originatingSaasManaged,
+            originatingMetadata,
           });
           continue;
         }
