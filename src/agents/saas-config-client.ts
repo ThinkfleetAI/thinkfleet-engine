@@ -89,10 +89,20 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
     setConfigOverride("agents.list.0.identity.name", config.name);
   }
 
-  // Set model via runtime override
+  // Set model via runtime override (object form supports fallbacks for rate-limit resilience)
   if (config.modelId) {
     const modelString = `${config.modelProvider}/${config.modelId}`;
-    setConfigOverride("agents.defaults.model", modelString);
+    const modelOverride: { primary: string; fallbacks?: string[] } = {
+      primary: modelString,
+    };
+
+    // Anthropic Opus has a very low rate limit (30K input tokens/min).
+    // Add Sonnet as automatic fallback so 429 errors don't block the agent.
+    if (config.modelProvider === "anthropic" && config.modelId.includes("opus")) {
+      modelOverride.fallbacks = ["anthropic/claude-sonnet-4-5"];
+    }
+
+    setConfigOverride("agents.defaults.model", modelOverride);
 
     // Ensure prompt caching is enabled for Anthropic models.
     // applyContextPruningDefaults runs before runtime overrides, so the SaaS-configured
