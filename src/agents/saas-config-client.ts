@@ -90,28 +90,44 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
   }
 
   // Set model via runtime override (object form supports fallbacks for rate-limit resilience)
-  if (config.modelId) {
-    const modelString = `${config.modelProvider}/${config.modelId}`;
-    const modelOverride: { primary: string; fallbacks?: string[] } = {
-      primary: modelString,
-    };
+  // Always set a model override with fallbacks to handle rate limits gracefully
+  const primaryModel = config.modelId
+    ? `${config.modelProvider}/${config.modelId}`
+    : `${config.modelProvider}/claude-sonnet-4-5`; // Default to Sonnet if no explicit model
 
-    // Anthropic Opus has a very low rate limit (30K input tokens/min).
-    // Add Sonnet as automatic fallback so 429 errors don't block the agent.
-    if (config.modelProvider === "anthropic" && config.modelId.includes("opus")) {
-      modelOverride.fallbacks = ["anthropic/claude-sonnet-4-5"];
-    }
+  const modelOverride: { primary: string; fallbacks?: string[] } = {
+    primary: primaryModel,
+  };
 
-    setConfigOverride("agents.defaults.model", modelOverride);
+  // Add cross-provider fallbacks for rate limit resilience.
+  // Anthropic orgs often have low rate limits (30K tokens/min).
+  // OpenAI typically has higher limits, so use it as a last resort.
+  if (config.modelProvider === "anthropic") {
+    modelOverride.fallbacks = [
+      "anthropic/claude-sonnet-4-5", // Try Sonnet first (might work if Opus hit the limit)
+      "anthropic/claude-haiku-3-5", // Haiku is cheaper and may have separate limit
+      "openai/gpt-4o", // Cross-provider fallback
+    ];
+  } else if (config.modelProvider === "openai") {
+    modelOverride.fallbacks = [
+      "openai/gpt-4o-mini", // Cheaper OpenAI model
+      "anthropic/claude-sonnet-4-5", // Cross-provider fallback
+    ];
+  }
 
-    // Ensure prompt caching is enabled for Anthropic models.
-    // applyContextPruningDefaults runs before runtime overrides, so the SaaS-configured
-    // model doesn't get cacheControlTtl automatically. Set it explicitly here.
-    if (config.modelProvider === "anthropic") {
-      setConfigOverride("agents.defaults.models", {
-        [modelString]: { params: { cacheControlTtl: "1h" } },
-      });
-    }
+  setConfigOverride("agents.defaults.model", modelOverride);
+
+  console.log(
+    `[saas-config] Model fallback chain: ${primaryModel} → ${modelOverride.fallbacks?.join(" → ") ?? "none"}`,
+  );
+
+  // Ensure prompt caching is enabled for Anthropic models.
+  // applyContextPruningDefaults runs before runtime overrides, so the SaaS-configured
+  // model doesn't get cacheControlTtl automatically. Set it explicitly here.
+  if (config.modelProvider === "anthropic") {
+    setConfigOverride("agents.defaults.models", {
+      [primaryModel]: { params: { cacheControlTtl: "1h" } },
+    });
   }
 
   // Set a global DM history limit to reduce token usage.
