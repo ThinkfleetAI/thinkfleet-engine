@@ -409,13 +409,13 @@ export async function runEmbeddedAttempt(
     );
     const totalEstimatedTokens = systemPromptTokens + skillsTokens + toolsTokens + bootstrapTokens;
 
-    log(
+    log.info(
       `[token-debug] session=${params.sessionKey ?? params.sessionId} ` +
         `systemPrompt=${systemPromptTokens}t skills=${skillsTokens}t tools=${toolsTokens}t ` +
         `bootstrap=${bootstrapTokens}t total=${totalEstimatedTokens}t (estimate)`,
     );
     if (totalEstimatedTokens > 15000) {
-      log(
+      log.warn(
         `[token-debug] WARNING: High token estimate (${totalEstimatedTokens}). ` +
           `Bootstrap files: ${systemPromptReport.injectedWorkspaceFiles.map((f) => `${f.name}:${f.injectedChars}c`).join(", ")} | ` +
           `Skills: ${systemPromptReport.skills.entries.length} loaded | ` +
@@ -580,14 +580,21 @@ export async function runEmbeddedAttempt(
 
         // Diagnostic: Log history message sizes for token debugging
         const historyChars = limited.reduce((sum, msg) => {
-          if (typeof msg.content === "string") return sum + msg.content.length;
-          if (Array.isArray(msg.content)) {
+          // Type guard: only user/assistant messages have content property
+          if (!("content" in msg)) return sum;
+          const content = msg.content;
+          if (typeof content === "string") return sum + content.length;
+          if (Array.isArray(content)) {
             return (
               sum +
-              msg.content.reduce((s, c) => {
-                if (c.type === "text" && typeof c.text === "string") return s + c.text.length;
-                if (c.type === "tool_result" && typeof c.content === "string")
-                  return s + c.content.length;
+              content.reduce((s: number, c: unknown) => {
+                if (c && typeof c === "object") {
+                  const block = c as { type?: string; text?: string; content?: string };
+                  if (block.type === "text" && typeof block.text === "string")
+                    return s + block.text.length;
+                  if (block.type === "tool_result" && typeof block.content === "string")
+                    return s + block.content.length;
+                }
                 return s;
               }, 0)
             );
@@ -595,7 +602,7 @@ export async function runEmbeddedAttempt(
           return sum;
         }, 0);
         const historyTokens = Math.ceil(historyChars / 4);
-        log(
+        log.info(
           `[token-debug] history: ${limited.length} messages, ~${historyChars} chars, ~${historyTokens} tokens`,
         );
 
