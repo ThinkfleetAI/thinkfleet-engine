@@ -395,6 +395,34 @@ export async function runEmbeddedAttempt(
       skillsPrompt,
       tools,
     });
+
+    // Diagnostic: Log system prompt components for token debugging
+    // ~4 chars per token is a rough estimate
+    const estimateTokens = (chars: number) => Math.ceil(chars / 4);
+    const systemPromptTokens = estimateTokens(systemPromptReport.systemPrompt.chars);
+    const skillsTokens = estimateTokens(systemPromptReport.skills.promptChars);
+    const toolsTokens = estimateTokens(
+      systemPromptReport.tools.listChars + systemPromptReport.tools.schemaChars,
+    );
+    const bootstrapTokens = estimateTokens(
+      systemPromptReport.injectedWorkspaceFiles.reduce((sum, f) => sum + f.injectedChars, 0),
+    );
+    const totalEstimatedTokens = systemPromptTokens + skillsTokens + toolsTokens + bootstrapTokens;
+
+    log(
+      `[token-debug] session=${params.sessionKey ?? params.sessionId} ` +
+        `systemPrompt=${systemPromptTokens}t skills=${skillsTokens}t tools=${toolsTokens}t ` +
+        `bootstrap=${bootstrapTokens}t total=${totalEstimatedTokens}t (estimate)`,
+    );
+    if (totalEstimatedTokens > 15000) {
+      log(
+        `[token-debug] WARNING: High token estimate (${totalEstimatedTokens}). ` +
+          `Bootstrap files: ${systemPromptReport.injectedWorkspaceFiles.map((f) => `${f.name}:${f.injectedChars}c`).join(", ")} | ` +
+          `Skills: ${systemPromptReport.skills.entries.length} loaded | ` +
+          `Tools: ${systemPromptReport.tools.entries.length}`,
+      );
+    }
+
     const systemPrompt = createSystemPromptOverride(appendPrompt);
 
     const sessionLock = await acquireSessionWriteLock({
@@ -549,6 +577,28 @@ export async function runEmbeddedAttempt(
           getDmHistoryLimitFromSessionKey(params.sessionKey, params.config),
         );
         cacheTrace?.recordStage("session:limited", { messages: limited });
+
+        // Diagnostic: Log history message sizes for token debugging
+        const historyChars = limited.reduce((sum, msg) => {
+          if (typeof msg.content === "string") return sum + msg.content.length;
+          if (Array.isArray(msg.content)) {
+            return (
+              sum +
+              msg.content.reduce((s, c) => {
+                if (c.type === "text" && typeof c.text === "string") return s + c.text.length;
+                if (c.type === "tool_result" && typeof c.content === "string")
+                  return s + c.content.length;
+                return s;
+              }, 0)
+            );
+          }
+          return sum;
+        }, 0);
+        const historyTokens = Math.ceil(historyChars / 4);
+        log(
+          `[token-debug] history: ${limited.length} messages, ~${historyChars} chars, ~${historyTokens} tokens`,
+        );
+
         if (limited.length > 0) {
           activeSession.agent.replaceMessages(limited);
         }
