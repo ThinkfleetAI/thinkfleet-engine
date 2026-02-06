@@ -17,6 +17,17 @@ export interface ReasoningOverrides {
   heartbeatInterval?: string;
 }
 
+export interface McpServerConfig {
+  name: string;
+  transport?: string;
+  command?: string;
+  args?: string[];
+  url?: string;
+  env?: Record<string, string>;
+  headers?: Record<string, string>;
+  disabled?: boolean;
+}
+
 export interface SaasAgentConfig {
   name: string;
   systemPrompt: string | null;
@@ -30,6 +41,7 @@ export interface SaasAgentConfig {
   proxyBaseUrl: string | null;
   reasoningMode: boolean;
   reasoningOverrides: ReasoningOverrides | null;
+  mcpServers?: McpServerConfig[];
 }
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
@@ -309,6 +321,27 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
   // Seed reasoning workspace files when reasoning mode is enabled
   if (config.reasoningMode) {
     seedReasoningWorkspaceFiles(workspaceDir);
+  }
+
+  // Apply MCP server config from SaaS
+  if (config.mcpServers && config.mcpServers.length > 0) {
+    // Convert SaaS MCP config format to bot's McpServerConfig format
+    const mcpServers = config.mcpServers
+      .filter((s) => s.command && !s.disabled) // Only include enabled stdio servers with commands
+      .map((s) => ({
+        id: s.name,
+        transport: "stdio" as const,
+        command: s.command!,
+        args: s.args,
+        env: s.env,
+      }));
+
+    if (mcpServers.length > 0) {
+      setConfigOverride("mcp.servers", mcpServers);
+      console.log(
+        `[saas-config] MCP servers configured: ${mcpServers.map((s) => s.id).join(", ")}`,
+      );
+    }
   }
 }
 
