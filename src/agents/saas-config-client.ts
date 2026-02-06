@@ -176,12 +176,13 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
   // don't typically need to switch models via directives.
   setConfigOverride("agents.defaults.skipModelAliases", true);
 
-  // Reduce max skills prompt size to 3K chars (default is much larger).
-  // Skills prompts list all available skills and can be 5-10K tokens.
+  // Enable skills catalog mode: Inject compact catalog (~500 tokens) instead of
+  // full skill content (~23K tokens). Agent reads SKILL.md on-demand when needed.
+  setConfigOverride("agents.defaults.skillsCatalogMode", true);
   setConfigOverride("agents.defaults.maxSkillsPromptChars", 3000);
 
   console.log(
-    "[saas-config] Token optimization enabled: bootstrapMaxChars=5000, dmHistoryLimit=10, contextPruning=aggressive, skipModelAliases=true",
+    "[saas-config] Token optimization enabled: bootstrapMaxChars=5000, dmHistoryLimit=10, contextPruning=aggressive, skipModelAliases=true, skillsCatalogMode=true",
   );
 
   // Apply reasoning mode config overrides

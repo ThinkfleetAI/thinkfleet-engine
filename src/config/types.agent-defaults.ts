@@ -110,6 +110,12 @@ export type AgentDefaultsConfig = {
   skipModelAliases?: boolean;
   /** Max chars for the skills prompt before truncation (unlimited by default). */
   maxSkillsPromptChars?: number;
+  /**
+   * Use compact skills catalog mode instead of full skill content.
+   * Reduces skills prompt from ~23K tokens to ~500 tokens.
+   * Agent reads individual SKILL.md files on-demand when needed.
+   */
+  skillsCatalogMode?: boolean;
   /** Optional IANA timezone for the user (used in system prompt; defaults to host timezone). */
   userTimezone?: string;
   /** Time format in system prompt: auto (OS preference), 12-hour, or 24-hour. */

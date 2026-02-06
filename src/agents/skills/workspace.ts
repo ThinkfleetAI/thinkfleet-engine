@@ -26,6 +26,7 @@ import type {
   SkillEntry,
   SkillSnapshot,
 } from "./types.js";
+import { buildSkillsCatalogPrompt } from "./catalog/index.js";
 
 const fsp = fs.promises;
 const skillsLogger = createSubsystemLogger("skills");
@@ -249,10 +250,30 @@ export function resolveSkillsPromptForRun(params: {
   config?: ThinkfleetConfig;
   workspaceDir: string;
 }): string {
-  const snapshotPrompt = params.skillsSnapshot?.prompt?.trim();
-  // Use configured limit, or fall back to default to prevent token explosion
   const maxChars =
     params.config?.agents?.defaults?.maxSkillsPromptChars ?? DEFAULT_MAX_SKILLS_PROMPT_CHARS;
+  const useCatalogMode = params.config?.agents?.defaults?.skillsCatalogMode ?? false;
+
+  // Catalog mode: Use compact format (~500 tokens) instead of full content (~23K tokens)
+  // Agent reads individual SKILL.md files on-demand when needed
+  if (useCatalogMode) {
+    // Get entries from snapshot or load them
+    const entries =
+      params.entries ??
+      (params.skillsSnapshot?.skills?.map((s) => ({
+        skill: { name: s.name, description: "", filePath: "", baseDir: "" },
+        frontmatter: {},
+        metadata: { primaryEnv: s.primaryEnv },
+      })) as SkillEntry[]) ??
+      [];
+
+    if (entries.length === 0) return "";
+
+    return buildSkillsCatalogPrompt(entries, { maxChars });
+  }
+
+  // Legacy mode: Full skill content (truncated to maxChars)
+  const snapshotPrompt = params.skillsSnapshot?.prompt?.trim();
 
   const applyMaxChars = (prompt: string): string => {
     if (maxChars <= 0) return prompt;
