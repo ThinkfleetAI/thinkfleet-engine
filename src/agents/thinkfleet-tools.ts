@@ -5,6 +5,7 @@ import { resolveSessionAgentId } from "./agent-scope.js";
 import { createAgentsListTool } from "./tools/agents-list-tool.js";
 import { createBrowserTool } from "./tools/browser-tool.js";
 import { createCanvasTool } from "./tools/canvas-tool.js";
+import { createLoadToolsTool } from "./tools/catalog/load-tools-tool.js";
 import type { AnyAgentTool } from "./tools/common.js";
 import { createCronTool } from "./tools/cron-tool.js";
 import { createGatewayTool } from "./tools/gateway-tool.js";
@@ -55,6 +56,12 @@ export function createThinkfleetTools(options?: {
   modelHasVision?: boolean;
   /** Explicit agent ID override for cron/hook sessions. */
   requesterAgentIdOverride?: string;
+  /**
+   * Callback invoked when the agent requests to load additional tools.
+   * Returns true if tools were successfully loaded into the session.
+   * If not provided, load_tools will report success but tools won't be dynamically added.
+   */
+  onLoadTools?: (toolNames: string[]) => Promise<boolean> | boolean;
 }): AnyAgentTool[] {
   const imageTool = options?.agentDir?.trim()
     ? createImageTool({
@@ -143,6 +150,11 @@ export function createThinkfleetTools(options?: {
       agentSessionKey: options?.agentSessionKey,
     }),
     createSaasTool(),
+    // load_tools: meta-tool for Cursor-style dynamic tool loading
+    // Note: True dynamic loading requires onLoadTools callback to be wired up
+    // by the agent runner. Without it, tools are reported as "loaded" but
+    // won't be available until the next session.
+    createLoadToolsTool(options?.onLoadTools),
   ];
 
   const pluginTools = resolvePluginTools({

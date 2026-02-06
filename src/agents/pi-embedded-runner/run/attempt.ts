@@ -364,7 +364,10 @@ export async function runEmbeddedAttempt(
       messageToolHints,
       sandboxInfo,
       tools,
-      modelAliasLines: buildModelAliasLines(params.config),
+      // Skip model aliases when configured (saves ~500 tokens for SaaS agents)
+      modelAliasLines: params.config?.agents?.defaults?.skipModelAliases
+        ? []
+        : buildModelAliasLines(params.config),
       userTimezone,
       userTime,
       userTimeFormat,

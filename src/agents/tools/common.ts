@@ -180,6 +180,18 @@ export function jsonResult(payload: unknown): AgentToolResult<unknown> {
   };
 }
 
+export function textResult(text: string): AgentToolResult<unknown> {
+  return {
+    content: [
+      {
+        type: "text",
+        text,
+      },
+    ],
+    details: { text },
+  };
+}
+
 export async function imageResult(params: {
   label: string;
   path: string;

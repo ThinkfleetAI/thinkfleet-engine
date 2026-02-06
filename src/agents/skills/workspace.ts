@@ -246,13 +246,25 @@ export function resolveSkillsPromptForRun(params: {
   workspaceDir: string;
 }): string {
   const snapshotPrompt = params.skillsSnapshot?.prompt?.trim();
-  if (snapshotPrompt) return snapshotPrompt;
+  const maxChars = params.config?.agents?.defaults?.maxSkillsPromptChars;
+
+  const applyMaxChars = (prompt: string): string => {
+    if (!maxChars || maxChars <= 0) return prompt;
+    if (prompt.length <= maxChars) return prompt;
+    // Truncate with a note that more skills are available
+    const truncated = prompt.slice(0, maxChars - 50);
+    const lastNewline = truncated.lastIndexOf("\n");
+    const cleanTruncated = lastNewline > 0 ? truncated.slice(0, lastNewline) : truncated;
+    return `${cleanTruncated}\n\n[Skills list truncated. Use \`skills list\` to see all available skills.]`;
+  };
+
+  if (snapshotPrompt) return applyMaxChars(snapshotPrompt);
   if (params.entries && params.entries.length > 0) {
     const prompt = buildWorkspaceSkillsPrompt(params.workspaceDir, {
       entries: params.entries,
       config: params.config,
     });
-    return prompt.trim() ? prompt : "";
+    return prompt.trim() ? applyMaxChars(prompt) : "";
   }
   return "";
 }

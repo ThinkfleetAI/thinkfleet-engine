@@ -116,9 +116,57 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
 
   // Set a global DM history limit to reduce token usage.
   // Without this, full conversation history is sent on every request, which can
-  // consume 5-10K+ tokens on long sessions. 15 user turns is enough context
+  // consume 5-10K+ tokens on long sessions. 10 user turns is enough context
   // for continuity while keeping costs manageable across all providers.
-  setConfigOverride("agents.defaults.dmHistoryLimit", 15);
+  // Reduced from 15 to 10 for additional token savings (~2-3K per turn).
+  setConfigOverride("agents.defaults.dmHistoryLimit", 10);
+
+  // ============================================================================
+  // TOKEN OPTIMIZATION: Cursor-style context reduction for SaaS agents
+  // ============================================================================
+  //
+  // Reduce bootstrap file size limit from default 20K to 5K chars per file.
+  // SaaS agents don't need massive context files - 5K is plenty for personas.
+  // Savings: ~2-6K tokens when files are large.
+  setConfigOverride("agents.defaults.bootstrapMaxChars", 5000);
+
+  // Enable aggressive context pruning to trim old tool results earlier.
+  // This is the single biggest win for long conversations - tool results
+  // (file reads, grep outputs, exec results) can be huge and accumulate fast.
+  //
+  // Settings tuned for SaaS:
+  // - Start soft trimming at 50% context (vs default 70%)
+  // - Start hard clearing at 70% context (vs default 85%)
+  // - Keep only last 3 assistant turns protected
+  // - Trim tool results to 2K chars (500 head + 300 tail)
+  setConfigOverride("agents.defaults.contextPruning", {
+    mode: "cache-ttl",
+    ttl: "5m",
+    softTrimRatio: 0.5,
+    hardClearRatio: 0.7,
+    keepLastAssistants: 3,
+    softTrim: {
+      maxChars: 2000,
+      headChars: 500,
+      tailChars: 300,
+    },
+    hardClear: {
+      enabled: true,
+      placeholder: "[Tool result cleared to save context]",
+    },
+  });
+
+  // Skip model aliases in system prompt - they add ~500 tokens and SaaS users
+  // don't typically need to switch models via directives.
+  setConfigOverride("agents.defaults.skipModelAliases", true);
+
+  // Reduce max skills prompt size to 3K chars (default is much larger).
+  // Skills prompts list all available skills and can be 5-10K tokens.
+  setConfigOverride("agents.defaults.maxSkillsPromptChars", 3000);
+
+  console.log(
+    "[saas-config] Token optimization enabled: bootstrapMaxChars=5000, dmHistoryLimit=10, contextPruning=aggressive, skipModelAliases=true",
+  );
 
   // Apply reasoning mode config overrides
   if (config.reasoningMode) {
