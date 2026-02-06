@@ -239,6 +239,10 @@ export function buildWorkspaceSkillsPrompt(
     .join("\n");
 }
 
+// Default limit to prevent token explosion when config override isn't applied.
+// 3000 chars ≈ 750 tokens - enough for ~15-20 skill summaries.
+const DEFAULT_MAX_SKILLS_PROMPT_CHARS = 3000;
+
 export function resolveSkillsPromptForRun(params: {
   skillsSnapshot?: SkillSnapshot;
   entries?: SkillEntry[];
@@ -246,10 +250,12 @@ export function resolveSkillsPromptForRun(params: {
   workspaceDir: string;
 }): string {
   const snapshotPrompt = params.skillsSnapshot?.prompt?.trim();
-  const maxChars = params.config?.agents?.defaults?.maxSkillsPromptChars;
+  // Use configured limit, or fall back to default to prevent token explosion
+  const maxChars =
+    params.config?.agents?.defaults?.maxSkillsPromptChars ?? DEFAULT_MAX_SKILLS_PROMPT_CHARS;
 
   const applyMaxChars = (prompt: string): string => {
-    if (!maxChars || maxChars <= 0) return prompt;
+    if (maxChars <= 0) return prompt;
     if (prompt.length <= maxChars) return prompt;
     // Truncate with a note that more skills are available
     const truncated = prompt.slice(0, maxChars - 50);
