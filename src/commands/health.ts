@@ -52,6 +52,8 @@ export type HealthSummary = {
   ok: true;
   ts: number;
   durationMs: number;
+  /** Bot process uptime in milliseconds */
+  uptimeMs: number;
   channels: Record<string, ChannelHealthSummary>;
   channelOrder: string[];
   channelLabels: Record<string, string>;
@@ -485,6 +487,7 @@ export async function getHealthSnapshot(params?: {
     ok: true,
     ts: Date.now(),
     durationMs: Date.now() - start,
+    uptimeMs: Math.round(process.uptime() * 1000),
     channels,
     channelOrder,
     channelLabels,

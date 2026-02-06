@@ -42,6 +42,8 @@ export interface SaasAgentConfig {
   reasoningMode: boolean;
   reasoningOverrides: ReasoningOverrides | null;
   mcpServers?: McpServerConfig[];
+  /** Maximum concurrent tasks this agent can execute (from subscription plan) */
+  maxConcurrentTasks: number;
 }
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;

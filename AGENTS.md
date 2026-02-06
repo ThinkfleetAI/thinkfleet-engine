@@ -4,7 +4,7 @@
 
 ## SaaS Integration Architecture
 
-This bot runs as a **stateless AI worker** managed by the Clawdbot SaaS platform (sibling repo at `../saas/`). The SaaS platform is the gateway and control plane — it owns credentials, billing, channels, reverse proxy, authentication, and organization tenancy.
+This bot runs as a **stateless AI worker** managed by the Thinkfleet SaaS platform (sibling repo at `../saas/`). The SaaS platform is the gateway and control plane — it owns credentials, billing, channels, reverse proxy, authentication, and organization tenancy.
 
 ### SaaS Mode vs Standalone Mode
 

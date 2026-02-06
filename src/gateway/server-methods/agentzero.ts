@@ -3,6 +3,9 @@
  *
  * Thin HTTP proxy to the local Agent Zero FastAPI gateway at 127.0.0.1:9100.
  * These methods are invoked by the SaaS platform via the existing gateway WS channel.
+ *
+ * When tasks are created internally (not from SaaS), we also register them with
+ * the SaaS platform to ensure they appear on the task board.
  */
 
 import { ErrorCodes, errorShape } from "../protocol/index.js";
@@ -11,6 +14,48 @@ import type { GatewayRequestHandlers } from "./types.js";
 const AZ_HOST = process.env.AZ_GATEWAY_HOST ?? "127.0.0.1";
 const AZ_PORT = process.env.AZ_GATEWAY_PORT ?? "9100";
 const AZ_BASE = `http://${AZ_HOST}:${AZ_PORT}`;
+
+// SaaS bridge endpoint for task registration
+const SAAS_BASE = process.env.THINKFLEET_API_URL || process.env.CLAWDBOT_PROXY_BASE_URL || "";
+const GATEWAY_TOKEN = process.env.THINKFLEET_GATEWAY_TOKEN || "";
+const AGENT_DB_ID = process.env.THINKFLEET_AGENT_DB_ID || "";
+
+/**
+ * Register an AZ task with the SaaS task board.
+ * Best-effort — failures don't block task creation.
+ */
+async function registerTaskWithSaas(params: {
+  taskId: string;
+  goal: string;
+  constraints?: unknown;
+}): Promise<{ saasTaskId?: string }> {
+  if (!SAAS_BASE || !GATEWAY_TOKEN || !AGENT_DB_ID) {
+    return {}; // SaaS mode not configured
+  }
+  try {
+    const res = await fetch(`${SAAS_BASE}/api/internal/bridge/agentzero`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${GATEWAY_TOKEN}`,
+        "X-Agent-Id": AGENT_DB_ID,
+      },
+      body: JSON.stringify({
+        action: "register",
+        azTaskId: params.taskId,
+        goal: params.goal,
+        constraints: params.constraints,
+      }),
+    });
+    if (res.ok) {
+      const data = (await res.json()) as { taskId?: string };
+      return { saasTaskId: data.taskId };
+    }
+  } catch {
+    // Best-effort registration — don't fail the AZ task creation
+  }
+  return {};
+}
 
 async function azFetch(
   path: string,
@@ -45,6 +90,7 @@ export const agentZeroHandlers: GatewayRequestHandlers = {
 
   "agentzero.task.create": async ({ respond, params }) => {
     try {
+      // Create the task in Agent Zero
       const { ok, data } = await azFetch("/tasks", {
         method: "POST",
         body: params,
@@ -54,6 +100,23 @@ export const agentZeroHandlers: GatewayRequestHandlers = {
         respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, String(msg)));
         return;
       }
+
+      // If this task was NOT created via SaaS (no saasTaskId in params), register it
+      // with the SaaS task board so it appears in the UI. This handles the case where
+      // the AI internally decides to spawn an AZ task (e.g., via MCP or skill).
+      const azData = data as { taskId?: string } | null;
+      const saasInitiated = Boolean((params as Record<string, unknown>).saasTaskId);
+      if (!saasInitiated && azData?.taskId) {
+        const goal = (params as Record<string, unknown>).goal as string | undefined;
+        const constraints = (params as Record<string, unknown>).constraints;
+        // Best-effort registration — don't await in critical path
+        void registerTaskWithSaas({
+          taskId: azData.taskId,
+          goal: goal || "Agent Zero task",
+          constraints,
+        });
+      }
+
       respond(true, data, undefined);
     } catch (err) {
       respond(
