@@ -103,6 +103,21 @@ function buildMessagingSection(params: {
   ];
 }
 
+function buildTaskBoardSection(params: { isMinimal: boolean; availableTools: Set<string> }) {
+  if (params.isMinimal) return [];
+  if (!params.availableTools.has("saas")) return [];
+  return [
+    "## Task Board",
+    "You have a kanban task board managed through the `saas` tool.",
+    '- At the start of a task-scoped session (sessionKey starts with "task:"), you are working on that specific task. Focus on completing it and update status when done.',
+    '- Use saas(action="task_list") to see your current tasks when context is unclear.',
+    '- When you complete work on a task, call saas(action="task_update", taskId="...", status="delivered", deliverables="summary of what you did").',
+    "- After creating deliverable files (HTML, PDF, CSV, etc.), always call publish_file with task_id set to the task you're working on.",
+    "- If you need clarification or input from the user before you can proceed, say so clearly in your response.",
+    "",
+  ];
+}
+
 function buildVoiceSection(params: { isMinimal: boolean; ttsHint?: string }) {
   if (params.isMinimal) return [];
   const hint = params.ttsHint?.trim();
@@ -462,6 +477,7 @@ export function buildAgentSystemPrompt(params: {
       messageToolHints: params.messageToolHints,
     }),
     ...buildVoiceSection({ isMinimal, ttsHint: params.ttsHint }),
+    ...buildTaskBoardSection({ isMinimal, availableTools }),
   ];
 
   if (extraSystemPrompt) {

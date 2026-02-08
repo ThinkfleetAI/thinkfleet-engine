@@ -58,7 +58,7 @@ PARAMETERS:
 
 USAGE NOTES:
 - Use task_list to check your current tasks before starting work.
-- When you finish a task, use task_update with status="done" and deliverables describing what you accomplished.
+- When you finish a task, use task_update with status="delivered" and deliverables describing what you accomplished. The user will review and move it to "done".
 - Tokens from integrations_get_token are ephemeral — do not store them. Request a fresh token each time.
 - Card details from card_get are sensitive — use them only for the immediate purchase, never persist them.`,
     parameters: SaasToolSchema,
