@@ -150,10 +150,9 @@ export function createThinkfleetTools(options?: {
       agentSessionKey: options?.agentSessionKey,
     }),
     createSaasTool(),
-    // load_tools: meta-tool for Cursor-style dynamic tool loading
-    // Note: True dynamic loading requires onLoadTools callback to be wired up
-    // by the agent runner. Without it, tools are reported as "loaded" but
-    // won't be available until the next session.
+    // load_tools: meta-tool for Cursor-style dynamic tool loading.
+    // The onLoadTools callback is wired up by the agent runner (attempt.ts)
+    // to call session.setActiveToolsByName() for mid-session tool activation.
     createLoadToolsTool(options?.onLoadTools),
   ];
 

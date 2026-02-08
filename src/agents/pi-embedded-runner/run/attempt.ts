@@ -208,6 +208,26 @@ export async function runEmbeddedAttempt(
     const mcpTools = params.disableTools
       ? []
       : await bootMcpTools(params.config, (msg) => log.info(msg));
+    // Mutable ref for dynamic tool loading — set after session is created.
+    // The onLoadTools callback captures this ref and uses it to activate tools
+    // mid-session when the agent calls load_tools().
+    let activeSessionForToolLoading:
+      | Awaited<ReturnType<typeof createAgentSession>>["session"]
+      | null = null;
+
+    const onLoadTools = (toolNames: string[]): boolean => {
+      if (!activeSessionForToolLoading) return false;
+      try {
+        const current = activeSessionForToolLoading.getActiveToolNames();
+        const merged = [...new Set([...current, ...toolNames])];
+        activeSessionForToolLoading.setActiveToolsByName(merged);
+        return true;
+      } catch (err) {
+        log.error(`Dynamic tool loading failed: ${String(err)}`);
+        return false;
+      }
+    };
+
     const toolsRaw = params.disableTools
       ? []
       : createThinkfleetCodingTools({
@@ -242,6 +262,7 @@ export async function runEmbeddedAttempt(
           hasRepliedRef: params.hasRepliedRef,
           modelHasVision,
           mcpTools,
+          onLoadTools,
         });
     const tools = sanitizeToolsForGoogle({ tools: toolsRaw, provider: params.provider });
     logToolSchemasForGoogle({ tools, provider: params.provider });
@@ -508,6 +529,7 @@ export async function runEmbeddedAttempt(
         throw new Error("Embedded agent session missing");
       }
       const activeSession = session;
+      activeSessionForToolLoading = activeSession;
       const cacheTrace = createCacheTrace({
         cfg: params.config,
         env: process.env,

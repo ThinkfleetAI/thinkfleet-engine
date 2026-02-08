@@ -152,6 +152,8 @@ export function createThinkfleetCodingTools(options?: {
   modelHasVision?: boolean;
   /** Pre-started MCP tools to include in the tool set. */
   mcpTools?: AnyAgentTool[];
+  /** Callback for dynamic tool loading. Called by the load_tools meta-tool. */
+  onLoadTools?: (toolNames: string[]) => Promise<boolean> | boolean;
 }): AnyAgentTool[] {
   const execToolName = "exec";
   const sandbox = options?.sandbox?.enabled ? options.sandbox : undefined;
@@ -336,6 +338,7 @@ export function createThinkfleetCodingTools(options?: {
       hasRepliedRef: options?.hasRepliedRef,
       modelHasVision: options?.modelHasVision,
       requesterAgentIdOverride: agentId,
+      onLoadTools: options?.onLoadTools,
     }),
     ...(options?.mcpTools ?? []),
   ];
