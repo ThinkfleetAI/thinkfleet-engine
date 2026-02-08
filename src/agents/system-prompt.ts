@@ -520,10 +520,20 @@ export function buildAgentSystemPrompt(params: {
       const baseName = normalizedPath.split("/").pop() ?? normalizedPath;
       return baseName.toLowerCase() === "soul.md";
     });
+    const hasExpertiseFile = contextFiles.some((file) => {
+      const normalizedPath = file.path.trim().replace(/\\/g, "/");
+      const baseName = normalizedPath.split("/").pop() ?? normalizedPath;
+      return baseName.toLowerCase() === "expertise.md";
+    });
     lines.push("# Project Context", "", "The following project context files have been loaded:");
     if (hasSoulFile) {
       lines.push(
         "If SOUL.md is present, embody its persona and tone. Avoid stiff, generic replies; follow its guidance unless higher-priority instructions override it.",
+      );
+    }
+    if (hasExpertiseFile) {
+      lines.push(
+        "EXPERTISE.md contains mandatory domain processes with GATE checkpoints, guardrails, and quality standards. Follow its flows for every task within its domain. When a GATE checkpoint is listed, you must satisfy it before proceeding to the next step.",
       );
     }
     lines.push("");

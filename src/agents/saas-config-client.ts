@@ -42,6 +42,7 @@ export interface SaasAgentConfig {
   reasoningMode: boolean;
   reasoningOverrides: ReasoningOverrides | null;
   mcpServers?: McpServerConfig[];
+  expertisePack?: string | null;
   /** Maximum concurrent tasks this agent can execute (from subscription plan) */
   maxConcurrentTasks: number;
 }
@@ -284,6 +285,29 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
       console.log(`[saas-config] Wrote runtime context to ${bootstrapPath}`);
     } catch (error) {
       console.error("[saas-config] Error writing BOOTSTRAP.md:", error);
+    }
+  }
+
+  // Write expertise pack to EXPERTISE.md (always overwrite — managed at persona level)
+  const expertisePath = path.join(workspaceDir, "EXPERTISE.md");
+  if (config.expertisePack) {
+    try {
+      const content = [`# Expertise Pack`, "", config.expertisePack, ""].join("\n");
+      fs.mkdirSync(path.dirname(expertisePath), { recursive: true });
+      fs.writeFileSync(expertisePath, content, "utf-8");
+      console.log(`[saas-config] Wrote expertise pack to ${expertisePath}`);
+    } catch (error) {
+      console.error("[saas-config] Error writing EXPERTISE.md:", error);
+    }
+  } else {
+    // Clean up stale EXPERTISE.md if persona no longer has an expertise pack
+    try {
+      if (fs.existsSync(expertisePath)) {
+        fs.unlinkSync(expertisePath);
+        console.log(`[saas-config] Removed stale EXPERTISE.md`);
+      }
+    } catch {
+      /* ignore cleanup errors */
     }
   }
 
