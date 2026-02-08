@@ -9,12 +9,22 @@ const SAAS_ACTIONS = [
   "integrations_connect",
   "card_list",
   "card_get",
+  "task_list",
+  "task_create",
+  "task_update",
 ] as const;
 
 const SaasToolSchema = Type.Object({
   action: stringEnum(SAAS_ACTIONS),
   appName: Type.Optional(Type.String()),
   cardId: Type.Optional(Type.String()),
+  // Task fields
+  taskId: Type.Optional(Type.String()),
+  title: Type.Optional(Type.String()),
+  description: Type.Optional(Type.String()),
+  status: Type.Optional(Type.String()),
+  priority: Type.Optional(Type.Number()),
+  deliverables: Type.Optional(Type.String()),
   gatewayUrl: Type.Optional(Type.String()),
   gatewayToken: Type.Optional(Type.String()),
   timeoutMs: Type.Optional(Type.Number()),
@@ -24,9 +34,12 @@ export function createSaasTool(): AnyAgentTool {
   return {
     label: "SaaS",
     name: "saas",
-    description: `Interact with the SaaS platform for OAuth integrations and virtual cards.
+    description: `Interact with the SaaS platform for task management, OAuth integrations, and virtual cards.
 
 ACTIONS:
+- task_list: List tasks on your kanban board (optional: status filter)
+- task_create: Create a new task (requires title; optional: description, priority, status)
+- task_update: Update a task (requires taskId; optional: status, deliverables, description)
 - integrations_list: List active OAuth integrations assigned to this agent
 - integrations_get_token: Get an ephemeral OAuth token for a connected app (requires appName)
 - integrations_connect: Initiate OAuth connection for a service (requires appName, returns redirect URL)
@@ -34,14 +47,20 @@ ACTIONS:
 - card_get: Get card details — number, CVC, expiry (requires cardId)
 
 PARAMETERS:
+- taskId: Required for task_update
+- title: Required for task_create
+- description: Optional for task_create and task_update
+- status: Optional filter for task_list; target status for task_update (todo, in_progress, delivered, done)
+- priority: Optional for task_create (0 = highest)
+- deliverables: Optional for task_update — summary of what was accomplished
 - appName: Required for integrations_get_token and integrations_connect (e.g. "gmail", "slack", "google-drive")
 - cardId: Required for card_get
 
 USAGE NOTES:
+- Use task_list to check your current tasks before starting work.
+- When you finish a task, use task_update with status="done" and deliverables describing what you accomplished.
 - Tokens from integrations_get_token are ephemeral — do not store them. Request a fresh token each time.
-- Card details from card_get are sensitive — use them only for the immediate purchase, never persist them.
-- Call integrations_list first to see what integrations are available before requesting tokens.
-- Call card_list first to see assigned cards before requesting card details.`,
+- Card details from card_get are sensitive — use them only for the immediate purchase, never persist them.`,
     parameters: SaasToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -76,6 +95,43 @@ USAGE NOTES:
         case "card_get": {
           const cardId = readStringParam(params, "cardId", { required: true });
           return jsonResult(await callGatewayTool("saas.card.get", gatewayOpts, { cardId }));
+        }
+
+        case "task_list": {
+          const status = readStringParam(params, "status");
+          return jsonResult(
+            await callGatewayTool("saas.task.list", gatewayOpts, { status: status || undefined }),
+          );
+        }
+
+        case "task_create": {
+          const title = readStringParam(params, "title", { required: true });
+          const description = readStringParam(params, "description");
+          const priority = typeof params.priority === "number" ? params.priority : undefined;
+          const status = readStringParam(params, "status");
+          return jsonResult(
+            await callGatewayTool("saas.task.create", gatewayOpts, {
+              title,
+              description: description || undefined,
+              priority,
+              status: status || undefined,
+            }),
+          );
+        }
+
+        case "task_update": {
+          const taskId = readStringParam(params, "taskId", { required: true });
+          const status = readStringParam(params, "status");
+          const deliverables = readStringParam(params, "deliverables");
+          const description = readStringParam(params, "description");
+          return jsonResult(
+            await callGatewayTool("saas.task.update", gatewayOpts, {
+              taskId,
+              status: status || undefined,
+              deliverables: deliverables || undefined,
+              description: description || undefined,
+            }),
+          );
         }
 
         default:
