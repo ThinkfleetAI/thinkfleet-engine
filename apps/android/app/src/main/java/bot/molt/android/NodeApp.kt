@@ -2,6 +2,7 @@ package bot.molt.android
 
 import android.app.Application
 import android.os.StrictMode
+import com.thinkfleet.android.BuildConfig
 
 class NodeApp : Application() {
   val runtime: NodeRuntime by lazy { NodeRuntime(this) }

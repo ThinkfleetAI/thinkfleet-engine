@@ -58,7 +58,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import bot.molt.android.BuildConfig
+import com.thinkfleet.android.BuildConfig
 import bot.molt.android.LocationMode
 import bot.molt.android.MainViewModel
 import bot.molt.android.NodeForegroundService

@@ -5,22 +5,78 @@ struct TaskBoardView: View {
     @State private var tasks: [AgentTask] = []
     @State private var isLoading = true
     @State private var selectedFilter: TaskStatus? = nil
+    @State private var selectedAgentId: String?
+    @State private var selectedCrewId: String?
     @State private var showCreateTask = false
 
+    enum SourceMode: String, CaseIterable {
+        case all = "All"
+        case agent = "Agent"
+        case crew = "Crew"
+    }
+
+    @State private var sourceMode: SourceMode = .all
+
     var filteredTasks: [AgentTask] {
-        guard let filter = selectedFilter else { return tasks }
-        return tasks.filter { $0.status == filter }
+        var result = tasks
+
+        // Filter by agent/crew
+        if sourceMode == .agent, let agentId = selectedAgentId {
+            result = result.filter { $0.agentId == agentId }
+        }
+
+        // Filter by status
+        if let filter = selectedFilter {
+            result = result.filter { $0.status == filter }
+        }
+
+        return result
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Filter chips
+            // Source selector (All / Agent / Crew)
+            if !appState.agents.isEmpty || !appState.crews.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        FilterChip(label: "All", isSelected: sourceMode == .all) {
+                            sourceMode = .all
+                            selectedAgentId = nil
+                            selectedCrewId = nil
+                        }
+                        ForEach(appState.agents) { agent in
+                            FilterChip(
+                                label: agent.name,
+                                isSelected: sourceMode == .agent && selectedAgentId == agent.id
+                            ) {
+                                sourceMode = .agent
+                                selectedAgentId = agent.id
+                                selectedCrewId = nil
+                            }
+                        }
+                        ForEach(appState.crews) { crew in
+                            FilterChip(
+                                label: "🤝 \(crew.name)",
+                                isSelected: sourceMode == .crew && selectedCrewId == crew.id
+                            ) {
+                                sourceMode = .crew
+                                selectedCrewId = crew.id
+                                selectedAgentId = nil
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.vertical, 6)
+            }
+
+            // Status filter chips
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     FilterChip(label: "All", isSelected: selectedFilter == nil) {
                         selectedFilter = nil
                     }
-                    ForEach([TaskStatus.todo, .in_progress, .done], id: \.self) { status in
+                    ForEach([TaskStatus.todo, .in_progress, .delivered, .done], id: \.self) { status in
                         FilterChip(label: status.displayName, isSelected: selectedFilter == status) {
                             selectedFilter = status
                         }
@@ -28,7 +84,7 @@ struct TaskBoardView: View {
                 }
                 .padding(.horizontal)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 6)
 
             Divider()
 
@@ -40,7 +96,7 @@ struct TaskBoardView: View {
                 ContentUnavailableView("No Tasks", systemImage: "checklist", description: Text("Create a task to get started."))
             } else {
                 List(filteredTasks) { task in
-                    TaskRow(task: task)
+                    TaskRow(task: task, agents: appState.agents)
                 }
                 .refreshable { await loadTasks() }
             }
@@ -74,6 +130,14 @@ struct TaskBoardView: View {
 
 struct TaskRow: View {
     let task: AgentTask
+    let agents: [Agent]
+
+    private var assignedAgentName: String? {
+        if let delegatedId = task.delegatedToAgentId {
+            return agents.first(where: { $0.id == delegatedId })?.name
+        }
+        return agents.first(where: { $0.id == task.agentId })?.name
+    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -94,11 +158,31 @@ struct TaskRow: View {
                         UrgencyBadge(urgency: urgency)
                     }
 
+                    if let delegationStatus = task.delegationStatus, !delegationStatus.isEmpty {
+                        Text(delegationStatus)
+                            .font(.caption2)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(Color.purple.opacity(0.15))
+                            .foregroundStyle(.purple)
+                            .clipShape(Capsule())
+                    }
+
                     if let labels = task.labels, !labels.isEmpty {
                         Text(labels.joined(separator: ", "))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
+                }
+
+                if let agentName = assignedAgentName {
+                    HStack(spacing: 4) {
+                        Image(systemName: "cpu")
+                            .font(.caption2)
+                        Text(agentName)
+                            .font(.caption2)
+                    }
+                    .foregroundStyle(.secondary)
                 }
             }
         }
@@ -161,6 +245,7 @@ extension TaskStatus {
         switch self {
         case .todo: "To Do"
         case .in_progress: "In Progress"
+        case .delivered: "Delivered"
         case .done: "Done"
         case .archived: "Archived"
         }
@@ -170,6 +255,7 @@ extension TaskStatus {
         switch self {
         case .todo: "circle"
         case .in_progress: "circle.dotted.circle"
+        case .delivered: "shippingbox.fill"
         case .done: "checkmark.circle.fill"
         case .archived: "archivebox"
         }
@@ -179,6 +265,7 @@ extension TaskStatus {
         switch self {
         case .todo: .secondary
         case .in_progress: .blue
+        case .delivered: .purple
         case .done: .green
         case .archived: .secondary
         }

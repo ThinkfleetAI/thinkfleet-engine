@@ -54,7 +54,7 @@ data class AgentHealthCheck(
 data class Organization(
     val id: String,
     val name: String,
-    val slug: String,
+    val slug: String? = null,
     val logo: String? = null,
     val isPersonal: Boolean? = null,
 )
@@ -87,14 +87,78 @@ data class AgentTask(
     val taskType: String? = null,
     val urgency: Int? = null,
     val agentId: String,
+    val deliverables: String? = null,
+    val deliveredAt: String? = null,
+    val delegationStatus: String? = null,
+    val delegatedToAgentId: String? = null,
     val createdAt: String,
     val updatedAt: String,
 )
 
 @Serializable
 enum class TaskStatus {
-    todo, in_progress, done, archived
+    todo, in_progress, delivered, done, archived
 }
+
+// MARK: - Crew Models
+
+@Serializable
+data class Crew(
+    val id: String,
+    val organizationId: String,
+    val name: String,
+    val description: String? = null,
+    val status: CrewStatus,
+    val leadAgentId: String,
+    val leadAgent: CrewAgentRef? = null,
+    val members: List<CrewMember>? = null,
+    val createdAt: String,
+    val updatedAt: String,
+)
+
+@Serializable
+enum class CrewStatus {
+    active, paused, disbanded
+}
+
+@Serializable
+data class CrewMember(
+    val id: String,
+    val agentId: String,
+    val role: String,
+    val agent: CrewAgentRef? = null,
+)
+
+@Serializable
+data class CrewAgentRef(
+    val id: String,
+    val name: String,
+    val status: AgentStatus,
+)
+
+@Serializable
+data class CrewExecution(
+    val id: String,
+    val crewId: String,
+    val status: String,
+    val objective: String? = null,
+    val startedAt: String? = null,
+    val completedAt: String? = null,
+    val createdAt: String,
+)
+
+// MARK: - Attachment Models
+
+@Serializable
+data class TaskAttachment(
+    val id: String,
+    val taskId: String,
+    val filename: String,
+    val mimeType: String,
+    val fileSize: Int,
+    val source: String? = null,
+    val createdAt: String,
+)
 
 // MARK: - Chat Models
 
@@ -174,3 +238,43 @@ data class LogsInput(val agentId: String, val organizationId: String)
 
 @Serializable
 data class LogsResponse(val logs: List<LogEntry>)
+
+// MARK: - Crew RPC Types
+
+@Serializable
+data class ListCrewsInput(val organizationId: String)
+
+@Serializable
+data class CrewIdInput(val crewId: String, val organizationId: String)
+
+@Serializable
+data class CrewListResponse(val crews: List<Crew>)
+
+@Serializable
+data class CrewResponse(val crew: Crew)
+
+@Serializable
+data class CrewExecutionListResponse(val executions: List<CrewExecution>)
+
+@Serializable
+data class CrewExecutionTasksInput(val executionId: String, val organizationId: String)
+
+@Serializable
+data class StartCrewExecutionInput(val crewId: String, val organizationId: String, val objective: String? = null)
+
+// MARK: - Attachment RPC Types
+
+@Serializable
+data class AttachmentListInput(val agentId: String, val organizationId: String)
+
+@Serializable
+data class TaskAttachmentListInput(val taskId: String, val organizationId: String)
+
+@Serializable
+data class AttachmentListResponse(val attachments: List<TaskAttachment>)
+
+@Serializable
+data class AttachmentDownloadInput(val attachmentId: String, val taskId: String, val organizationId: String)
+
+@Serializable
+data class AttachmentDownloadResponse(val downloadUrl: String, val filename: String, val mimeType: String)

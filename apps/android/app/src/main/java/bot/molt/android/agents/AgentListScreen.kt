@@ -6,14 +6,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import bot.molt.android.crews.CrewChatScreen
+import bot.molt.android.crews.CrewDetailScreen
+import bot.molt.android.crews.CrewStatusChip
 import bot.molt.android.model.AppState
 import bot.molt.android.networking.*
 import kotlinx.coroutines.launch
@@ -21,13 +26,29 @@ import kotlinx.coroutines.launch
 @Composable
 fun AgentListScreen(appState: AppState) {
     val agents by appState.agents.collectAsState()
+    val crews by appState.crews.collectAsState()
     val isLoading by appState.isLoadingAgents.collectAsState()
     val currentOrg by appState.currentOrganization.collectAsState()
     val scope = rememberCoroutineScope()
     var selectedAgent by remember { mutableStateOf<Agent?>(null) }
+    var selectedCrewId by remember { mutableStateOf<String?>(null) }
+    var crewForChat by remember { mutableStateOf<Crew?>(null) }
 
     if (selectedAgent != null) {
         AgentDetailScreen(appState, selectedAgent!!) { selectedAgent = null }
+        return
+    }
+
+    if (crewForChat != null) {
+        CrewChatScreen(appState, crewForChat!!) { crewForChat = null }
+        return
+    }
+
+    if (selectedCrewId != null) {
+        CrewDetailScreen(appState, selectedCrewId!!, onBack = { selectedCrewId = null }) { crew ->
+            selectedCrewId = null
+            crewForChat = crew
+        }
         return
     }
 
@@ -47,7 +68,7 @@ fun AgentListScreen(appState: AppState) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
-        } else if (agents.isEmpty()) {
+        } else if (agents.isEmpty() && crews.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("No Agents", style = MaterialTheme.typography.headlineSmall)
@@ -55,9 +76,47 @@ fun AgentListScreen(appState: AppState) {
                 }
             }
         } else {
-            LazyColumn(Modifier.padding(padding)) {
-                items(agents, key = { it.id }) { agent ->
-                    AgentRow(agent) { selectedAgent = agent }
+            var isRefreshing by remember { mutableStateOf(false) }
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    scope.launch {
+                        appState.loadAgents()
+                        appState.loadCrews()
+                        isRefreshing = false
+                    }
+                },
+                modifier = Modifier.padding(padding),
+            ) {
+                LazyColumn(Modifier.fillMaxSize()) {
+                    // Agents section
+                    if (agents.isNotEmpty()) {
+                        item {
+                            Text(
+                                "Agents",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
+                        items(agents, key = { it.id }) { agent ->
+                            AgentRow(agent) { selectedAgent = agent }
+                        }
+                    }
+
+                    // Crews section
+                    if (crews.isNotEmpty()) {
+                        item {
+                            Text(
+                                "Crews",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
+                        items(crews, key = { it.id }) { crew ->
+                            CrewRow(crew) { selectedCrewId = crew.id }
+                        }
+                    }
                 }
             }
         }
@@ -65,6 +124,7 @@ fun AgentListScreen(appState: AppState) {
 
     LaunchedEffect(currentOrg) {
         appState.loadAgents()
+        appState.loadCrews()
     }
 }
 
@@ -124,7 +184,7 @@ fun AgentDetailScreen(appState: AppState, agent: Agent, onBack: () -> Unit) {
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            androidx.compose.material.icons.Icons.AutoMirrored.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
                         )
                     }
@@ -172,7 +232,7 @@ fun AgentDetailScreen(appState: AppState, agent: Agent, onBack: () -> Unit) {
             }
 
             // Tab row
-            ScrollableTabRow(
+            PrimaryScrollableTabRow(
                 selectedTabIndex = AgentDetailTab.entries.indexOf(selectedTab),
                 edgePadding = 8.dp,
             ) {
@@ -467,6 +527,27 @@ private fun logLevelColor(level: String): Color = when (level.lowercase()) {
     "info" -> Color(0xFF2196F3)
     "debug" -> Color.Gray
     else -> Color.Unspecified
+}
+
+@Composable
+private fun CrewRow(crew: Crew, onClick: () -> Unit) {
+    ListItem(
+        modifier = Modifier.clickable(onClick = onClick),
+        headlineContent = { Text(crew.name) },
+        supportingContent = {
+            val memberCount = crew.members?.size ?: 0
+            Text("$memberCount member${if (memberCount != 1) "s" else ""}")
+        },
+        leadingContent = {
+            CrewStatusChip(crew.status)
+        },
+        trailingContent = {
+            crew.leadAgent?.let {
+                Text(it.name, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            }
+        },
+    )
+    HorizontalDivider()
 }
 
 private fun statusColor(status: AgentStatus): Color = when (status) {

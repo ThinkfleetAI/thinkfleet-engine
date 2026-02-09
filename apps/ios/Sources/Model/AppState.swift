@@ -11,7 +11,9 @@ final class AppState: @unchecked Sendable {
     private(set) var organizations: [Organization] = []
     private(set) var currentOrganization: Organization?
     private(set) var agents: [Agent] = []
+    private(set) var crews: [Crew] = []
     private(set) var isLoadingAgents = false
+    private(set) var isLoadingCrews = false
     var pushManager: PushNotificationManager?
 
     init() {
@@ -28,6 +30,7 @@ final class AppState: @unchecked Sendable {
         socketManager.connect()
         await loadOrganizations()
         await loadAgents()
+        await loadCrews()
         await pushManager?.requestPermissionAndRegister()
     }
 
@@ -41,6 +44,7 @@ final class AppState: @unchecked Sendable {
         organizations = []
         currentOrganization = nil
         agents = []
+        crews = []
     }
 
     // MARK: - Session Restore
@@ -68,7 +72,10 @@ final class AppState: @unchecked Sendable {
     func selectOrganization(_ org: Organization) {
         currentOrganization = org
         sessionStore.setOrganization(id: org.id)
-        Task { await loadAgents() }
+        Task {
+            await loadAgents()
+            await loadCrews()
+        }
     }
 
     // MARK: - Agents
@@ -95,6 +102,18 @@ final class AppState: @unchecked Sendable {
         let input = AgentActionInput(agentId: agentId, organizationId: orgId)
         let _: AgentResponse = try await apiClient.rpc("assistants.agents.stop", input: input)
         await loadAgents()
+    }
+
+    // MARK: - Crews
+
+    func loadCrews() async {
+        guard let orgId = currentOrganization?.id else { return }
+        isLoadingCrews = true
+        defer { isLoadingCrews = false }
+
+        let input = ListCrewsInput(organizationId: orgId)
+        guard let response: CrewListResponse = try? await apiClient.rpc("assistants.crews.list", input: input) else { return }
+        self.crews = response.crews
     }
 
     // MARK: - Config

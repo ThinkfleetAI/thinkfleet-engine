@@ -7,7 +7,10 @@ import bot.molt.android.networking.AgentActionInput
 import bot.molt.android.networking.AgentListResponse
 import bot.molt.android.networking.AgentResponse
 import bot.molt.android.networking.Agent
+import bot.molt.android.networking.Crew
+import bot.molt.android.networking.CrewListResponse
 import bot.molt.android.networking.ListAgentsInput
+import bot.molt.android.networking.ListCrewsInput
 import bot.molt.android.networking.Organization
 import bot.molt.android.networking.OrganizationListResponse
 import bot.molt.android.networking.SaaSApiClient
@@ -34,6 +37,9 @@ class AppState(context: Context) {
     private val _agents = MutableStateFlow<List<Agent>>(emptyList())
     val agents: StateFlow<List<Agent>> = _agents.asStateFlow()
 
+    private val _crews = MutableStateFlow<List<Crew>>(emptyList())
+    val crews: StateFlow<List<Crew>> = _crews.asStateFlow()
+
     private val _isLoadingAgents = MutableStateFlow(false)
     val isLoadingAgents: StateFlow<Boolean> = _isLoadingAgents.asStateFlow()
 
@@ -41,6 +47,7 @@ class AppState(context: Context) {
         socketManager.connect()
         loadOrganizations()
         loadAgents()
+        loadCrews()
         pushManager.registerToken(this)
     }
 
@@ -54,6 +61,7 @@ class AppState(context: Context) {
         _organizations.value = emptyList()
         _currentOrganization.value = null
         _agents.value = emptyList()
+        _crews.value = emptyList()
     }
 
     suspend fun restoreSessionIfNeeded() {
@@ -100,6 +108,19 @@ class AppState(context: Context) {
             _agents.value = response.agents
         } catch (_: Exception) { }
         _isLoadingAgents.value = false
+    }
+
+    suspend fun loadCrews() {
+        val orgId = _currentOrganization.value?.id ?: return
+        try {
+            val response = apiClient.rpc(
+                "assistants.crews.list",
+                ListCrewsInput(orgId),
+                ListCrewsInput.serializer(),
+                CrewListResponse.serializer()
+            )
+            _crews.value = response.crews
+        } catch (_: Exception) { }
     }
 
     suspend fun startAgent(agentId: String) {

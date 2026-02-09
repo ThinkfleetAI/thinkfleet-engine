@@ -22,7 +22,7 @@ import bot.molt.android.gateway.GatewaySession
 import bot.molt.android.gateway.GatewayTlsParams
 import bot.molt.android.node.CameraCaptureManager
 import bot.molt.android.node.LocationCaptureManager
-import bot.molt.android.BuildConfig
+import com.thinkfleet.android.BuildConfig
 import bot.molt.android.node.CanvasController
 import bot.molt.android.node.ScreenRecordManager
 import bot.molt.android.node.SmsManager

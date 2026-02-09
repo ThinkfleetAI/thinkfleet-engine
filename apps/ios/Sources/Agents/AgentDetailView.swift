@@ -207,7 +207,7 @@ struct AgentTasksTab: View {
                 ContentUnavailableView("No Tasks", systemImage: "checklist", description: Text("No tasks assigned to this agent."))
             } else {
                 List(tasks) { task in
-                    TaskRow(task: task)
+                    TaskRow(task: task, agents: appState.agents)
                 }
                 .refreshable { await loadTasks() }
             }

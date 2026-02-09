@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package bot.molt.android.auth
 
 import android.content.Context

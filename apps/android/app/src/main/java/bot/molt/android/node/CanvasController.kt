@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import bot.molt.android.BuildConfig
+import com.thinkfleet.android.BuildConfig
 import kotlin.coroutines.resume
 
 class CanvasController {

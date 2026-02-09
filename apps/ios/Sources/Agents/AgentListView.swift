@@ -21,14 +21,27 @@ struct AgentListView: View {
                 }
             } else {
                 List {
-                    ForEach(appState.agents) { agent in
-                        NavigationLink(value: agent.id) {
-                            AgentRow(agent: agent)
+                    Section("Agents") {
+                        ForEach(appState.agents) { agent in
+                            NavigationLink(value: agent.id) {
+                                AgentRow(agent: agent)
+                            }
+                        }
+                    }
+
+                    if !appState.crews.isEmpty {
+                        Section("Crews") {
+                            ForEach(appState.crews) { crew in
+                                NavigationLink(destination: CrewDetailView(crewId: crew.id)) {
+                                    CrewRow(crew: crew)
+                                }
+                            }
                         }
                     }
                 }
                 .refreshable {
                     await appState.loadAgents()
+                    await appState.loadCrews()
                 }
             }
         }
@@ -104,6 +117,51 @@ struct AgentStatusIndicator: View {
         case .PENDING: .yellow
         case .ERROR: .red
         case .TERMINATED: .gray
+        }
+    }
+}
+
+// MARK: - Crew Row
+
+struct CrewRow: View {
+    let crew: Crew
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "person.3.fill")
+                .foregroundStyle(statusColor)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(crew.name)
+                    .font(.body.weight(.medium))
+                HStack(spacing: 6) {
+                    Text(crew.status.rawValue.capitalized)
+                        .font(.caption)
+                        .foregroundStyle(statusColor)
+                    if let count = crew.members?.count {
+                        Text("\(count) members")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
+            Spacer()
+
+            if let lead = crew.leadAgent {
+                Text(lead.name)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var statusColor: Color {
+        switch crew.status {
+        case .active: .green
+        case .paused: .yellow
+        case .disbanded: .secondary
         }
     }
 }

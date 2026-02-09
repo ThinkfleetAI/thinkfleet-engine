@@ -10,6 +10,9 @@ Sources/Chat/IOSGatewayChatTransport.swift
 Sources/ThinkFleetBotApp.swift
 Sources/Config/ThinkFleetConfig.swift
 Sources/Credentials/CredentialListView.swift
+Sources/Crews/CrewChatView.swift
+Sources/Crews/CrewDetailView.swift
+Sources/Deliverables/DeliverableListView.swift
 Sources/Documents/DocumentListView.swift
 Sources/Gateway/GatewayConnectionController.swift
 Sources/Gateway/GatewayDiscoveryDebugLogView.swift

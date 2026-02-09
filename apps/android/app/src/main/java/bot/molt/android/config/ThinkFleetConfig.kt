@@ -5,14 +5,14 @@ object ThinkFleetConfig {
     val apiBaseUrl: String by lazy {
         System.getenv("THINKFLEET_API_URL")
             ?: try {
-                val field = Class.forName("bot.molt.android.BuildConfig").getField("THINKFLEET_API_URL")
+                val field = Class.forName("com.thinkfleet.android.BuildConfig").getField("THINKFLEET_API_URL")
                 field.get(null) as? String ?: DEFAULT_URL
             } catch (_: Exception) {
                 DEFAULT_URL
             }
     }
 
-    private const val DEFAULT_URL = "http://10.0.2.2:3002"
+    private const val DEFAULT_URL = "https://www.thinkfleet.ai"
 
     const val SOCKET_IO_PATH = "/api/socket.io"
     const val RPC_BASE_PATH = "/api/rpc"
