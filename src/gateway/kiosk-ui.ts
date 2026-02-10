@@ -10,10 +10,6 @@ function resolveKioskRoot(): string | null {
   const candidates = [
     // Packaged: kiosk dist alongside gateway
     path.resolve(here, "../kiosk"),
-    // Dev: src/gateway -> ../../apps/kiosk/dist
-    path.resolve(here, "../../apps/kiosk/dist"),
-    // Fallback
-    path.resolve(process.cwd(), "apps", "kiosk", "dist"),
   ];
   for (const dir of candidates) {
     if (fs.existsSync(path.join(dir, "index.html"))) return dir;

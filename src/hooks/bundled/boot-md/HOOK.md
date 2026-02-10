@@ -1,7 +1,7 @@
 ---
 name: boot-md
 description: "Run BOOT.md on gateway startup"
-homepage: https://docs.molt.bot/hooks#boot-md
+homepage: https://docs.thinkfleet.dev/hooks#boot-md
 metadata:
   {
     "thinkfleetbot":

@@ -229,7 +229,7 @@ export async function startGatewayServer(
 
   // Run gateway startup hooks (e.g. SaaS agent config application)
   const { runGatewayStartupHooks } = await import("./startup-hooks.js");
-  await runGatewayStartupHooks(defaultWorkspaceDir ?? "/home/node/clawd");
+  await runGatewayStartupHooks(defaultWorkspaceDir ?? "/home/node/thinkfleet");
 
   const baseMethods = listGatewayMethods();
   const { pluginRegistry, gatewayMethods: baseGatewayMethods } = loadGatewayPlugins({

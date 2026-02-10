@@ -47,8 +47,8 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/sh
   && apt-get update && apt-get install -y terraform \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ClawdHub CLI for skill management
-RUN npm install -g clawdhub
+# ThinkFleet Skills Hub CLI for skill management
+RUN npm install -g thinkfleet
 
 RUN corepack enable
 

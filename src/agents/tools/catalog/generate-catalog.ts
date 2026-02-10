@@ -92,7 +92,7 @@ function generateCatalog(): string {
   lines.push("| `aws` | AWS CLI v2 |");
   lines.push("| `az` | Azure CLI |");
   lines.push("| `terraform` | Infrastructure as code |");
-  lines.push("| `clawdhub` | Skill management CLI |");
+  lines.push("| `thinkfleet skills search` | Skill management CLI |");
   lines.push("");
   lines.push("**Example - Edit video with ffmpeg:**");
   lines.push("```");

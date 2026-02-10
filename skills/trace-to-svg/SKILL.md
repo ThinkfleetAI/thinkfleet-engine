@@ -2,7 +2,7 @@
 name: trace-to-svg
 description: Trace bitmap images (PNG/JPG/WebP) into clean SVG paths using potrace/mkbitmap. Use to convert logos/silhouettes into vectors for downstream CAD workflows (e.g., create-dxf etch_svg_path) and for turning reference images into manufacturable outlines.
 metadata:
-  openclaw:
+  thinkfleet:
     requires:
       bins: ["potrace", "mkbitmap"]
     install:

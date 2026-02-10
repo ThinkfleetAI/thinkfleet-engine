@@ -73,7 +73,7 @@ Agent responds (using all 3 systems)
 
 ### Install Git-Notes Memory
 ```bash
-clawdhub install git-notes-memory
+thinkfleet-hub install git-notes-memory
 ```
 
 ### Create File Search Script

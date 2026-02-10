@@ -75,7 +75,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
 ```ini
 # ~/.config/systemd/user/clawd-browser.service
 [Unit]
-Description=Clawd Browser (Chrome CDP)
+Description=ThinkFleet Browser (Chrome CDP)
 After=network.target
 
 [Service]

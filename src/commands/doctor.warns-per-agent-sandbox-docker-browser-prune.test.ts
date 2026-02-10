@@ -348,7 +348,7 @@ describe("doctor command", () => {
           list: [
             {
               id: "work",
-              workspace: "~/clawd-work",
+              workspace: "~/thinkfleet-work",
               sandbox: {
                 mode: "all",
                 scope: "shared",
@@ -395,7 +395,7 @@ describe("doctor command", () => {
       parsed: {},
       valid: true,
       config: {
-        agents: { defaults: { workspace: "/Users/steipete/clawd" } },
+        agents: { defaults: { workspace: "/Users/steipete/thinkfleet" } },
       },
       issues: [],
       legacyIssues: [],
@@ -404,14 +404,10 @@ describe("doctor command", () => {
     note.mockClear();
     const homedirSpy = vi.spyOn(os, "homedir").mockReturnValue("/Users/steipete");
     const realExists = fs.existsSync;
-    const legacyPath = path.join("/Users/steipete", "thinkfleet");
+    const legacyPath = path.join("/Users/steipete", "clawd");
     const legacyAgentsPath = path.join(legacyPath, "AGENTS.md");
     const existsSpy = vi.spyOn(fs, "existsSync").mockImplementation((value) => {
-      if (
-        value === "/Users/steipete/thinkfleet" ||
-        value === legacyPath ||
-        value === legacyAgentsPath
-      )
+      if (value === "/Users/steipete/clawd" || value === legacyPath || value === legacyAgentsPath)
         return true;
       return realExists(value as never);
     });
@@ -428,9 +424,7 @@ describe("doctor command", () => {
     expect(
       note.mock.calls.some(
         ([message, title]) =>
-          title === "Extra workspace" &&
-          typeof message === "string" &&
-          message.includes("thinkfleet"),
+          title === "Extra workspace" && typeof message === "string" && message.includes("clawd"),
       ),
     ).toBe(true);
 

@@ -49,7 +49,7 @@ export function renderOverview(props: OverviewProps) {
           <div style="margin-top: 6px;">
             <a
               class="session-link"
-              href="https://docs.molt.bot/web/dashboard"
+              href="https://docs.thinkfleet.dev/web/dashboard"
               target="_blank"
               rel="noreferrer"
               title="Control UI auth docs (opens in new tab)"
@@ -67,7 +67,7 @@ export function renderOverview(props: OverviewProps) {
         <div style="margin-top: 6px;">
           <a
             class="session-link"
-            href="https://docs.molt.bot/web/dashboard"
+            href="https://docs.thinkfleet.dev/web/dashboard"
             target="_blank"
             rel="noreferrer"
             title="Control UI auth docs (opens in new tab)"
@@ -96,7 +96,7 @@ export function renderOverview(props: OverviewProps) {
         <div style="margin-top: 6px;">
           <a
             class="session-link"
-            href="https://docs.molt.bot/gateway/tailscale"
+            href="https://docs.thinkfleet.dev/gateway/tailscale"
             target="_blank"
             rel="noreferrer"
             title="Tailscale Serve docs (opens in new tab)"
@@ -105,7 +105,7 @@ export function renderOverview(props: OverviewProps) {
           <span class="muted"> · </span>
           <a
             class="session-link"
-            href="https://docs.molt.bot/web/control-ui#insecure-http"
+            href="https://docs.thinkfleet.dev/web/control-ui#insecure-http"
             target="_blank"
             rel="noreferrer"
             title="Insecure HTTP docs (opens in new tab)"

@@ -207,7 +207,7 @@
 - **changelog-gen** — Generate changelogs from git history. Use when you need rel…
 - **clanker** — Deploy ERC20 tokens on Base, Ethereum, Arbitrum, and other …
 - **📊 claude-code-usage** — Check Claude Code OAuth usage limits (session & weekly quot…
-- **clawdhub** — Use the ClawdHub CLI to search, install, update, and publis…
+- **thinkfleet-hub** — Use the ThinkFleet Hub CLI to search, install, update, and publis…
 - **📊 code-quality** — Measure and improve code quality: linting, complexity analy…
 - **conventional-commits** — Format commit messages using the Conventional Commits speci…
 - **cron-writer** — Convert natural language to cron expressions. Use when you …

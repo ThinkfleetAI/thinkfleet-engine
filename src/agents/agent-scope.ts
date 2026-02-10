@@ -149,7 +149,7 @@ export function resolveAgentWorkspaceDir(cfg: ThinkfleetConfig, agentId: string)
     if (fallback) return resolveUserPath(fallback);
     return DEFAULT_AGENT_WORKSPACE_DIR;
   }
-  return path.join(os.homedir(), `clawd-${id}`);
+  return path.join(os.homedir(), `thinkfleet-${id}`);
 }
 
 export function resolveAgentDir(cfg: ThinkfleetConfig, agentId: string) {

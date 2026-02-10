@@ -68,13 +68,13 @@ cp docs/reference/AGENTS.default.md ~/clawd/AGENTS.md
 - Keep environment-specific notes in `TOOLS.md` (Notes for Skills).
 
 ## Backup tip (recommended)
-If you treat this workspace as Clawd’s “memory”, make it a git repo (ideally private) so `AGENTS.md` and your memory files are backed up.
+If you treat this workspace as ThinkFleet's "memory", make it a git repo (ideally private) so `AGENTS.md` and your memory files are backed up.
 
 ```bash
 cd ~/clawd
 git init
 git add AGENTS.md
-git commit -m "Add Clawd workspace"
+git commit -m "Add ThinkFleet workspace"
 # Optional: add a private remote + push
 ```
 

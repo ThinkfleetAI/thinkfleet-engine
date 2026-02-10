@@ -53,7 +53,7 @@ thinkfleetbot browser --browser-profile work tabs
 
 ```bash
 thinkfleetbot browser tabs
-thinkfleetbot browser open https://docs.molt.bot
+thinkfleetbot browser open https://docs.thinkfleet.dev
 thinkfleetbot browser focus <targetId>
 thinkfleetbot browser close <targetId>
 ```

@@ -305,11 +305,11 @@ describe("mention helpers", () => {
   it("builds regexes and skips invalid patterns", () => {
     const regexes = buildMentionRegexes({
       messages: {
-        groupChat: { mentionPatterns: ["\\bclawd\\b", "(invalid"] },
+        groupChat: { mentionPatterns: ["\\bthinkfleet\\b", "(invalid"] },
       },
     });
     expect(regexes).toHaveLength(1);
-    expect(regexes[0]?.test("clawd")).toBe(true);
+    expect(regexes[0]?.test("thinkfleet")).toBe(true);
   });
 
   it("normalizes zero-width characters", () => {
@@ -318,9 +318,9 @@ describe("mention helpers", () => {
 
   it("matches patterns case-insensitively", () => {
     const regexes = buildMentionRegexes({
-      messages: { groupChat: { mentionPatterns: ["\\bclawd\\b"] } },
+      messages: { groupChat: { mentionPatterns: ["\\bthinkfleet\\b"] } },
     });
-    expect(matchesMentionPatterns("CLAWD: hi", regexes)).toBe(true);
+    expect(matchesMentionPatterns("THINKFLEET: hi", regexes)).toBe(true);
   });
 
   it("uses per-agent mention patterns when configured", () => {

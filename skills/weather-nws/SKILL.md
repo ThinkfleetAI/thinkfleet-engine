@@ -6,7 +6,7 @@ author: awalker
 homepage: https://weather.gov
 keywords: weather, forecast, alerts, nws, national-weather-service
 metadata:
-  openclaw:
+  thinkfleet:
     emoji: 🌤️
     requires:
       bins: ["curl", "node"]
@@ -27,7 +27,7 @@ Use this skill when you need:
 - **Weather monitoring** in automation/cron jobs
 - **Alert-based notifications** for severe weather
 
-This skill is ideal for US-based OpenClaw deployments that need professional-grade weather data without the complexity or cost of commercial APIs.
+This skill is ideal for US-based ThinkFleet deployments that need professional-grade weather data without the complexity or cost of commercial APIs.
 
 ## Features
 
@@ -118,9 +118,9 @@ Returns structured JSON with:
 - `timestamp` - ISO timestamp
 - `source` - "National Weather Service"
 
-### Integration with OpenClaw
+### Integration with ThinkFleet
 
-Use in your OpenClaw prompts:
+Use in your ThinkFleet prompts:
 
 ```
 Check the weather and let me know if I need a jacket today.
@@ -321,4 +321,4 @@ Weather data provided by the National Weather Service (NOAA).
 
 ---
 
-**Built for OpenClaw** (formerly ThinkFleetBot)
+**Built for ThinkFleet** (formerly ThinkFleetBot)

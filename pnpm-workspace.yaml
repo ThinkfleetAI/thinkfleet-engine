@@ -3,7 +3,6 @@ packages:
   - ui
   - packages/*
   - extensions/*
-  - apps/desktop
 
 onlyBuiltDependencies:
   - '@whiskeysockets/baileys'

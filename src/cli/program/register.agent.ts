@@ -155,11 +155,20 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.thinkfleet.ai/cli/a
         `
 ${theme.heading("Examples:")}
 ${formatHelpExamples([
-  ['thinkfleet agents set-identity --agent main --name "Clawd" --emoji "🦞"', "Set name + emoji."],
-  ["thinkfleet agents set-identity --agent main --avatar avatars/clawd.png", "Set avatar path."],
-  ["thinkfleet agents set-identity --workspace ~/clawd --from-identity", "Load from IDENTITY.md."],
   [
-    "thinkfleet agents set-identity --identity-file ~/clawd/IDENTITY.md --agent main",
+    'thinkfleet agents set-identity --agent main --name "ThinkFleet" --emoji "🦞"',
+    "Set name + emoji.",
+  ],
+  [
+    "thinkfleet agents set-identity --agent main --avatar avatars/thinkfleet.png",
+    "Set avatar path.",
+  ],
+  [
+    "thinkfleet agents set-identity --workspace ~/thinkfleet --from-identity",
+    "Load from IDENTITY.md.",
+  ],
+  [
+    "thinkfleet agents set-identity --identity-file ~/thinkfleet/IDENTITY.md --agent main",
     "Use a specific IDENTITY.md.",
   ],
 ])}

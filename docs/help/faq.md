@@ -18,7 +18,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [It is stuck on "wake up my friend" / onboarding will not hatch. What now?](#it-is-stuck-on-wake-up-my-friend-onboarding-will-not-hatch-what-now)
   - [Can I migrate my setup to a new machine (Mac mini) without redoing onboarding?](#can-i-migrate-my-setup-to-a-new-machine-mac-mini-without-redoing-onboarding)
   - [Where do I see what’s new in the latest version?](#where-do-i-see-whats-new-in-the-latest-version)
-  - [I can't access docs.molt.bot (SSL error). What now?](#i-cant-access-docsthinkfleetbot-ssl-error-what-now)
+  - [I can't access docs.thinkfleet.dev (SSL error). What now?](#i-cant-access-docsthinkfleetbot-ssl-error-what-now)
   - [What’s the difference between stable and beta?](#whats-the-difference-between-stable-and-beta)
 - [How do I install the beta version, and what’s the difference between beta and dev?](#how-do-i-install-the-beta-version-and-whats-the-difference-between-beta-and-dev)
   - [How do I try the latest bits?](#how-do-i-try-the-latest-bits)
@@ -29,7 +29,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How do I install ThinkFleetBot on Linux?](#how-do-i-install-thinkfleetbot-on-linux)
   - [How do I install ThinkFleetBot on a VPS?](#how-do-i-install-thinkfleetbot-on-a-vps)
   - [Where are the cloud/VPS install guides?](#where-are-the-cloudvps-install-guides)
-  - [Can I ask Clawd to update itself?](#can-i-ask-clawd-to-update-itself)
+  - [Can I ask ThinkFleet to update itself?](#can-i-ask-thinkfleet-to-update-itself)
   - [What does the onboarding wizard actually do?](#what-does-the-onboarding-wizard-actually-do)
   - [Do I need a Claude or OpenAI subscription to run this?](#do-i-need-a-claude-or-openai-subscription-to-run-this)
   - [Can I use Claude Max subscription without an API key](#can-i-use-claude-max-subscription-without-an-api-key)
@@ -137,7 +137,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [What model do you recommend?](#what-model-do-you-recommend)
   - [How do I switch models without wiping my config?](#how-do-i-switch-models-without-wiping-my-config)
   - [Can I use self-hosted models (llama.cpp, vLLM, Ollama)?](#can-i-use-selfhosted-models-llamacpp-vllm-ollama)
-  - [What do Clawd, Flawd, and Krill use for models?](#what-do-clawd-flawd-and-krill-use-for-models)
+  - [What do ThinkFleet, Flawd, and Krill use for models?](#what-do-thinkfleet-flawd-and-krill-use-for-models)
   - [How do I switch models on the fly (without restarting)?](#how-do-i-switch-models-on-the-fly-without-restarting)
   - [Can I use GPT 5.2 for daily tasks and Codex 5.2 for coding](#can-i-use-gpt-52-for-daily-tasks-and-codex-52-for-coding)
   - [Why do I see “Model … is not allowed” and then no reply?](#why-do-i-see-model-is-not-allowed-and-then-no-reply)
@@ -258,7 +258,7 @@ setup (PATH, services, permissions, auth files). Give them the **full source che
 the hackable (git) install:
 
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash -s -- --install-method git
+curl -fsSL https://thinkfleet.dev/install.sh | bash -s -- --install-method git
 ```
 
 This installs ThinkFleetBot **from a git checkout**, so the agent can read the code + docs and
@@ -296,7 +296,7 @@ Install docs: [Install](/install), [Installer flags](/install/installer), [Updat
 The repo recommends running from source and using the onboarding wizard:
 
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash
+curl -fsSL https://thinkfleet.dev/install.sh | bash
 thinkfleetbot onboard --install-daemon
 ```
 
@@ -416,8 +416,8 @@ section is the latest shipped version. Entries are grouped by **Highlights**, **
 
 ### I cant access docsthinkfleetbot SSL error What now
 
-Some Comcast/Xfinity connections incorrectly block `docs.molt.bot` via Xfinity
-Advanced Security. Disable it or allowlist `docs.molt.bot`, then retry. More
+Some Comcast/Xfinity connections incorrectly block `docs.thinkfleet.dev` via Xfinity
+Advanced Security. Disable it or allowlist `docs.thinkfleet.dev`, then retry. More
 detail: [Troubleshooting](/help/troubleshooting#docsthinkfleetbot-shows-an-ssl-error-comcastxfinity).
 Please help us unblock it by reporting here: https://spa.xfinity.com/check_url_status.
 
@@ -445,15 +445,15 @@ https://github.com/thinkfleetbot/thinkfleetbot/blob/main/CHANGELOG.md
 One‑liners (macOS/Linux):
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://molt.bot/install.sh | bash -s -- --beta
+curl -fsSL --proto '=https' --tlsv1.2 https://thinkfleet.dev/install.sh | bash -s -- --beta
 ```
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://molt.bot/install.sh | bash -s -- --install-method git
+curl -fsSL --proto '=https' --tlsv1.2 https://thinkfleet.dev/install.sh | bash -s -- --install-method git
 ```
 
 Windows installer (PowerShell):
-https://molt.bot/install.ps1
+https://thinkfleet.dev/install.ps1
 
 More detail: [Development channels](/install/development-channels) and [Installer flags](/install/installer).
 
@@ -478,7 +478,7 @@ This switches to the `main` branch and updates from source.
 
 2) **Hackable install (from the installer site):**
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash -s -- --install-method git
+curl -fsSL https://thinkfleet.dev/install.sh | bash -s -- --install-method git
 ```
 That gives you a local repo you can edit, then update via git.
 
@@ -498,19 +498,19 @@ Docs: [Update](/cli/update), [Development channels](/install/development-channel
 Re-run the installer with **verbose output**:
 
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash -s -- --verbose
+curl -fsSL https://thinkfleet.dev/install.sh | bash -s -- --verbose
 ```
 
 Beta install with verbose:
 
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash -s -- --beta --verbose
+curl -fsSL https://thinkfleet.dev/install.sh | bash -s -- --beta --verbose
 ```
 
 For a hackable (git) install:
 
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash -s -- --install-method git --verbose
+curl -fsSL https://thinkfleet.dev/install.sh | bash -s -- --install-method git --verbose
 ```
 
 More options: [Installer flags](/install/installer).
@@ -541,7 +541,7 @@ Use the **hackable (git) install** so you have the full source and docs locally,
 your bot (or Claude/Codex) *from that folder* so it can read the repo and answer precisely.
 
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash -s -- --install-method git
+curl -fsSL https://thinkfleet.dev/install.sh | bash -s -- --install-method git
 ```
 
 More detail: [Install](/install) and [Installer flags](/install/installer).
@@ -581,7 +581,7 @@ Gateway in the cloud.
 Hub: [Platforms](/platforms). Remote access: [Gateway remote](/gateway/remote).
 Nodes: [Nodes](/nodes), [Nodes CLI](/cli/nodes).
 
-### Can I ask Clawd to update itself
+### Can I ask ThinkFleet to update itself
 
 Short answer: **possible, not recommended**. The update flow can restart the
 Gateway (which drops the active session), may need a clean git checkout, and
@@ -946,7 +946,7 @@ Advantages:
 - **Always-on Gateway** (run on a VPS, interact from anywhere)
 - **Nodes** for local browser/screen/camera/exec
 
-Showcase: https://molt.bot/showcase
+Showcase: https://thinkfleet.dev/showcase
 
 ## Skills and automation
 
@@ -956,7 +956,7 @@ Use managed overrides instead of editing the repo copy. Put your changes in `~/.
 
 ### Can I load skills from a custom folder
 
-Yes. Add extra directories via `skills.load.extraDirs` in `~/.thinkfleetbot/thinkfleetbot.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.thinkfleetbot/skills` → bundled → `skills.load.extraDirs`. `clawdhub` installs into `./skills` by default, which ThinkFleetBot treats as `<workspace>/skills`.
+Yes. Add extra directories via `skills.load.extraDirs` in `~/.thinkfleetbot/thinkfleetbot.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.thinkfleetbot/skills` → bundled → `skills.load.extraDirs`. `thinkfleet-hub` installs into `./skills` by default, which ThinkFleetBot treats as `<workspace>/skills`.
 
 ### How can I use different models for different tasks
 
@@ -1000,17 +1000,17 @@ Docs: [Cron jobs](/automation/cron-jobs), [Cron vs Heartbeat](/automation/cron-v
 
 ### How do I install skills on Linux
 
-Use **ClawdHub** (CLI) or drop skills into your workspace. The macOS Skills UI isn’t available on Linux.
-Browse skills at https://clawdhub.com.
+Use **ThinkFleet Hub** (CLI) or drop skills into your workspace. The macOS Skills UI isn’t available on Linux.
+Browse skills at https://thinkfleet-hub.com.
 
-Install the ClawdHub CLI (pick one package manager):
+Install the ThinkFleet Hub CLI (pick one package manager):
 
 ```bash
-npm i -g clawdhub
+npm i -g thinkfleet-hub
 ```
 
 ```bash
-pnpm add -g clawdhub
+pnpm add -g thinkfleet-hub
 ```
 
 ### Can ThinkFleetBot run tasks on a schedule or continuously in the background
@@ -1076,11 +1076,11 @@ targeting those APIs.
 Install skills:
 
 ```bash
-clawdhub install <skill-slug>
-clawdhub update --all
+thinkfleet-hub install <skill-slug>
+thinkfleet-hub update --all
 ```
 
-ClawdHub installs into `./skills` under your current directory (or falls back to your configured ThinkFleetBot workspace); ThinkFleetBot treats that as `<workspace>/skills` on the next session. For shared skills across agents, place them in `~/.thinkfleetbot/skills/<name>/SKILL.md`. Some skills expect binaries installed via Homebrew; on Linux that means Linuxbrew (see the Homebrew Linux FAQ entry above). See [Skills](/tools/skills) and [ClawdHub](/tools/clawdhub).
+ThinkFleet Hub installs into `./skills` under your current directory (or falls back to your configured ThinkFleetBot workspace); ThinkFleetBot treats that as `<workspace>/skills` on the next session. For shared skills across agents, place them in `~/.thinkfleetbot/skills/<name>/SKILL.md`. Some skills expect binaries installed via Homebrew; on Linux that means Linuxbrew (see the Homebrew Linux FAQ entry above). See [Skills](/tools/skills) and [ThinkFleet Hub](/tools/thinkfleet-hub).
 
 ### How do I install the Chrome extension for browser takeover
 
@@ -1906,9 +1906,9 @@ If you did overwrite config, restore from backup or re-run `thinkfleetbot doctor
 
 Docs: [Models](/concepts/models), [Configure](/cli/configure), [Config](/cli/config), [Doctor](/gateway/doctor).
 
-### What do Clawd Flawd and Krill use for models
+### What do ThinkFleet Flawd and Krill use for models
 
-- **Clawd + Flawd:** Anthropic Opus (`anthropic/claude-opus-4-5`) - see [Anthropic](/providers/anthropic).
+- **ThinkFleet + Flawd:** Anthropic Opus (`anthropic/claude-opus-4-5`) - see [Anthropic](/providers/anthropic).
 - **Krill:** MiniMax M2.1 (`minimax/MiniMax-M2.1`) - see [MiniMax](/providers/minimax).
 
 ### How do I switch models on the fly without restarting

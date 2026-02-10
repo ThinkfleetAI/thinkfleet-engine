@@ -25,7 +25,7 @@ read_when:
 </p>
 
 ThinkFleetBot bridges WhatsApp (via WhatsApp Web / Baileys), Telegram (Bot API / grammY), Discord (Bot API / channels.discord.js), and iMessage (imsg CLI) to coding agents like [Pi](https://github.com/badlogic/pi-mono). Plugins add Mattermost (Bot API + WebSocket) and more.
-ThinkFleetBot also powers [Clawd](https://clawd.me), the space‑lobster assistant.
+ThinkFleetBot also powers [ThinkFleet](https://thinkfleet.dev), the space‑lobster assistant.
 
 ## Start here
 
@@ -177,7 +177,7 @@ Example:
   - [Updating / rollback](/install/updating)
   - [Pairing (DM + nodes)](/start/pairing)
   - [Nix mode](/install/nix)
-  - [ThinkFleetBot assistant setup (Clawd)](/start/clawd)
+  - [ThinkFleetBot assistant setup (ThinkFleet)](/start/clawd)
   - [Skills](/tools/skills)
   - [Skills config](/tools/skills-config)
   - [Workspace templates](/reference/templates/AGENTS)

@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout CLI
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup pnpm (corepack retry)
         run: |
@@ -29,8 +29,8 @@ jobs:
 
       - name: Run installer docker tests
         env:
-          THINKFLEETBOT_INSTALL_URL: https://clawd.bot/install.sh
-          THINKFLEETBOT_INSTALL_CLI_URL: https://clawd.bot/install-cli.sh
+          THINKFLEETBOT_INSTALL_URL: https://thinkfleet.dev/install.sh
+          THINKFLEETBOT_INSTALL_CLI_URL: https://thinkfleet.dev/install-cli.sh
           THINKFLEETBOT_NO_ONBOARD: "1"
           THINKFLEETBOT_INSTALL_SMOKE_SKIP_CLI: "1"
           THINKFLEETBOT_INSTALL_SMOKE_SKIP_NONROOT: ${{ github.event_name == 'pull_request' && '1' || '0' }}

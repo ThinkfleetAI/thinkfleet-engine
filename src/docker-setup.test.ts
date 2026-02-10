@@ -62,7 +62,7 @@ describe("docker-setup.sh", () => {
       DOCKER_STUB_LOG: logPath,
       THINKFLEETBOT_GATEWAY_TOKEN: "test-token",
       THINKFLEETBOT_CONFIG_DIR: join(rootDir, "config"),
-      THINKFLEETBOT_WORKSPACE_DIR: join(rootDir, "clawd"),
+      THINKFLEETBOT_WORKSPACE_DIR: join(rootDir, "thinkfleet"),
     };
     delete env.THINKFLEETBOT_DOCKER_APT_PACKAGES;
     delete env.THINKFLEETBOT_EXTRA_MOUNTS;
@@ -113,7 +113,7 @@ describe("docker-setup.sh", () => {
       THINKFLEETBOT_DOCKER_APT_PACKAGES: "ffmpeg build-essential",
       THINKFLEETBOT_GATEWAY_TOKEN: "test-token",
       THINKFLEETBOT_CONFIG_DIR: join(rootDir, "config"),
-      THINKFLEETBOT_WORKSPACE_DIR: join(rootDir, "clawd"),
+      THINKFLEETBOT_WORKSPACE_DIR: join(rootDir, "thinkfleet"),
       THINKFLEETBOT_EXTRA_MOUNTS: "",
       THINKFLEETBOT_HOME_VOLUME: "",
     };

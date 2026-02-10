@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALL_URL="${THINKFLEETBOT_INSTALL_URL:-https://molt.bot/install.sh}"
+INSTALL_URL="${THINKFLEETBOT_INSTALL_URL:-https://thinkfleet.dev/install.sh}"
 MODELS_MODE="${THINKFLEETBOT_E2E_MODELS:-both}" # both|openai|anthropic
 INSTALL_TAG="${THINKFLEETBOT_INSTALL_TAG:-latest}"
 E2E_PREVIOUS_VERSION="${THINKFLEETBOT_INSTALL_E2E_PREVIOUS:-}"
@@ -528,11 +528,11 @@ run_profile() {
 }
 
 if [[ "$MODELS_MODE" == "openai" || "$MODELS_MODE" == "both" ]]; then
-  run_profile "e2e-openai" "18789" "/tmp/clawd-e2e-openai" "openai"
+  run_profile "e2e-openai" "18789" "/tmp/thinkfleet-e2e-openai" "openai"
 fi
 
 if [[ "$MODELS_MODE" == "anthropic" || "$MODELS_MODE" == "both" ]]; then
-  run_profile "e2e-anthropic" "18799" "/tmp/clawd-e2e-anthropic" "anthropic"
+  run_profile "e2e-anthropic" "18799" "/tmp/thinkfleet-e2e-anthropic" "anthropic"
 fi
 
 echo "OK"

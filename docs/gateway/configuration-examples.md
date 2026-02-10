@@ -25,7 +25,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
 ```json5
 {
   identity: {
-    name: "Clawd",
+    name: "ThinkFleet",
     theme: "helpful assistant",
     emoji: "🦞"
   },

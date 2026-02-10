@@ -13,7 +13,7 @@ Keep your ThinkFleetBot and skills up to date automatically with daily update ch
 This skill sets up a daily cron job that:
 
 1. Updates ThinkFleetBot itself (via `thinkfleetbot doctor` or package manager)
-2. Updates all installed skills (via `clawdhub update --all`)
+2. Updates all installed skills (via `thinkfleet-hub update --all`)
 3. Messages you with a summary of what was updated
 
 ## Setup
@@ -68,7 +68,7 @@ Always run `thinkfleetbot doctor` after updating to apply migrations.
 ### Skill Updates
 
 ```bash
-clawdhub update --all
+thinkfleet-hub update --all
 ```
 
 This checks all installed skills against the registry and updates any with new versions available.
@@ -97,12 +97,12 @@ No issues encountered.
 
 Check for updates without applying:
 ```bash
-clawdhub update --all --dry-run
+thinkfleet-hub update --all --dry-run
 ```
 
 View current skill versions:
 ```bash
-clawdhub list
+thinkfleet-hub list
 ```
 
 Check ThinkFleetBot version:
@@ -144,6 +144,6 @@ Or disable temporarily in config:
 
 ## Resources
 
-- [ThinkFleetBot Updating Guide](https://docs.clawd.bot/install/updating)
-- [ClawdHub CLI](https://docs.clawd.bot/tools/clawdhub)
-- [Cron Jobs](https://docs.clawd.bot/cron)
+- [ThinkFleetBot Updating Guide](https://docs.thinkfleet.dev/install/updating)
+- [ThinkFleet Hub CLI](https://docs.thinkfleet.dev/tools/thinkfleet-hub)
+- [Cron Jobs](https://docs.thinkfleet.dev/cron)

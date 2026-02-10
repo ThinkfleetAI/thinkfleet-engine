@@ -124,7 +124,7 @@ The `HOOK.md` file contains metadata in YAML frontmatter plus Markdown documenta
 ---
 name: my-hook
 description: "Short description of what this hook does"
-homepage: https://docs.molt.bot/hooks#my-hook
+homepage: https://docs.thinkfleet.dev/hooks#my-hook
 metadata: {"thinkfleetbot":{"emoji":"🔗","events":["command:new"],"requires":{"bins":["node"]}}}
 ---
 
@@ -687,7 +687,7 @@ Monitor gateway logs to see hook execution:
 
 ```bash
 # macOS
-./scripts/clawlog.sh -f
+./scripts/tflog.sh -f
 
 # Other platforms
 tail -f ~/.thinkfleetbot/gateway.log
@@ -806,7 +806,7 @@ Look for missing:
 
 3. Check gateway logs for errors:
    ```bash
-   ./scripts/clawlog.sh | grep hook
+   ./scripts/tflog.sh | grep hook
    ```
 
 ### Handler Errors

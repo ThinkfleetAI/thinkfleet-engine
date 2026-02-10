@@ -13,9 +13,9 @@ export function resolveDefaultAgentWorkspaceDir(
 ): string {
   const profile = env.THINKFLEET_PROFILE?.trim();
   if (profile && profile.toLowerCase() !== "default") {
-    return path.join(homedir(), `clawd-${profile}`);
+    return path.join(homedir(), `thinkfleet-${profile}`);
   }
-  return path.join(homedir(), "clawd");
+  return path.join(homedir(), "thinkfleet");
 }
 
 export const DEFAULT_AGENT_WORKSPACE_DIR = resolveDefaultAgentWorkspaceDir();

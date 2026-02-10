@@ -47,7 +47,7 @@ thinkfleetbot agents set-identity --workspace ~/clawd --from-identity
 Override fields explicitly:
 
 ```bash
-thinkfleetbot agents set-identity --agent main --name "Clawd" --emoji "🦞" --avatar avatars/clawd.png
+thinkfleetbot agents set-identity --agent main --name "ThinkFleet" --emoji "🦞" --avatar avatars/clawd.png
 ```
 
 Config sample:
@@ -59,7 +59,7 @@ Config sample:
       {
         id: "main",
         identity: {
-          name: "Clawd",
+          name: "ThinkFleet",
           theme: "space lobster",
           emoji: "🦞",
           avatar: "avatars/clawd.png"

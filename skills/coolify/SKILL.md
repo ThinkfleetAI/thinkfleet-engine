@@ -3,7 +3,7 @@ name: coolify
 description: Manage Coolify deployments, applications, databases, and services via the Coolify API. Use when the user wants to deploy, start, stop, restart, or manage applications hosted on Coolify.
 homepage: https://coolify.io
 user-invocable: true
-metadata: {"openclaw":{"emoji":"🚀","requires":{"bins":["node"],"env":["COOLIFY_TOKEN"]},"primaryEnv":"COOLIFY_TOKEN"}}
+metadata: {"thinkfleet":{"emoji":"🚀","requires":{"bins":["node"],"env":["COOLIFY_TOKEN"]},"primaryEnv":"COOLIFY_TOKEN"}}
 ---
 
 # Coolify API Skill
@@ -747,7 +747,7 @@ Use this skill when the user needs to:
 export COOLIFY_TOKEN="your-token-here"
 ```
 
-Or configure in OpenClaw config at `~/.openclaw/openclaw.json`:
+Or configure in ThinkFleet config at `~/.thinkfleet/thinkfleet.json`:
 ```json
 {
   "skills": {

@@ -54,7 +54,7 @@ function buildSlackManifest(botName: string) {
       },
       slash_commands: [
         {
-          command: "/clawd",
+          command: "/thinkfleet",
           description: "Send a message to Thinkfleet",
           should_escape: false,
         },

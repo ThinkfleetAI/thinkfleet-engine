@@ -216,7 +216,7 @@ All 15 built-in themes.
 
 Extract diagram colors from Shiki theme.
 
-## Usage in OpenClaw
+## Usage in ThinkFleet
 
 ### Telegram Integration
 

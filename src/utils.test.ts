@@ -159,7 +159,7 @@ describe("resolveUserPath", () => {
   });
 
   it("expands ~/ to home dir", () => {
-    expect(resolveUserPath("~/clawd")).toBe(path.resolve(os.homedir(), "clawd"));
+    expect(resolveUserPath("~/thinkfleet")).toBe(path.resolve(os.homedir(), "thinkfleet"));
   });
 
   it("resolves relative paths", () => {

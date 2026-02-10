@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALL_URL="${THINKFLEETBOT_INSTALL_URL:-https://molt.bot/install.sh}"
+INSTALL_URL="${THINKFLEETBOT_INSTALL_URL:-https://thinkfleet.dev/install.sh}"
 SMOKE_PREVIOUS_VERSION="${THINKFLEETBOT_INSTALL_SMOKE_PREVIOUS:-}"
 SKIP_PREVIOUS="${THINKFLEETBOT_INSTALL_SMOKE_SKIP_PREVIOUS:-0}"
 DEFAULT_PACKAGE="thinkfleet"
-if [[ -z "${THINKFLEETBOT_INSTALL_PACKAGE:-}" && "$INSTALL_URL" == *"clawd.bot"* ]]; then
+if [[ -z "${THINKFLEETBOT_INSTALL_PACKAGE:-}" && "$INSTALL_URL" == *"thinkfleet.dev"* ]]; then
   DEFAULT_PACKAGE="thinkfleet"
 fi
 PACKAGE_NAME="${THINKFLEETBOT_INSTALL_PACKAGE:-$DEFAULT_PACKAGE}"

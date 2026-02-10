@@ -45,22 +45,22 @@ You can gate them via `metadata.thinkfleetbot.requires.config` on the plugin’s
 entry. See [Plugins](/plugin) for discovery/config and [Tools](/tools) for the
 tool surface those skills teach.
 
-## ClawdHub (install + sync)
+## ThinkFleet Hub (install + sync)
 
-ClawdHub is the public skills registry for ThinkFleetBot. Browse at
-https://clawdhub.com. Use it to discover, install, update, and back up skills.
-Full guide: [ClawdHub](/tools/clawdhub).
+ThinkFleet Hub is the public skills registry for ThinkFleetBot. Browse at
+https://thinkfleet-hub.com. Use it to discover, install, update, and back up skills.
+Full guide: [ThinkFleet Hub](/tools/thinkfleet-hub).
 
 Common flows:
 
 - Install a skill into your workspace:
-  - `clawdhub install <skill-slug>`
+  - `thinkfleet-hub install <skill-slug>`
 - Update all installed skills:
-  - `clawdhub update --all`
+  - `thinkfleet-hub update --all`
 - Sync (scan + publish updates):
-  - `clawdhub sync --all`
+  - `thinkfleet-hub sync --all`
 
-By default, `clawdhub` installs into `./skills` under your current working
+By default, `thinkfleet-hub` installs into `./skills` under your current working
 directory (or falls back to the configured ThinkFleetBot workspace). ThinkFleetBot picks
 that up as `<workspace>/skills` on the next session.
 
@@ -262,6 +262,6 @@ See [Skills config](/tools/skills-config) for the full configuration schema.
 
 ## Looking for more skills?
 
-Browse https://clawdhub.com.
+Browse https://thinkfleet-hub.com.
 
 ---

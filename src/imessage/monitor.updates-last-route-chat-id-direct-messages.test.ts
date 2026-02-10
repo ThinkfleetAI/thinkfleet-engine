@@ -80,7 +80,7 @@ beforeEach(() => {
     },
     session: { mainKey: "main" },
     messages: {
-      groupChat: { mentionPatterns: ["@clawd"] },
+      groupChat: { mentionPatterns: ["@thinkfleet"] },
     },
   };
   requestMock.mockReset().mockImplementation((method: string) => {

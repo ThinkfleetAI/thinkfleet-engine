@@ -10,7 +10,7 @@ services:
       CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE}
     volumes:
       - ${THINKFLEETBOT_CONFIG_DIR}:/home/node/.thinkfleetbot
-      - ${THINKFLEETBOT_WORKSPACE_DIR}:/home/node/clawd
+      - ${THINKFLEETBOT_WORKSPACE_DIR}:/home/node/thinkfleet
     ports:
       - "${THINKFLEETBOT_GATEWAY_PORT:-18789}:18789"
       - "${THINKFLEETBOT_BRIDGE_PORT:-18790}:18790"
@@ -38,7 +38,7 @@ services:
       CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE}
     volumes:
       - ${THINKFLEETBOT_CONFIG_DIR}:/home/node/.thinkfleetbot
-      - ${THINKFLEETBOT_WORKSPACE_DIR}:/home/node/clawd
+      - ${THINKFLEETBOT_WORKSPACE_DIR}:/home/node/thinkfleet
     stdin_open: true
     tty: true
     init: true

@@ -31,9 +31,9 @@ This skill requires:
 
 - `ASANA_PAT` (required): Asana PAT (Bearer token)
 
-In Moltbot/ThinkFleet, configure skill env vars via **skills config** (do not rely on host env vars when sandboxed).
+In ThinkFleet, configure skill env vars via **skills config** (do not rely on host env vars when sandboxed).
 
-- Skills config docs: https://docs.molt.bot/tools/skills-config
+- Skills config docs: https://docs.thinkfleet.dev/tools/skills-config
 
 Example config snippet (conceptual):
 

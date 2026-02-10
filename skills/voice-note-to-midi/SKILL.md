@@ -1,7 +1,7 @@
 ---
 name: voice-note-to-midi
 description: Convert voice notes, humming, and melodic audio recordings to quantized MIDI files using ML-based pitch detection and intelligent post-processing
-author: Clawd
+author: ThinkFleet
 tags: [audio, midi, music, transcription, machine-learning]
 ---
 

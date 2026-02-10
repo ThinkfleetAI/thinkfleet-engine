@@ -22,10 +22,10 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 
 mkdir -p "${THINKFLEETBOT_CONFIG_DIR:-$HOME/.thinkfleetbot}"
-mkdir -p "${THINKFLEETBOT_WORKSPACE_DIR:-$HOME/clawd}"
+mkdir -p "${THINKFLEETBOT_WORKSPACE_DIR:-$HOME/thinkfleet}"
 
 export THINKFLEETBOT_CONFIG_DIR="${THINKFLEETBOT_CONFIG_DIR:-$HOME/.thinkfleetbot}"
-export THINKFLEETBOT_WORKSPACE_DIR="${THINKFLEETBOT_WORKSPACE_DIR:-$HOME/clawd}"
+export THINKFLEETBOT_WORKSPACE_DIR="${THINKFLEETBOT_WORKSPACE_DIR:-$HOME/thinkfleet}"
 export THINKFLEETBOT_GATEWAY_PORT="${THINKFLEETBOT_GATEWAY_PORT:-18789}"
 export THINKFLEETBOT_BRIDGE_PORT="${THINKFLEETBOT_BRIDGE_PORT:-18790}"
 export THINKFLEETBOT_GATEWAY_BIND="${THINKFLEETBOT_GATEWAY_BIND:-lan}"
@@ -63,7 +63,7 @@ YAML
   if [[ -n "$home_volume" ]]; then
     printf '      - %s:/home/node\n' "$home_volume" >>"$EXTRA_COMPOSE_FILE"
     printf '      - %s:/home/node/.thinkfleetbot\n' "$THINKFLEETBOT_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/clawd\n' "$THINKFLEETBOT_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/thinkfleet\n' "$THINKFLEETBOT_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
   fi
 
   for mount in "${mounts[@]}"; do
@@ -78,7 +78,7 @@ YAML
   if [[ -n "$home_volume" ]]; then
     printf '      - %s:/home/node\n' "$home_volume" >>"$EXTRA_COMPOSE_FILE"
     printf '      - %s:/home/node/.thinkfleetbot\n' "$THINKFLEETBOT_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/clawd\n' "$THINKFLEETBOT_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/thinkfleet\n' "$THINKFLEETBOT_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
   fi
 
   for mount in "${mounts[@]}"; do
@@ -191,7 +191,7 @@ echo "Telegram (bot token):"
 echo "  ${COMPOSE_HINT} run --rm thinkfleetbot-cli providers add --provider telegram --token <token>"
 echo "Discord (bot token):"
 echo "  ${COMPOSE_HINT} run --rm thinkfleetbot-cli providers add --provider discord --token <token>"
-echo "Docs: https://docs.molt.bot/providers"
+echo "Docs: https://docs.thinkfleet.dev/providers"
 
 echo ""
 echo "==> Starting gateway"

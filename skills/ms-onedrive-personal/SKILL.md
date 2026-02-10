@@ -2,7 +2,7 @@
 name: ms-onedrive-personal-graph
 description: Access OneDrive Personal (consumer Microsoft accounts) via Microsoft Graph using OAuth device-code flow. Supports ls/mkdir/upload/download/info; safe-by-default (no delete).
 metadata:
-  openclaw:
+  thinkfleet:
     requires:
       bins: ["bash","curl","jq","python3"]
 ---
@@ -40,7 +40,7 @@ Create an app registration (recommended):
 > Note: Some users hit Azure portal sign-in errors like “tenant blocked due to inactivity”. That is *not* required for OneDrive itself, but it can block creating an app registration. In that case, create the app under a different Entra tenant you control, **as long as it’s configured to allow personal Microsoft accounts**.
 
 ### 2) Run setup
-On the machine running OpenClaw:
+On the machine running ThinkFleet:
 ```bash
 cd /root/clawd/skills/ms-onedrive-personal-graph
 ./scripts/onedrive-setup.sh

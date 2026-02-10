@@ -1,6 +1,6 @@
-# Contributing to ThinkFleetBot
+# Contributing to ThinkFleet
 
-Welcome to the lobster tank! 🦞
+Welcome aboard!
 
 ## Quick Links
 - **GitHub:** https://github.com/thinkfleetbot/thinkfleetbot
@@ -24,7 +24,7 @@ Welcome to the lobster tank! 🦞
 3. **Questions** → Discord #setup-help
 
 ## Before You PR
-- Test locally with your ThinkFleetBot instance
+- Test locally with your ThinkFleet instance
 - Run linter: `npm run lint`
 - Keep PRs focused (one thing per PR)
 - Describe what & why

@@ -1,29 +1,29 @@
 ---
 summary: "How the installer scripts work (install.sh + install-cli.sh), flags, and automation"
 read_when:
-  - You want to understand `molt.bot/install.sh`
+  - You want to understand `thinkfleet.dev/install.sh`
   - You want to automate installs (CI / headless)
   - You want to install from a GitHub checkout
 ---
 
 # Installer internals
 
-ThinkFleetBot ships two installer scripts (served from `molt.bot`):
+ThinkFleetBot ships two installer scripts (served from `thinkfleet.dev`):
 
-- `https://molt.bot/install.sh` — “recommended” installer (global npm install by default; can also install from a GitHub checkout)
-- `https://molt.bot/install-cli.sh` — non-root-friendly CLI installer (installs into a prefix with its own Node)
- - `https://molt.bot/install.ps1` — Windows PowerShell installer (npm by default; optional git install)
+- `https://thinkfleet.dev/install.sh` — “recommended” installer (global npm install by default; can also install from a GitHub checkout)
+- `https://thinkfleet.dev/install-cli.sh` — non-root-friendly CLI installer (installs into a prefix with its own Node)
+ - `https://thinkfleet.dev/install.ps1` — Windows PowerShell installer (npm by default; optional git install)
 
 To see the current flags/behavior, run:
 
 ```bash
-curl -fsSL https://molt.bot/install.sh | bash -s -- --help
+curl -fsSL https://thinkfleet.dev/install.sh | bash -s -- --help
 ```
 
 Windows (PowerShell) help:
 
 ```powershell
-& ([scriptblock]::Create((iwr -useb https://molt.bot/install.ps1))) -?
+& ([scriptblock]::Create((iwr -useb https://thinkfleet.dev/install.ps1))) -?
 ```
 
 If the installer completes but `thinkfleetbot` is not found in a new terminal, it’s usually a Node/npm PATH issue. See: [Install](/install#nodejs--npm-path-sanity).
@@ -45,7 +45,7 @@ What it does (high level):
 If you *want* `sharp` to link against a globally-installed libvips (or you’re debugging), set:
 
 ```bash
-SHARP_IGNORE_GLOBAL_LIBVIPS=0 curl -fsSL https://molt.bot/install.sh | bash
+SHARP_IGNORE_GLOBAL_LIBVIPS=0 curl -fsSL https://thinkfleet.dev/install.sh | bash
 ```
 
 ### Discoverability / “git install” prompt
@@ -78,7 +78,7 @@ This script installs `thinkfleetbot` into a prefix (default: `~/.thinkfleetbot`)
 Help:
 
 ```bash
-curl -fsSL https://molt.bot/install-cli.sh | bash -s -- --help
+curl -fsSL https://thinkfleet.dev/install-cli.sh | bash -s -- --help
 ```
 
 ## install.ps1 (Windows PowerShell)
@@ -94,15 +94,15 @@ What it does (high level):
 Examples:
 
 ```powershell
-iwr -useb https://molt.bot/install.ps1 | iex
+iwr -useb https://thinkfleet.dev/install.ps1 | iex
 ```
 
 ```powershell
-iwr -useb https://molt.bot/install.ps1 | iex -InstallMethod git
+iwr -useb https://thinkfleet.dev/install.ps1 | iex -InstallMethod git
 ```
 
 ```powershell
-iwr -useb https://molt.bot/install.ps1 | iex -InstallMethod git -GitDir "C:\\thinkfleetbot"
+iwr -useb https://thinkfleet.dev/install.ps1 | iex -InstallMethod git -GitDir "C:\\thinkfleetbot"
 ```
 
 Environment variables:

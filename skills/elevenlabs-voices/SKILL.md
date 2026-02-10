@@ -41,7 +41,7 @@ To reconfigure at any time, simply run the setup wizard again.
 - **Cost Tracking** - Monitor character usage and estimated costs
 - **Voice Design** - Create custom voices from descriptions
 - **Pronunciation Dictionary** - Custom word pronunciation rules
-- **OpenClaw Integration** - Works with OpenClaw's built-in TTS
+- **ThinkFleet Integration** - Works with ThinkFleet's built-in TTS
 
 ---
 
@@ -262,7 +262,7 @@ Edit `pronunciations.json`:
 {
   "rules": [
     {
-      "word": "OpenClaw",
+      "word": "ThinkFleet",
       "replacement": "Open Claw",
       "comment": "Pronounce as two words"
     },
@@ -278,7 +278,7 @@ Edit `pronunciations.json`:
 Usage:
 ```bash
 # Pronunciations are applied automatically
-python3 scripts/tts.py --text "The OpenClaw API is great" --voice rachel
+python3 scripts/tts.py --text "The ThinkFleet API is great" --voice rachel
 
 # Disable pronunciations
 python3 scripts/tts.py --text "The API is great" --voice rachel --no-pronunciations
@@ -311,11 +311,11 @@ python3 scripts/tts.py --stats
 
 ---
 
-## 🤖 OpenClaw TTS Integration
+## 🤖 ThinkFleet TTS Integration
 
-### Using with OpenClaw's Built-in TTS
+### Using with ThinkFleet's Built-in TTS
 
-OpenClaw has built-in TTS support that can use ElevenLabs. Configure in `~/.openclaw/openclaw.json`:
+ThinkFleet has built-in TTS support that can use ElevenLabs. Configure in `~/.thinkfleetbot/thinkfleetbot.json`:
 
 ```json
 {
@@ -333,15 +333,15 @@ OpenClaw has built-in TTS support that can use ElevenLabs. Configure in `~/.open
 
 ### Triggering TTS in Chat
 
-In OpenClaw conversations:
+In ThinkFleet conversations:
 - Use `/tts on` to enable automatic TTS
 - Use the `tts` tool directly for one-off speech
 - Request "read this aloud" or "speak this"
 
-### Using Skill Scripts from OpenClaw
+### Using Skill Scripts from ThinkFleet
 
 ```bash
-# OpenClaw can run these scripts directly
+# ThinkFleet can run these scripts directly
 exec python3 /path/to/skills/elevenlabs-voices/scripts/tts.py --text "Hello" --voice rachel
 ```
 
@@ -352,7 +352,7 @@ exec python3 /path/to/skills/elevenlabs-voices/scripts/tts.py --text "Hello" --v
 The scripts look for API key in this order:
 
 1. `ELEVEN_API_KEY` or `ELEVENLABS_API_KEY` environment variable
-2. OpenClaw config (`~/.openclaw/openclaw.json` → tts.elevenlabs.apiKey)
+2. ThinkFleet config (`~/.thinkfleetbot/thinkfleetbot.json` → tts.elevenlabs.apiKey)
 3. Skill-local `.env` file
 
 **Create .env file:**
@@ -432,5 +432,5 @@ elevenlabs-voices/
 - Added cost tracking with `--stats` flag
 - Added voice design tool (`voice-design.py`)
 - Added pronunciation dictionary support
-- Added OpenClaw TTS integration documentation
+- Added ThinkFleet TTS integration documentation
 - Improved error handling and progress output

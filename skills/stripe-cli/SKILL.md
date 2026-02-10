@@ -1,6 +1,6 @@
 # Stripe CLI Skill 🧾
 
-A universal Moltbot skill wrapping Stripe CLI for payment processing, webhook testing, and API operations. Includes optional ShapeScale-specific extensions for clinic management.
+A universal ThinkFleet skill wrapping Stripe CLI for payment processing, webhook testing, and API operations. Includes optional ShapeScale-specific extensions for clinic management.
 
 ## What It Does
 
@@ -45,8 +45,8 @@ op read "op://Stripe/Secret Key" --vault Personal
 ### 3. Clone to Skills
 
 ```bash
-cd ~/.moltbot/skills/
-git clone https://github.com/mkessler/stripe-cli-moltbot-skill.git stripe
+cd ~/.thinkfleetbot/skills/
+git clone https://github.com/mkessler/stripe-cli-thinkfleet-skill.git stripe
 ```
 
 ## Usage
@@ -137,8 +137,8 @@ stripe/
 
 ## Publishing
 
-This skill is published to ClawdHub and available at:
-https://github.com/mkessler/stripe-cli-moltbot-skill
+This skill is published to ThinkFleet Hub and available at:
+https://github.com/mkessler/stripe-cli-thinkfleet-skill
 
 ## License
 

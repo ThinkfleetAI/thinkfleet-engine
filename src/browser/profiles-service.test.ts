@@ -21,7 +21,7 @@ vi.mock("./trash.js", () => ({
 }));
 
 vi.mock("./chrome.js", () => ({
-  resolveClawdUserDataDir: vi.fn(() => "/tmp/clawd-test/clawd/user-data"),
+  resolveClawdUserDataDir: vi.fn(() => "/tmp/thinkfleet-test/clawd/user-data"),
 }));
 
 import { loadConfig, writeConfigFile } from "../config/config.js";

@@ -1,7 +1,7 @@
 ---
 name: session-memory
 description: "Save session context to memory when /new command is issued"
-homepage: https://docs.molt.bot/hooks#session-memory
+homepage: https://docs.thinkfleet.dev/hooks#session-memory
 metadata:
   {
     "thinkfleetbot":
@@ -82,7 +82,7 @@ Example configuration:
 
 The hook automatically:
 
-- Uses your workspace directory (`~/clawd` by default)
+- Uses your workspace directory (`~/thinkfleet` by default)
 - Uses your configured LLM for slug generation
 - Falls back to timestamp slugs if LLM is unavailable
 

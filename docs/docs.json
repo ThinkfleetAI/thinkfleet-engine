@@ -354,8 +354,8 @@
       "destination": "/start/clawd"
     },
     {
-      "source": "/clawdhub",
-      "destination": "/tools/clawdhub"
+      "source": "/thinkfleet-hub",
+      "destination": "/tools/thinkfleet-hub"
     },
     {
       "source": "/configuration",
@@ -1057,7 +1057,7 @@
           "tools/reactions",
           "tools/skills",
           "tools/skills-config",
-          "tools/clawdhub"
+          "tools/thinkfleet-hub"
         ]
       },
       {

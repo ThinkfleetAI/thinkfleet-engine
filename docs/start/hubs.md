@@ -18,7 +18,7 @@ Use these hubs to discover every page, including deep dives and reference docs t
 - [Help](/help)
 - [Configuration](/gateway/configuration)
 - [Configuration examples](/gateway/configuration-examples)
-- [ThinkFleetBot assistant (Clawd)](/start/clawd)
+- [ThinkFleetBot assistant (ThinkFleet)](/start/clawd)
 - [Showcase](/start/showcase)
 - [Lore](/start/lore)
 
@@ -156,7 +156,7 @@ Use these hubs to discover every page, including deep dives and reference docs t
 ## Workspace + templates
 
 - [Skills](/tools/skills)
-- [ClawdHub](/tools/clawdhub)
+- [ThinkFleet Hub](/tools/thinkfleet-hub)
 - [Skills config](/tools/skills-config)
 - [Default AGENTS](/reference/AGENTS.default)
 - [Templates: AGENTS](/reference/templates/AGENTS)

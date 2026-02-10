@@ -180,7 +180,7 @@ The following CLI tools are pre-installed in the Docker image and available via 
 | `aws` | AWS CLI v2 |
 | `az` | Azure CLI |
 | `terraform` | Infrastructure as code |
-| `clawdhub` | Skill management CLI |
+| `thinkfleet-hub` | Skill management CLI |
 
 **Example - Edit video with ffmpeg:**
 ```

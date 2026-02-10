@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Paths
-OPENCLAW_WORKSPACE_DEFAULT="$HOME/.openclaw/workspace"
+OPENCLAW_WORKSPACE_DEFAULT="$HOME/.thinkfleetbot/workspace"
 OPENCLAW_WORKSPACE="${OPENCLAW_WORKSPACE:-$OPENCLAW_WORKSPACE_DEFAULT}"
 SDK_REPO="${VEIL_SDK_REPO:-$OPENCLAW_WORKSPACE/repos/veildotcash-sdk}"
 VEIL_DIR="$HOME/.thinkfleet/skills/veil"

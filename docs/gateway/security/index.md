@@ -293,7 +293,7 @@ Assume “compromised” means: someone got into a room that can trigger the bot
 
 ### The `find ~` Incident 🦞
 
-On Day 1, a friendly tester asked Clawd to run `find ~` and share the output. Clawd happily dumped the entire home directory structure to a group chat.
+On Day 1, a friendly tester asked ThinkFleet to run `find ~` and share the output. ThinkFleet happily dumped the entire home directory structure to a group chat.
 
 **Lesson:** Even "innocent" requests can leak sensitive info. Directory structures reveal project names, tool configs, and system layout.
 
@@ -501,7 +501,7 @@ Details: [Logging](/gateway/logging)
     "list": [
       {
         "id": "main",
-        "groupChat": { "mentionPatterns": ["@clawd", "@mybot"] }
+        "groupChat": { "mentionPatterns": ["@thinkfleet", "@mybot"] }
       }
     ]
   }
@@ -732,7 +732,7 @@ Commit the updated `.secrets.baseline` once it reflects the intended state.
 Owner (Peter)
   │ Full trust
   ▼
-AI (Clawd)
+AI (ThinkFleet)
   │ Trust but verify
   ▼
 Friends in allowlist
@@ -749,7 +749,7 @@ Mario asking for find ~
 
 Found a vulnerability in ThinkFleetBot? Please report responsibly:
 
-1. Email: security@clawd.bot
+1. Email: security@thinkfleet.dev
 2. Don't post publicly until fixed
 3. We'll credit you (unless you prefer anonymity)
 

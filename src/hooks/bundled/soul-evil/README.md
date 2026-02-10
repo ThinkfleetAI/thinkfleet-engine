@@ -2,7 +2,7 @@
 
 Small persona swap hook for ThinkFleetBot.
 
-Docs: https://docs.molt.bot/hooks/soul-evil
+Docs: https://docs.thinkfleet.dev/hooks/soul-evil
 
 ## Setup
 

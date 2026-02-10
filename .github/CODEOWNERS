@@ -1,0 +1,18 @@
+# Default — maintainers review everything
+*                           @rrader26
+
+# Security-sensitive files require owner review
+SECURITY.md                 @rrader26
+package.json                @rrader26
+pnpm-lock.yaml              @rrader26
+.github/workflows/          @rrader26
+
+# Plugin SDK — public API changes need careful review
+src/plugin-sdk/             @rrader26
+
+# Configuration and compatibility
+src/config/                 @rrader26
+src/compat/                 @rrader26
+
+# Gateway protocol (affects all clients)
+src/gateway/protocol/       @rrader26

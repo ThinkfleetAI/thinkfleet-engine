@@ -85,7 +85,7 @@ Details:
   Source: thinkfleetbot-bundled
   Path: /path/to/thinkfleetbot/hooks/bundled/session-memory/HOOK.md
   Handler: /path/to/thinkfleetbot/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.molt.bot/hooks#session-memory
+  Homepage: https://docs.thinkfleet.dev/hooks#session-memory
   Events: command:new
 
 Requirements:

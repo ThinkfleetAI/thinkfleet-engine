@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IMAGE_NAME="${THINKFLEETBOT_INSTALL_E2E_IMAGE:-thinkfleetbot-install-e2e:local}"
-INSTALL_URL="${THINKFLEETBOT_INSTALL_URL:-https://molt.bot/install.sh}"
+INSTALL_URL="${THINKFLEETBOT_INSTALL_URL:-https://thinkfleet.dev/install.sh}"
 
 OPENAI_API_KEY="${OPENAI_API_KEY:-}"
 ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}"

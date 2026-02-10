@@ -8,7 +8,7 @@ vi.mock("./chrome.js", () => ({
   launchClawdChrome: vi.fn(async () => {
     throw new Error("unexpected launch");
   }),
-  resolveClawdUserDataDir: vi.fn(() => "/tmp/clawd"),
+  resolveClawdUserDataDir: vi.fn(() => "/tmp/thinkfleet"),
   stopClawdChrome: vi.fn(async () => {}),
 }));
 

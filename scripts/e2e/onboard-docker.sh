@@ -280,7 +280,7 @@ TRASH
       --skip-health
 
     # Assert config + workspace scaffolding.
-    workspace_dir="$HOME/clawd"
+    workspace_dir="$HOME/thinkfleet"
     config_path="$HOME/.thinkfleetbot/thinkfleetbot.json"
     sessions_dir="$HOME/.thinkfleetbot/agents/main/sessions"
 

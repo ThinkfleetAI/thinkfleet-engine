@@ -91,7 +91,7 @@ kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
 - Docs: `docs/` (images, queue, Pi config). Built output lives in `dist/`.
 - Plugins/extensions: live under `extensions/*` (workspace packages). Keep plugin-only deps in the extension `package.json`; do not add them to the root `package.json` unless core uses them.
 - Plugins: install runs `npm install --omit=dev` in plugin dir; runtime deps must live in `dependencies`. Avoid `workspace:*` in `dependencies` (npm install breaks); put `thinkfleetbot` in `devDependencies` or `peerDependencies` instead (runtime resolves `thinkfleetbot/plugin-sdk` via jiti alias).
-- Installers served from `https://molt.bot/*`: live in the sibling repo `../molt.bot` (`public/install.sh`, `public/install-cli.sh`, `public/install.ps1`).
+- Installers served from `https://thinkfleet.dev/*`: live in the sibling repo `../thinkfleet-site` (`public/install.sh`, `public/install-cli.sh`, `public/install.ps1`).
 - Messaging channels: always consider **all** built-in + extension channels when refactoring shared logic (routing, allowlists, pairing, command gating, onboarding, docs).
   - Core channel docs: `docs/channels/`
   - Core channel code: `src/telegram`, `src/discord`, `src/slack`, `src/signal`, `src/imessage`, `src/web` (WhatsApp web), `src/channels`, `src/routing`
@@ -99,13 +99,13 @@ kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
 - When adding channels/extensions/apps/docs, review `.github/labeler.yml` for label coverage.
 
 ## Docs Linking (Mintlify)
-- Docs are hosted on Mintlify (docs.molt.bot).
+- Docs are hosted on Mintlify (docs.thinkfleet.dev).
 - Internal doc links in `docs/**/*.md`: root-relative, no `.md`/`.mdx` (example: `[Config](/configuration)`).
 - Section cross-references: use anchors on root-relative paths (example: `[Hooks](/configuration#hooks)`).
 - Doc headings and anchors: avoid em dashes and apostrophes in headings because they break Mintlify anchor links.
-- When Peter asks for links, reply with full `https://docs.molt.bot/...` URLs (not root-relative).
-- When you touch docs, end the reply with the `https://docs.molt.bot/...` URLs you referenced.
-- README (GitHub): keep absolute docs URLs (`https://docs.molt.bot/...`) so links work on GitHub.
+- When Peter asks for links, reply with full `https://docs.thinkfleet.dev/...` URLs (not root-relative).
+- When you touch docs, end the reply with the `https://docs.thinkfleet.dev/...` URLs you referenced.
+- README (GitHub): keep absolute docs URLs (`https://docs.thinkfleet.dev/...`) so links work on GitHub.
 - Docs content must be generic: no personal device names/hostnames/paths; use placeholders like `user@gateway-host` and “gateway host”.
 
 ## exe.dev VM ops (general)
@@ -169,8 +169,8 @@ kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
 - When working on a PR: add a changelog entry with the PR number and thank the contributor.
 - When working on an issue: reference the issue in the changelog entry.
 - When merging a PR: leave a PR comment that explains exactly what we did and include the SHA hashes.
-- When merging a PR from a new contributor: add their avatar to the README “Thanks to all clawtributors” thumbnail list.
-- After merging a PR: run `bun scripts/update-clawtributors.ts` if the contributor is missing, then commit the regenerated README.
+- When merging a PR from a new contributor: add their avatar to the README “Thanks to all contributors” thumbnail list.
+- After merging a PR: run `bun scripts/update-contributors.ts` if the contributor is missing, then commit the regenerated README.
 
 ## Shorthand Commands
 - `sync`: if working tree is dirty, commit all changes (pick a sensible Conventional Commit message), then `git pull --rebase`; if rebase conflicts and cannot resolve, stop; otherwise `git push`.
@@ -201,7 +201,7 @@ kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
 - CLI progress: use `src/cli/progress.ts` (`osc-progress` + `@clack/prompts` spinner); don’t hand-roll spinners/bars.
 - Status output: keep tables + ANSI-safe wrapping (`src/terminal/table.ts`); `status --all` = read-only/pasteable, `status --deep` = probes.
 - Gateway currently runs only as the menubar app; there is no separate LaunchAgent/helper label installed. Restart via the ThinkFleetBot Mac app or `scripts/restart-mac.sh`; to verify/kill use `launchctl print gui/$UID | grep thinkfleetbot` rather than assuming a fixed label. **When debugging on macOS, start/stop the gateway via the app, not ad-hoc tmux sessions; kill any temporary tunnels before handoff.**
-- macOS logs: use `./scripts/clawlog.sh` to query unified logs for the ThinkFleetBot subsystem; it supports follow/tail/category filters and expects passwordless sudo for `/usr/bin/log`.
+- macOS logs: use `./scripts/tflog.sh` to query unified logs for the ThinkFleetBot subsystem; it supports follow/tail/category filters and expects passwordless sudo for `/usr/bin/log`.
 - If shared guardrails are available locally, review them; otherwise follow this repo's guidance.
 - SwiftUI state management (iOS/macOS): prefer the `Observation` framework (`@Observable`, `@Bindable`) over `ObservableObject`/`@StateObject`; don’t introduce new `ObservableObject` unless required for compatibility, and migrate existing usages when touching related code.
 - Connection providers: when adding a new connection, update every UI surface and docs (macOS app, web UI, mobile if applicable, onboarding/overview docs) and add matching status + configuration forms so provider lists and settings stay in sync.

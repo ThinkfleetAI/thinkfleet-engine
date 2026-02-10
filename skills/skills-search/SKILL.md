@@ -10,7 +10,7 @@ metadata:
     install:
       - id: "skill-install"
         kind: "skill"
-        source: "clawdhub"
+        source: "thinkfleet-hub"
         slug: "skills-search"
         label: "Install skills-search skill"
 ---
@@ -22,7 +22,7 @@ Search skills from skills.sh registry directly from your terminal.
 ## Install (ThinkFleetBot)
 
 ```bash
-clawdhub install skills-search
+thinkfleet-hub install skills-search
 ```
 
 ## Usage
@@ -111,18 +111,18 @@ ls ~/.thinkfleetbot/workspace/.agents/skills/
 Skills.sh automatically indexes GitHub repos containing `SKILL.md` files. To add your skill:
 
 1. **Create a skill folder** with `SKILL.md` in your GitHub repo
-2. **Publish to ClawdHub** for ThinkFleetBot-specific discovery:
+2. **Publish to ThinkFleet Hub** for ThinkFleetBot-specific discovery:
    ```bash
-   clawdhub publish ./your-skill/ --slug your-skill --name "Your Skill" --version 1.0.0
+   thinkfleet-hub publish ./your-skill/ --slug your-skill --name "Your Skill" --version 1.0.0
    ```
 3. **Install in ThinkFleetBot:**
    ```bash
-   clawdhub install your-skill
+   thinkfleet-hub install your-skill
    ```
 
 ## Notes
 
 - Queries https://skills.sh/api/skills (official skills.sh API)
 - Results sorted by install count (most popular first)
-- **ThinkFleetBot-only**: Install via `clawdhub install skills-search`
-- Skills.sh leaderboard requires GitHub repo (not needed for ClawdHub-only skills)
+- **ThinkFleetBot-only**: Install via `thinkfleet-hub install skills-search`
+- Skills.sh leaderboard requires GitHub repo (not needed for ThinkFleet Hub-only skills)

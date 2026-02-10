@@ -34,11 +34,13 @@ describe("resolveAssistantIdentity avatar normalization", () => {
     const cfg: ThinkfleetConfig = {
       ui: {
         assistant: {
-          avatar: "avatars/clawd.png",
+          avatar: "avatars/thinkfleet.png",
         },
       },
     };
 
-    expect(resolveAssistantIdentity({ cfg, workspaceDir: "" }).avatar).toBe("avatars/clawd.png");
+    expect(resolveAssistantIdentity({ cfg, workspaceDir: "" }).avatar).toBe(
+      "avatars/thinkfleet.png",
+    );
   });
 });

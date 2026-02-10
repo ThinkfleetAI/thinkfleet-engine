@@ -1,7 +1,7 @@
 ---
 name: fitbit-analytics
 description: Fitbit health and fitness data integration. Fetch steps, heart rate, sleep, activity, calories, and trends from Fitbit Web API. Generate automated health reports and alerts. Requires FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_ACCESS_TOKEN, FITBIT_REFRESH_TOKEN.
-metadata: {"openclaw":{"requires":{"bins":["python3"],"env":["FITBIT_CLIENT_ID","FITBIT_CLIENT_SECRET","FITBIT_ACCESS_TOKEN","FITBIT_REFRESH_TOKEN"]},"homepage":"https://github.com/kesslerio/fitbit-analytics-openclaw-skill"}}
+metadata: {"thinkfleet":{"requires":{"bins":["python3"],"env":["FITBIT_CLIENT_ID","FITBIT_CLIENT_SECRET","FITBIT_ACCESS_TOKEN","FITBIT_REFRESH_TOKEN"]},"homepage":"https://github.com/kesslerio/fitbit-analytics-thinkfleet-skill"}}
 ---
 
 # Fitbit Analytics
@@ -176,11 +176,11 @@ Required:
 
 ## Automation (Cron Jobs)
 
-Cron jobs are configured in OpenClaw's gateway, not in this repo. Add these to your OpenClaw setup:
+Cron jobs are configured in ThinkFleet's gateway, not in this repo. Add these to your ThinkFleet setup:
 
 ### Daily Morning Briefing (8:00 AM)
 ```bash
-openclaw cron add \
+thinkfleet cron add \
   --name "Morning Fitbit Health Report" \
   --cron "0 8 * * *" \
   --tz "America/Los_Angeles" \

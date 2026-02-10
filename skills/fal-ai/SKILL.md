@@ -4,7 +4,7 @@ description: Generate images, videos, and audio via fal.ai API (FLUX, SDXL, Whis
 version: 0.1.0
 metadata:
   {
-    "openclaw": { "requires": { "env": ["FAL_KEY"] }, "primaryEnv": "FAL_KEY" },
+    "thinkfleet": { "requires": { "env": ["FAL_KEY"] }, "primaryEnv": "FAL_KEY" },
   }
 ---
 

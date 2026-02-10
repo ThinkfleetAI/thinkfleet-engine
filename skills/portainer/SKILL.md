@@ -258,7 +258,7 @@ echo "PORTAINER_API_KEY=ptr_your_token" >> ~/.thinkfleetbot/.env
 
 ---
 
-## 🔗 Integration with Clawd
+## 🔗 Integration with ThinkFleet
 
 ```
 "Redeploy the website"
@@ -295,7 +295,7 @@ echo "PORTAINER_API_KEY=ptr_your_token" >> ~/.thinkfleetbot/.env
 
 **Author:** Andy Steinberger (with help from his ThinkFleetBot Owen the Frog 🐸)  
 **Powered by:** [Portainer](https://portainer.io/) API  
-**Part of:** [ThinkFleetBot](https://clawdhub.com) Skills Collection
+**Part of:** [ThinkFleetBot](https://thinkfleet-hub.com) Skills Collection
 
 ---
 

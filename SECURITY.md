@@ -1,6 +1,6 @@
 # Security Policy
 
-If you believe you've found a security issue in ThinkFleetBot, please report it privately.
+If you believe you've found a security issue in ThinkFleet Engine, please report it privately.
 
 ## Reporting
 
@@ -11,17 +11,17 @@ If you believe you've found a security issue in ThinkFleetBot, please report it 
 
 For threat model + hardening guidance (including `thinkfleetbot security audit --deep` and `--fix`), see:
 
-- `https://docs.molt.bot/gateway/security`
+- `https://docs.thinkfleet.dev/gateway/security`
 
 ### Web Interface Safety
 
-ThinkFleetBot's web interface is intended for local use only. Do **not** bind it to the public internet; it is not hardened for public exposure.
+ThinkFleet Engine's web interface is intended for local use only. Do **not** bind it to the public internet; it is not hardened for public exposure.
 
 ## Runtime Requirements
 
 ### Node.js Version
 
-ThinkFleetBot requires **Node.js 22.12.0 or later** (LTS). This version includes important security patches:
+ThinkFleet Engine requires **Node.js 22.12.0 or later** (LTS). This version includes important security patches:
 
 - CVE-2025-59466: async_hooks DoS vulnerability
 - CVE-2026-21636: Permission model bypass vulnerability
@@ -34,7 +34,7 @@ node --version  # Should be v22.12.0 or later
 
 ### Docker Security
 
-When running ThinkFleetBot in Docker:
+When running ThinkFleet Engine in Docker:
 
 1. The official image runs as a non-root user (`node`) for reduced attack surface
 2. Use `--read-only` flag when possible for additional filesystem protection

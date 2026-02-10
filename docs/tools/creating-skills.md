@@ -38,4 +38,4 @@ Ask your agent to "refresh skills" or restart the gateway. ThinkFleetBot will di
 - **Test Locally**: Use `thinkfleetbot agent --message "use my new skill"` to test.
 
 ## Shared Skills
-You can also browse and contribute skills to [ClawdHub](https://clawdhub.com).
+You can also browse and contribute skills to [ThinkFleet Hub](https://thinkfleet-hub.com).

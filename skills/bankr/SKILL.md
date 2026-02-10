@@ -38,9 +38,9 @@ EOF
 
 API keys can be created and managed at [bankr.bot/api](https://bankr.bot/api). The key must have **Agent API** access enabled.
 
-#### Option B: Create a new account (guided by Clawd)
+#### Option B: Create a new account (guided by ThinkFleet)
 
-Clawd can walk the user through the full signup flow:
+ThinkFleet can walk the user through the full signup flow:
 
 1. **Sign up / Sign in** — User provides their email address. Bankr sends a one-time passcode (OTP) to that email. Creating a new account automatically provisions **EVM wallets** (Base, Ethereum, Polygon, Unichain) and a **Solana wallet** — no manual wallet setup needed.
 2. **Enter OTP** — User checks their email and provides the OTP code.

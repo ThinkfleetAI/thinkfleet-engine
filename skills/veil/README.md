@@ -17,8 +17,8 @@ It wraps the local `veildotcash-sdk` checkout and optionally uses Bankr Agent AP
 
   **Option B: Clone from GitHub**
   ```bash
-  mkdir -p ~/.openclaw/workspace/repos
-  cd ~/.openclaw/workspace/repos
+  mkdir -p ~/.thinkfleetbot/workspace/repos
+  cd ~/.thinkfleetbot/workspace/repos
   git clone https://github.com/veildotcash/veildotcash-sdk.git
   cd veildotcash-sdk
   npm ci && npm run build
