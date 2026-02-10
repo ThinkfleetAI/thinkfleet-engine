@@ -79,6 +79,16 @@ RUN pnpm ui:build
 
 ENV NODE_ENV=production
 
+# Scoped sudo for Super Bot / developer mode (only apt-get, no full root)
+RUN apt-get update && apt-get install -y --no-install-recommends sudo \
+  && echo "node ALL=(ALL) NOPASSWD: /usr/bin/apt-get, /usr/bin/apt" >> /etc/sudoers.d/node-apt \
+  && chmod 0440 /etc/sudoers.d/node-apt \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Dev-install helper for persistent apt packages across restarts
+COPY scripts/dev-install.sh /usr/local/bin/dev-install
+RUN chmod +x /usr/local/bin/dev-install
+
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges

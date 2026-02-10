@@ -17,7 +17,13 @@ import { createSessionsHistoryTool } from "./tools/sessions-history-tool.js";
 import { createSessionsListTool } from "./tools/sessions-list-tool.js";
 import { createSessionsSendTool } from "./tools/sessions-send-tool.js";
 import { createSessionsSpawnTool } from "./tools/sessions-spawn-tool.js";
-import { createWebFetchTool, createWebSearchTool } from "./tools/web-tools.js";
+import {
+  createWebFetchTool,
+  createWebSearchTool,
+  createExaAnswerTool,
+  createExaContentsTool,
+  createExaResearchTool,
+} from "./tools/web-tools.js";
 import { createTtsTool } from "./tools/tts-tool.js";
 import { createPublishFileTool } from "./tools/publish-file-tool.js";
 import { createSaasTool } from "./tools/saas-tool.js";
@@ -76,6 +82,18 @@ export function createThinkfleetTools(options?: {
     sandboxed: options?.sandboxed,
   });
   const webFetchTool = createWebFetchTool({
+    config: options?.config,
+    sandboxed: options?.sandboxed,
+  });
+  const exaAnswerTool = createExaAnswerTool({
+    config: options?.config,
+    sandboxed: options?.sandboxed,
+  });
+  const exaContentsTool = createExaContentsTool({
+    config: options?.config,
+    sandboxed: options?.sandboxed,
+  });
+  const exaResearchTool = createExaResearchTool({
     config: options?.config,
     sandboxed: options?.sandboxed,
   });
@@ -145,6 +163,9 @@ export function createThinkfleetTools(options?: {
     }),
     ...(webSearchTool ? [webSearchTool] : []),
     ...(webFetchTool ? [webFetchTool] : []),
+    ...(exaAnswerTool ? [exaAnswerTool] : []),
+    ...(exaContentsTool ? [exaContentsTool] : []),
+    ...(exaResearchTool ? [exaResearchTool] : []),
     ...(imageTool ? [imageTool] : []),
     createPublishFileTool({
       agentSessionKey: options?.agentSessionKey,

@@ -58,6 +58,7 @@ const PROVIDER_TO_ENV: Record<string, string> = {
   deepgram: "DEEPGRAM_API_KEY",
   // Search
   brave: "BRAVE_API_KEY",
+  exa: "EXA_API_KEY",
   // E-Commerce
   "shopify-store-url": "SHOPIFY_STORE_URL",
   "shopify-access-token": "SHOPIFY_ACCESS_TOKEN",
@@ -155,6 +156,7 @@ interface CredentialResponse {
     source?: KeySource;
   }>;
   budgetExhausted?: boolean;
+  searchBudgetExhausted?: boolean;
 }
 
 // In-memory cache: provider → { value, source, fetchedAt }
@@ -164,6 +166,7 @@ const cache = new Map<string, CachedCredential>();
 let allCredentials: Map<string, { value: string; source: KeySource }> | null = null;
 let lastFetchAt = 0;
 let _budgetExhausted = false;
+let _searchBudgetExhausted = false;
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
 const agentDbId = process.env.THINKFLEET_AGENT_DB_ID;
@@ -213,9 +216,15 @@ export async function fetchCredentialFromSaas(
       const data = (await response.json()) as CredentialResponse;
       allCredentials = new Map<string, { value: string; source: KeySource }>();
       _budgetExhausted = data.budgetExhausted ?? false;
+      _searchBudgetExhausted = data.searchBudgetExhausted ?? false;
 
       if (_budgetExhausted) {
         console.warn("[saas-cred] Token budget exhausted — platform keys will not be served");
+      }
+      if (_searchBudgetExhausted) {
+        console.warn(
+          "[saas-cred] Search budget exhausted — platform search keys will not be served",
+        );
       }
 
       for (const cred of data.credentials) {
@@ -256,6 +265,13 @@ export function getKeySource(provider: string): KeySource | null {
  */
 export function isBudgetExhausted(): boolean {
   return _budgetExhausted;
+}
+
+/**
+ * Returns true if the platform search budget is exhausted.
+ */
+export function isSearchBudgetExhausted(): boolean {
+  return _searchBudgetExhausted;
 }
 
 const LLM_PROVIDERS = new Set([

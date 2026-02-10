@@ -45,6 +45,8 @@ export interface SaasAgentConfig {
   expertisePack?: string | null;
   /** Maximum concurrent tasks this agent can execute (from subscription plan) */
   maxConcurrentTasks: number;
+  /** Super Bot mode: writable FS, full exec, persistent packages */
+  developerMode: boolean;
 }
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
@@ -225,6 +227,89 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
 
     console.log(
       `[saas-config] Reasoning mode enabled: thinking=${thinkingLevel}, blockStreaming=${blockStreaming}, heartbeat=${heartbeatEnabled ? heartbeatInterval : "off"}`,
+    );
+  }
+
+  // ============================================================================
+  // SUPER BOT / DEVELOPER MODE
+  // ============================================================================
+  if (config.developerMode) {
+    // Full exec access — no approval prompts, no allowlist restrictions
+    setConfigOverride("tools.exec.security", "full");
+    setConfigOverride("tools.exec.ask", "off");
+
+    // Prepend user-space package bin dirs to PATH for the agent's exec tool
+    setConfigOverride("tools.exec.pathPrepend", [
+      "/home/node/.local/bin", // pip --user installs
+      "/home/node/.npm-global/bin", // npm global installs
+    ]);
+
+    // Write exec-approvals.json with full access (consumed by exec-approvals subsystem)
+    const os = await import("node:os");
+    const approvalsPath = path.join(os.homedir(), ".thinkfleet", "exec-approvals.json");
+    try {
+      const approvals = {
+        version: 1,
+        defaults: {
+          security: "full",
+          ask: "off",
+          autoAllowSkills: true,
+        },
+        agents: {},
+      };
+      fs.mkdirSync(path.dirname(approvalsPath), { recursive: true });
+      fs.writeFileSync(approvalsPath, JSON.stringify(approvals, null, 2), { mode: 0o600 });
+      console.log(`[saas-config] Wrote exec-approvals with full access to ${approvalsPath}`);
+    } catch (error) {
+      console.error("[saas-config] Error writing exec-approvals.json:", error);
+    }
+
+    // Write DEV_MODE.md to workspace with package installation guide
+    const devModePath = path.join(workspaceDir, "DEV_MODE.md");
+    try {
+      const content = [
+        "# Super Bot — Developer Mode",
+        "",
+        "This agent is running with Super Bot mode enabled. You have full developer autonomy.",
+        "",
+        "## Package Installation",
+        "",
+        "### System packages (apt-get) — persistent across restarts",
+        "```bash",
+        "dev-install <package1> [package2] ...   # Recommended: installs + records to manifest",
+        "sudo apt-get install -y <package>       # Direct install (won't persist across restart)",
+        "```",
+        "",
+        "### Python packages — persistent automatically",
+        "```bash",
+        "pip install <package>                   # Installs to ~/.local/ (PVC-backed)",
+        "```",
+        "",
+        "### Node packages — persistent automatically",
+        "```bash",
+        "npm install -g <package>                # Installs to ~/.npm-global/ (PVC-backed)",
+        "```",
+        "",
+        "## What Persists Across Restarts",
+        "- pip packages (`~/.local/`) — automatic",
+        "- npm global packages (`~/.npm-global/`) — automatic",
+        "- apt packages — only if installed via `dev-install` (records to manifest, replayed on startup)",
+        "- Everything in `~/.thinkfleet/` and workspace — automatic (PVC-backed)",
+        "",
+        "## Paths",
+        "- User binaries: `~/.local/bin`, `~/.npm-global/bin` (on PATH)",
+        "- Dev manifest: `~/.thinkfleet/dev-packages.json`",
+        "",
+      ].join("\n");
+      fs.mkdirSync(path.dirname(devModePath), { recursive: true });
+      fs.writeFileSync(devModePath, content, "utf-8");
+      console.log(`[saas-config] Wrote developer mode guide to ${devModePath}`);
+    } catch (error) {
+      console.error("[saas-config] Error writing DEV_MODE.md:", error);
+    }
+
+    console.log(
+      "[saas-config] Super Bot / developer mode enabled: full exec, user-space packages, writable FS",
     );
   }
 
