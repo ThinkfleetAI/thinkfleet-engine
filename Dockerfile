@@ -48,7 +48,8 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/sh
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ThinkFleet Skills Hub CLI for skill management
-RUN npm install -g thinkfleet
+# Package still published as 'clawdbot' on npm (pending rebrand publish)
+RUN npm install -g clawdbot
 
 RUN corepack enable
 
