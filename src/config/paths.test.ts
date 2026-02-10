@@ -37,22 +37,19 @@ describe("oauth paths", () => {
 });
 
 describe("state + config path candidates", () => {
-  it("prefers THINKFLEET_STATE_DIR over legacy state dir env", () => {
+  it("respects THINKFLEET_STATE_DIR env override", () => {
     const env = {
-      THINKFLEET_STATE_DIR: "/new/state",
-      THINKFLEET_STATE_DIR: "/legacy/state",
+      THINKFLEET_STATE_DIR: "/custom/state",
     } as NodeJS.ProcessEnv;
 
-    expect(resolveStateDir(env, () => "/home/test")).toBe(path.resolve("/new/state"));
+    expect(resolveStateDir(env, () => "/home/test")).toBe(path.resolve("/custom/state"));
   });
 
-  it("orders default config candidates as new then legacy", () => {
+  it("returns default config candidate path", () => {
     const home = "/home/test";
     const candidates = resolveDefaultConfigCandidates({} as NodeJS.ProcessEnv, () => home);
+    expect(candidates).toHaveLength(1);
     expect(candidates[0]).toBe(path.join(home, ".thinkfleet", "thinkfleet.json"));
-    expect(candidates[1]).toBe(path.join(home, ".thinkfleet", "thinkfleet.json"));
-    expect(candidates[2]).toBe(path.join(home, ".thinkfleet", "thinkfleet.json"));
-    expect(candidates[3]).toBe(path.join(home, ".thinkfleet", "thinkfleet.json"));
   });
 
   it("prefers ~/.thinkfleet when it exists and legacy dir is missing", async () => {
@@ -74,9 +71,7 @@ describe("state + config path candidates", () => {
     const previousHomeDrive = process.env.HOMEDRIVE;
     const previousHomePath = process.env.HOMEPATH;
     const previousThinkfleetConfig = process.env.THINKFLEET_CONFIG_PATH;
-    const previousThinkFleetBotConfig = process.env.THINKFLEET_CONFIG_PATH;
     const previousThinkfleetState = process.env.THINKFLEET_STATE_DIR;
-    const previousThinkFleetBotState = process.env.THINKFLEET_STATE_DIR;
     try {
       const legacyDir = path.join(root, ".thinkfleet");
       await fs.mkdir(legacyDir, { recursive: true });
@@ -91,8 +86,6 @@ describe("state + config path candidates", () => {
         process.env.HOMEPATH = root.slice(parsed.root.length - 1);
       }
       delete process.env.THINKFLEET_CONFIG_PATH;
-      delete process.env.THINKFLEET_CONFIG_PATH;
-      delete process.env.THINKFLEET_STATE_DIR;
       delete process.env.THINKFLEET_STATE_DIR;
 
       vi.resetModules();
@@ -112,12 +105,8 @@ describe("state + config path candidates", () => {
       else process.env.HOMEPATH = previousHomePath;
       if (previousThinkfleetConfig === undefined) delete process.env.THINKFLEET_CONFIG_PATH;
       else process.env.THINKFLEET_CONFIG_PATH = previousThinkfleetConfig;
-      if (previousThinkFleetBotConfig === undefined) delete process.env.THINKFLEET_CONFIG_PATH;
-      else process.env.THINKFLEET_CONFIG_PATH = previousThinkFleetBotConfig;
       if (previousThinkfleetState === undefined) delete process.env.THINKFLEET_STATE_DIR;
       else process.env.THINKFLEET_STATE_DIR = previousThinkfleetState;
-      if (previousThinkFleetBotState === undefined) delete process.env.THINKFLEET_STATE_DIR;
-      else process.env.THINKFLEET_STATE_DIR = previousThinkFleetBotState;
       await fs.rm(root, { recursive: true, force: true });
       vi.resetModules();
     }

@@ -2,7 +2,7 @@
 name: dexcom
 description: Monitor blood glucose via Dexcom G7/G6 CGM
 homepage: https://www.dexcom.com
-metadata: {"clawdbot":{"emoji":"🩸","requires":{"bins":["uv"],"env":["DEXCOM_USER","DEXCOM_PASSWORD"]},"primaryEnv":"DEXCOM_USER","install":[{"id":"uv-brew","kind":"brew","formula":"uv","bins":["uv"],"label":"Install uv (brew)"}]}}
+metadata: {"thinkfleet":{"emoji":"🩸","requires":{"bins":["uv"],"env":["DEXCOM_USER","DEXCOM_PASSWORD"]},"primaryEnv":"DEXCOM_USER","install":[{"id":"uv-brew","kind":"brew","formula":"uv","bins":["uv"],"label":"Install uv (brew)"}]}}
 ---
 
 # Dexcom CGM
@@ -18,7 +18,7 @@ export DEXCOM_PASSWORD="your-password"
 export DEXCOM_REGION="ous"  # or "us" (optional, defaults to "ous")
 ```
 
-Or configure in `~/.clawdbot/clawdbot.json`:
+Or configure in `~/.thinkfleet/thinkfleet.json`:
 ```json5
 {
   skills: {

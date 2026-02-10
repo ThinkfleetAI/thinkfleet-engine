@@ -5,10 +5,10 @@ set -euo pipefail
 OPENCLAW_WORKSPACE_DEFAULT="$HOME/.openclaw/workspace"
 OPENCLAW_WORKSPACE="${OPENCLAW_WORKSPACE:-$OPENCLAW_WORKSPACE_DEFAULT}"
 SDK_REPO="${VEIL_SDK_REPO:-$OPENCLAW_WORKSPACE/repos/veildotcash-sdk}"
-VEIL_DIR="$HOME/.clawdbot/skills/veil"
+VEIL_DIR="$HOME/.thinkfleet/skills/veil"
 VEIL_ENV="$VEIL_DIR/.env.veil"
 VEIL_ENV_EXTRA="$VEIL_DIR/.env"   # optional (RPC_URL, etc)
-BANKR_CONFIG="$HOME/.clawdbot/skills/bankr/config.json"
+BANKR_CONFIG="$HOME/.thinkfleet/skills/bankr/config.json"
 
 need_bin() {
   command -v "$1" >/dev/null 2>&1 || { echo "Missing required binary: $1" >&2; exit 1; }

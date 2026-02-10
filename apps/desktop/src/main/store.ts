@@ -18,6 +18,10 @@ export interface StoreSchema {
   proxyBypass: string;
   // Local agent
   localAgentEnabled: boolean;
+  // Desktop automation
+  automationEnabled: boolean;
+  automationPort: number;
+  automationAutoStart: boolean;
 }
 
 export type Store = ElectronStore<StoreSchema>;
@@ -40,6 +44,9 @@ export function createStore(): Store {
       proxyUrl: "",
       proxyBypass: "",
       localAgentEnabled: false,
+      automationEnabled: true,
+      automationPort: 5089,
+      automationAutoStart: true,
     },
   });
 }

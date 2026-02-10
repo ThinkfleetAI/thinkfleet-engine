@@ -21,7 +21,9 @@ vi.mock("./embeddings.js", () => {
   };
 });
 
-describe("memory vector dedupe", () => {
+const nodeMajor = Number.parseInt(process.versions.node.split(".")[0], 10);
+
+describe.skipIf(nodeMajor < 22)("memory vector dedupe", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;

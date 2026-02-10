@@ -1,5 +1,6 @@
 import type { IpcMain, BrowserWindow } from "electron";
 import type { GatewayManager } from "./gateway-manager.js";
+import type { DesktopAutomationManager } from "./desktop-automation-manager.js";
 import type { AuthManager } from "./auth.js";
 import type { Store } from "./store.js";
 import { app } from "electron";
@@ -10,6 +11,7 @@ export function registerIpcHandlers(
   auth: AuthManager,
   store: Store,
   getMainWindow: () => BrowserWindow | null,
+  automation?: DesktopAutomationManager,
 ): void {
   // --- Gateway ---
   ipcMain.handle("gateway:start", async () => {
@@ -105,4 +107,48 @@ export function registerIpcHandlers(
 
   // --- App ---
   ipcMain.handle("app:version", () => app.getVersion());
+
+  // --- Desktop Automation ---
+  if (automation) {
+    ipcMain.handle("automation:start", async () => {
+      await automation.start();
+      return {
+        status: automation.status,
+        port: automation.port,
+        platform: automation.platform,
+      };
+    });
+
+    ipcMain.handle("automation:stop", () => {
+      automation.stop();
+      return { status: automation.status };
+    });
+
+    ipcMain.handle("automation:restart", async () => {
+      await automation.restart();
+      return {
+        status: automation.status,
+        port: automation.port,
+        platform: automation.platform,
+      };
+    });
+
+    ipcMain.handle("automation:status", async () => {
+      const health = await automation.checkHealth();
+      return {
+        status: automation.status,
+        port: automation.port,
+        platform: automation.platform,
+        health,
+      };
+    });
+
+    // Forward automation status changes to renderer
+    automation.onStatusChange((state) => {
+      const win = getMainWindow();
+      if (win && !win.isDestroyed()) {
+        win.webContents.send("automation:status-change", state);
+      }
+    });
+  }
 }

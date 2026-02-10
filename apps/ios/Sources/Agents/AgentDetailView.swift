@@ -102,7 +102,7 @@ struct AgentDetailView: View {
     private func tabContent(_ agent: Agent) -> some View {
         switch selectedTab {
         case .chat:
-            AgentChatView(agent: agent)
+            SaaSChatView(agentId: agent.id)
         case .overview:
             AgentOverviewTab(agent: agent)
         case .tasks:
@@ -164,10 +164,10 @@ struct AgentDetailView: View {
     private func statusColor(_ status: AgentStatus) -> Color {
         switch status {
         case .RUNNING: .green
-        case .STOPPED: .secondary
-        case .PENDING: .yellow
+        case .STOPPED, .TERMINATED: .secondary
+        case .PENDING, .PROVISIONING: .yellow
         case .ERROR: .red
-        case .TERMINATED: .secondary
+        case .DELETING: .orange
         }
     }
 }
@@ -207,7 +207,9 @@ struct AgentTasksTab: View {
                 ContentUnavailableView("No Tasks", systemImage: "checklist", description: Text("No tasks assigned to this agent."))
             } else {
                 List(tasks) { task in
-                    TaskRow(task: task, agents: appState.agents)
+                    NavigationLink(destination: TaskDetailView(task: task, agents: appState.agents)) {
+                        TaskRow(task: task, agents: appState.agents)
+                    }
                 }
                 .refreshable { await loadTasks() }
             }

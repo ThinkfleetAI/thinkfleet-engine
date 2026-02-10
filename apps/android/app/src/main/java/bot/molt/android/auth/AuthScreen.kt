@@ -1,12 +1,16 @@
 package bot.molt.android.auth
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.thinkfleet.android.R
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,10 +23,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AuthScreen(appState: AppState, onAuthenticated: () -> Unit) {
+    val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
-    var isSignUp by remember { mutableStateOf(false) }
     var isForgotPassword by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -38,36 +41,20 @@ fun AuthScreen(appState: AppState, onAuthenticated: () -> Unit) {
     ) {
         Spacer(Modifier.height(48.dp))
 
-        Icon(
-            Icons.Default.Shield,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary,
+        Image(
+            painter = painterResource(R.drawable.app_logo),
+            contentDescription = "ThinkFleet",
+            modifier = Modifier.size(80.dp),
         )
         Spacer(Modifier.height(12.dp))
         Text("ThinkFleet", style = MaterialTheme.typography.headlineLarge)
         Text(
-            when {
-                isSignUp -> "Create your account"
-                isForgotPassword -> "Reset your password"
-                else -> "Sign in to continue"
-            },
+            if (isForgotPassword) "Reset your password" else "Sign in to continue",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(Modifier.height(32.dp))
-
-        if (isSignUp) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-            )
-            Spacer(Modifier.height(12.dp))
-        }
 
         OutlinedTextField(
             value = email,
@@ -109,23 +96,14 @@ fun AuthScreen(appState: AppState, onAuthenticated: () -> Unit) {
                     errorMessage = null
                     successMessage = null
                     try {
-                        when {
-                            isForgotPassword -> {
-                                appState.authService.forgotPassword(email)
-                                successMessage = "Check your email for a reset link."
-                            }
-                            isSignUp -> {
-                                val (token, user) = appState.authService.signUpWithEmail(name, email, password)
-                                appState.sessionStore.setSession(token, user)
-                                appState.onAuthenticated()
-                                onAuthenticated()
-                            }
-                            else -> {
-                                val (token, user) = appState.authService.signInWithEmail(email, password)
-                                appState.sessionStore.setSession(token, user)
-                                appState.onAuthenticated()
-                                onAuthenticated()
-                            }
+                        if (isForgotPassword) {
+                            appState.authService.forgotPassword(email)
+                            successMessage = "Check your email for a reset link."
+                        } else {
+                            val tokens = appState.authService.signInWithEmail(email, password)
+                            appState.sessionStore.setSession(tokens.signedToken, rawToken = tokens.rawToken, user = tokens.user)
+                            appState.onAuthenticated()
+                            onAuthenticated()
                         }
                     } catch (e: Exception) {
                         errorMessage = e.message ?: "An error occurred."
@@ -134,18 +112,12 @@ fun AuthScreen(appState: AppState, onAuthenticated: () -> Unit) {
                 }
             },
             modifier = Modifier.fillMaxWidth().height(48.dp),
-            enabled = !isLoading && email.isNotBlank() && (isForgotPassword || password.isNotBlank()) && (!isSignUp || name.isNotBlank()),
+            enabled = !isLoading && email.isNotBlank() && (isForgotPassword || password.isNotBlank()),
         ) {
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
             } else {
-                Text(
-                    when {
-                        isForgotPassword -> "Send Reset Link"
-                        isSignUp -> "Sign Up"
-                        else -> "Sign In"
-                    }
-                )
+                Text(if (isForgotPassword) "Send Reset Link" else "Sign In")
             }
         }
 
@@ -153,22 +125,18 @@ fun AuthScreen(appState: AppState, onAuthenticated: () -> Unit) {
 
         if (!isForgotPassword) {
             TextButton(onClick = {
-                isSignUp = !isSignUp
-                errorMessage = null
-                successMessage = null
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.thinkfleet.ai/auth/signup")))
             }) {
-                Text(if (isSignUp) "Already have an account? Sign in" else "Don't have an account? Sign up")
+                Text("Don't have an account? Sign up")
             }
         }
 
-        if (!isSignUp) {
-            TextButton(onClick = {
-                isForgotPassword = !isForgotPassword
-                errorMessage = null
-                successMessage = null
-            }) {
-                Text(if (isForgotPassword) "Back to sign in" else "Forgot password?")
-            }
+        TextButton(onClick = {
+            isForgotPassword = !isForgotPassword
+            errorMessage = null
+            successMessage = null
+        }) {
+            Text(if (isForgotPassword) "Back to sign in" else "Forgot password?")
         }
     }
 }

@@ -157,7 +157,10 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     const basename = path.basename(snapshot.path);
     if (basename === "thinkfleet.json") {
       const canonicalPath = path.join(path.dirname(snapshot.path), "thinkfleet.json");
-      if (!fs.existsSync(canonicalPath)) {
+      if (
+        path.resolve(snapshot.path) !== path.resolve(canonicalPath) &&
+        !fs.existsSync(canonicalPath)
+      ) {
         moveLegacyConfigFile(snapshot.path, canonicalPath);
         note(`- Config: ${snapshot.path} → ${canonicalPath}`, "Doctor changes");
         snapshot = await readConfigFileSnapshot();

@@ -1,7 +1,7 @@
 ---
 name: workout
 description: Track workouts, log sets, manage exercises and templates with workout-cli. Supports multi-user profiles. Use when helping users record gym sessions, view history, or analyze strength progression.
-metadata: {"clawdbot":{"emoji":"🏋️","requires":{"bins":["workout"]}}}
+metadata: {"thinkfleet":{"emoji":"🏋️","requires":{"bins":["workout"]}}}
 ---
 
 # Workout CLI

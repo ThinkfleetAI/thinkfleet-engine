@@ -4,7 +4,7 @@ set -euo pipefail
 # Neynar Farcaster API wrapper
 # Usage: neynar.sh <command> [args]
 
-CONFIG_FILE="${HOME}/.clawdbot/skills/neynar/config.json"
+CONFIG_FILE="${HOME}/.thinkfleet/skills/neynar/config.json"
 API_BASE="https://api.neynar.com/v2/farcaster"
 
 # Load config
@@ -13,7 +13,7 @@ if [[ -f "$CONFIG_FILE" ]]; then
     SIGNER_UUID=$(jq -r '.signerUuid // empty' "$CONFIG_FILE")
 else
     echo "Error: Config not found at $CONFIG_FILE" >&2
-    echo "Create it with: mkdir -p ~/.clawdbot/skills/neynar && echo '{\"apiKey\":\"YOUR_KEY\"}' > $CONFIG_FILE" >&2
+    echo "Create it with: mkdir -p ~/.thinkfleet/skills/neynar && echo '{\"apiKey\":\"YOUR_KEY\"}' > $CONFIG_FILE" >&2
     exit 1
 fi
 

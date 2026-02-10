@@ -1,24 +1,26 @@
 package bot.molt.android.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import bot.molt.android.agents.AgentListScreen
 import bot.molt.android.deliverables.DeliverableListScreen
 import bot.molt.android.model.AppState
-import bot.molt.android.settings.AccountSettingsScreen
 import bot.molt.android.tasks.TaskBoardScreen
 import kotlinx.coroutines.launch
 
 enum class MainTab(val label: String) {
     Agents("Agents"),
-    Chat("Chat"),
     Tasks("Tasks"),
     Deliverables("Deliverables"),
     Settings("Settings"),
@@ -43,7 +45,6 @@ fun MainNavScreen(appState: AppState) {
                             Icon(
                                 when (tab) {
                                     MainTab.Agents -> Icons.Default.Memory
-                                    MainTab.Chat -> Icons.Default.ChatBubble
                                     MainTab.Tasks -> Icons.Default.Checklist
                                     MainTab.Deliverables -> Icons.Default.Inventory
                                     MainTab.Settings -> Icons.Default.Settings
@@ -60,7 +61,6 @@ fun MainNavScreen(appState: AppState) {
         Box(Modifier.padding(padding)) {
             when (selectedTab) {
                 MainTab.Agents -> AgentListScreen(appState)
-                MainTab.Chat -> ChatRootScreen(appState)
                 MainTab.Tasks -> TaskBoardScreen(appState)
                 MainTab.Deliverables -> DeliverableListScreen(appState)
                 MainTab.Settings -> SaaSSettingsScreen(appState)
@@ -75,12 +75,7 @@ fun SaaSSettingsScreen(appState: AppState) {
     val currentOrg by appState.currentOrganization.collectAsState()
     val organizations by appState.organizations.collectAsState()
     val scope = rememberCoroutineScope()
-    var showAccount by remember { mutableStateOf(false) }
-
-    if (showAccount) {
-        AccountSettingsScreen(appState) { showAccount = false }
-        return
-    }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) }
@@ -90,7 +85,6 @@ fun SaaSSettingsScreen(appState: AppState) {
                 headlineContent = { Text(user?.name ?: "User") },
                 supportingContent = { Text(user?.email ?: "") },
                 leadingContent = { Icon(Icons.Default.Person, contentDescription = null) },
-                modifier = Modifier.clickable { showAccount = true },
             )
             HorizontalDivider()
 
@@ -130,9 +124,13 @@ fun SaaSSettingsScreen(appState: AppState) {
             }
 
             ListItem(
-                headlineContent = { Text("Account Settings") },
-                leadingContent = { Icon(Icons.Default.ManageAccounts, contentDescription = null) },
-                modifier = Modifier.clickable { showAccount = true },
+                headlineContent = { Text("Manage on Web") },
+                supportingContent = { Text("Members, credentials, billing & more") },
+                leadingContent = { Icon(Icons.Default.Language, contentDescription = null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null) },
+                modifier = Modifier.clickable {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.thinkfleet.ai/app")))
+                },
             )
             HorizontalDivider()
 

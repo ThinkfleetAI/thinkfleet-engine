@@ -28,7 +28,7 @@ import { makeBootstrapWarn, resolveBootstrapContextForRun } from "../../bootstra
 import { resolveThinkfleetDocsPath } from "../../docs-path.js";
 import { resolveModelAuthMode } from "../../model-auth.js";
 import { bootMcpTools } from "../../../mcp/boot.js";
-import { injectSaasCredentialsToEnv } from "../../saas-credential-client.js";
+import { injectPluginEnv } from "../../env-injectors.js";
 import {
   isCloudCodeAssistFormatError,
   resolveBootstrapMaxChars,
@@ -159,11 +159,11 @@ export async function runEmbeddedAttempt(
   await fs.mkdir(effectiveWorkspace, { recursive: true });
 
   let restoreSkillEnv: (() => void) | undefined;
-  let restoreSaasEnv: (() => void) | undefined;
+  let restorePluginEnv: (() => void) | undefined;
   process.chdir(effectiveWorkspace);
   try {
-    // Inject SaaS credentials as env vars before skill/tool setup
-    restoreSaasEnv = await injectSaasCredentialsToEnv();
+    // Inject plugin-provided env vars (e.g. SaaS credentials) before skill/tool setup
+    restorePluginEnv = await injectPluginEnv();
 
     const shouldLoadSkillEntries = !params.skillsSnapshot || !params.skillsSnapshot.resolvedSkills;
     const skillEntries = shouldLoadSkillEntries
@@ -971,7 +971,7 @@ export async function runEmbeddedAttempt(
     }
   } finally {
     restoreSkillEnv?.();
-    restoreSaasEnv?.();
+    restorePluginEnv?.();
     process.chdir(prevCwd);
   }
 }

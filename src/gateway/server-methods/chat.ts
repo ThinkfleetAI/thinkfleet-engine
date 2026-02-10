@@ -19,6 +19,7 @@ import { INTERNAL_MESSAGE_CHANNEL } from "../../utils/message-channel.js";
 import {
   abortChatRunById,
   abortChatRunsForSessionKey,
+  type ChatAbortOps,
   isChatStopCommandText,
   resolveChatRunExpiresAtMs,
 } from "../chat-abort.js";
@@ -430,6 +431,22 @@ export const chatHandlers: GatewayRequestHandlers = {
       });
       return;
     }
+
+    // Auto-abort in-flight runs for this session so rapid messages
+    // don't each trigger an independent LLM response.
+    abortChatRunsForSessionKey(
+      {
+        chatAbortControllers: context.chatAbortControllers,
+        chatRunBuffers: context.chatRunBuffers,
+        chatDeltaSentAt: context.chatDeltaSentAt,
+        chatAbortedRuns: context.chatAbortedRuns,
+        removeChatRun: context.removeChatRun,
+        agentRunSeq: context.agentRunSeq,
+        broadcast: context.broadcast,
+        nodeSendToSession: context.nodeSendToSession,
+      } satisfies ChatAbortOps,
+      { sessionKey: p.sessionKey, stopReason: "superseded" },
+    );
 
     try {
       const abortController = new AbortController();

@@ -14,7 +14,11 @@ import {
   resolveAuthStorePathForDisplay,
 } from "./auth-profiles.js";
 import { normalizeProviderId } from "./model-selection.js";
-import { fetchCredentialFromSaas, isSaasMode, type KeySource } from "./saas-credential-client.js";
+import {
+  hasCredentialResolvers,
+  type KeySource,
+  resolvePluginCredential,
+} from "./credential-resolvers.js";
 
 export { ensureAuthProfileStore, resolveAuthProfileOrder } from "./auth-profiles.js";
 
@@ -164,15 +168,15 @@ export async function resolveApiKeyForProvider(params: {
     return resolveAwsSdkAuthInfo();
   }
 
-  // SaaS credential pull -- highest priority in container mode
-  if (isSaasMode()) {
-    const saasResult = await fetchCredentialFromSaas(provider);
-    if (saasResult) {
+  // Plugin credential resolution -- highest priority (e.g. SaaS connector)
+  if (hasCredentialResolvers()) {
+    const pluginResult = await resolvePluginCredential(provider);
+    if (pluginResult) {
       return {
-        apiKey: saasResult.apiKey,
-        source: "saas-pull",
+        apiKey: pluginResult.apiKey,
+        source: "plugin",
         mode: "api-key",
-        keySource: saasResult.source,
+        keySource: pluginResult.keySource,
       };
     }
   }

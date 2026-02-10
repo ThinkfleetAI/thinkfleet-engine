@@ -2,7 +2,7 @@
 name: whoop
 description: WHOOP morning check-in (recovery/sleep/strain) with suggestions.
 metadata:
-  clawdbot:
+  thinkfleet:
     config:
       requiredEnv:
         - WHOOP_CLIENT_ID
@@ -27,7 +27,7 @@ WHOOP morning check-in:
 2) In the WHOOP developer dashboard, set Redirect URL:
 - `https://localhost:3000/callback`
 
-3) Put secrets into `~/.clawdbot/.env`:
+3) Put secrets into `~/.thinkfleet/.env`:
 
 ```bash
 WHOOP_CLIENT_ID=...
@@ -44,7 +44,7 @@ node /home/claw/clawd/skills/whoop/bin/whoop-auth --redirect-uri https://localho
 - Tap Allow/Authorize
 - Copy the `code` from the callback URL and paste it back
 
-This writes `WHOOP_REFRESH_TOKEN=...` into `~/.clawdbot/.env`.
+This writes `WHOOP_REFRESH_TOKEN=...` into `~/.thinkfleet/.env`.
 
 ### What the bot does (each run)
 

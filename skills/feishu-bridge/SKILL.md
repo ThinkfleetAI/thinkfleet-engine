@@ -1,21 +1,21 @@
 ---
 name: feishu-bridge
-description: Connect a Feishu (Lark) bot to Clawdbot via WebSocket long-connection. No public server, domain, or ngrok required. Use when setting up Feishu/Lark as a messaging channel, troubleshooting the Feishu bridge, or managing the bridge service (start/stop/logs). Covers bot creation on Feishu Open Platform, credential setup, bridge startup, macOS launchd auto-restart, and group chat behavior tuning.
+description: Connect a Feishu (Lark) bot to ThinkFleet via WebSocket long-connection. No public server, domain, or ngrok required. Use when setting up Feishu/Lark as a messaging channel, troubleshooting the Feishu bridge, or managing the bridge service (start/stop/logs). Covers bot creation on Feishu Open Platform, credential setup, bridge startup, macOS launchd auto-restart, and group chat behavior tuning.
 ---
 
 # Feishu Bridge
 
-Bridge Feishu bot messages to Clawdbot Gateway over local WebSocket.
+Bridge Feishu bot messages to ThinkFleet Gateway over local WebSocket.
 
 ## Architecture
 
 ```
-Feishu user → Feishu cloud ←WS→ bridge.mjs (local) ←WS→ Clawdbot Gateway → AI agent
+Feishu user → Feishu cloud ←WS→ bridge.mjs (local) ←WS→ ThinkFleet Gateway → AI agent
 ```
 
 - Feishu SDK connects outbound (no inbound port / public IP needed)
 - Bridge authenticates to Gateway using the existing gateway token
-- Each Feishu chat maps to a Clawdbot session (`feishu:<chatId>`)
+- Each Feishu chat maps to a ThinkFleet session (`feishu:<chatId>`)
 
 ## Setup
 
@@ -30,9 +30,9 @@ Feishu user → Feishu cloud ←WS→ bridge.mjs (local) ←WS→ Clawdbot Gatew
 ### 2. Store secret
 
 ```bash
-mkdir -p ~/.clawdbot/secrets
-echo "YOUR_APP_SECRET" > ~/.clawdbot/secrets/feishu_app_secret
-chmod 600 ~/.clawdbot/secrets/feishu_app_secret
+mkdir -p ~/.thinkfleet/secrets
+echo "YOUR_APP_SECRET" > ~/.thinkfleet/secrets/feishu_app_secret
+chmod 600 ~/.thinkfleet/secrets/feishu_app_secret
 ```
 
 ### 3. Install & run
@@ -47,7 +47,7 @@ FEISHU_APP_ID=cli_xxx node bridge.mjs
 
 ```bash
 FEISHU_APP_ID=cli_xxx node setup-service.mjs
-launchctl load ~/Library/LaunchAgents/com.clawdbot.feishu-bridge.plist
+launchctl load ~/Library/LaunchAgents/com.thinkfleet.feishu-bridge.plist
 ```
 
 ## Diagnostics
@@ -57,10 +57,10 @@ launchctl load ~/Library/LaunchAgents/com.clawdbot.feishu-bridge.plist
 launchctl list | grep feishu
 
 # Logs
-tail -f ~/.clawdbot/logs/feishu-bridge.err.log
+tail -f ~/.thinkfleet/logs/feishu-bridge.err.log
 
 # Stop
-launchctl unload ~/Library/LaunchAgents/com.clawdbot.feishu-bridge.plist
+launchctl unload ~/Library/LaunchAgents/com.thinkfleet.feishu-bridge.plist
 ```
 
 ## Group chat behavior
@@ -72,7 +72,7 @@ Bridge replies only when: user @-mentions the bot, message ends with `?`/`？`, 
 | Variable | Required | Default |
 |---|---|---|
 | `FEISHU_APP_ID` | ✅ | — |
-| `FEISHU_APP_SECRET_PATH` | — | `~/.clawdbot/secrets/feishu_app_secret` |
-| `CLAWDBOT_CONFIG_PATH` | — | `~/.clawdbot/clawdbot.json` |
-| `CLAWDBOT_AGENT_ID` | — | `main` |
+| `FEISHU_APP_SECRET_PATH` | — | `~/.thinkfleet/secrets/feishu_app_secret` |
+| `THINKFLEET_CONFIG_PATH` | — | `~/.thinkfleet/thinkfleet.json` |
+| `THINKFLEET_AGENT_ID` | — | `main` |
 | `FEISHU_THINKING_THRESHOLD_MS` | — | `2500` |

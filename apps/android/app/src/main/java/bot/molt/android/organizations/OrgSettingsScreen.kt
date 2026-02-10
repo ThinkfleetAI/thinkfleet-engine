@@ -45,7 +45,7 @@ fun OrgSettingsScreen(appState: AppState, onBack: (() -> Unit)? = null) {
                 item {
                     ListItem(
                         headlineContent = { Text(org.name) },
-                        supportingContent = { Text(org.slug) },
+                        supportingContent = { Text(org.slug ?: "") },
                         overlineContent = { Text("Organization Name") },
                     )
                     HorizontalDivider()

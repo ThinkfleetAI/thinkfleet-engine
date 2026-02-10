@@ -326,6 +326,11 @@ export async function autoMigrateLegacyStateDir(params: {
   const warnings: string[] = [];
   const changes: string[] = [];
 
+  // Skip migration when legacy and target resolve to the same path
+  if (path.resolve(legacyDir) === path.resolve(targetDir)) {
+    return { migrated: false, skipped: true, changes, warnings };
+  }
+
   let legacyStat: fs.Stats | null = null;
   try {
     legacyStat = fs.lstatSync(legacyDir);

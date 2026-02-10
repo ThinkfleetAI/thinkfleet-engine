@@ -6,4 +6,6 @@ public enum ThinkFleetBotCapability: String, Codable, Sendable {
     case screen
     case voiceWake
     case location
+    case calendar
+    case contacts
 }

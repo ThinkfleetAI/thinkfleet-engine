@@ -18,8 +18,8 @@ This skill wraps the `@veil-cash/sdk` CLI to make Veil operations agent-friendly
 
 ## File locations (recommended)
 
-- Veil keys: `~/.clawdbot/skills/veil/.env.veil` *(chmod 600)*
-- Bankr API key: `~/.clawdbot/skills/bankr/config.json`
+- Veil keys: `~/.thinkfleet/skills/veil/.env.veil` *(chmod 600)*
+- Bankr API key: `~/.thinkfleet/skills/bankr/config.json`
 
 ## Quick start
 
@@ -45,16 +45,16 @@ Veil queries a lot of blockchain data (UTXOs, merkle proofs, etc.), so public RP
 
 Put `RPC_URL=...` in **one** of these:
 
-- `~/.clawdbot/skills/veil/.env` *(preferred)*
+- `~/.thinkfleet/skills/veil/.env` *(preferred)*
 - or the SDK repo `.env` (less ideal)
 
 Example:
 ```bash
-mkdir -p ~/.clawdbot/skills/veil
-cat > ~/.clawdbot/skills/veil/.env << 'EOF'
+mkdir -p ~/.thinkfleet/skills/veil
+cat > ~/.thinkfleet/skills/veil/.env << 'EOF'
 RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
 EOF
-chmod 600 ~/.clawdbot/skills/veil/.env
+chmod 600 ~/.thinkfleet/skills/veil/.env
 ```
 
 ### 3) Make scripts executable
@@ -107,5 +107,5 @@ scripts/veil-withdraw.sh 0.007 0xYOUR_BANKR_ADDRESS
 
 ## Notes
 
-- For **Bankr signing**, this skill uses Bankr’s Agent API via your local `~/.clawdbot/skills/bankr/config.json`.
+- For **Bankr signing**, this skill uses Bankr’s Agent API via your local `~/.thinkfleet/skills/bankr/config.json`.
 - For privacy safety: never commit `.env.veil` or `.env` files to git.

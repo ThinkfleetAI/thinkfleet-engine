@@ -36,40 +36,22 @@ describe("Nix integration (U3, U5, U9)", () => {
 
   describe("U5: CONFIG_PATH and STATE_DIR env var overrides", () => {
     it("STATE_DIR defaults to ~/.thinkfleet when env not set", async () => {
-      await withEnvOverride(
-        { THINKFLEET_STATE_DIR: undefined, THINKFLEET_STATE_DIR: undefined },
-        async () => {
-          const { STATE_DIR } = await import("./config.js");
-          expect(STATE_DIR).toMatch(/\.thinkfleet$/);
-        },
-      );
+      await withEnvOverride({ THINKFLEET_STATE_DIR: undefined }, async () => {
+        const { STATE_DIR } = await import("./config.js");
+        expect(STATE_DIR).toMatch(/\.thinkfleet$/);
+      });
     });
 
     it("STATE_DIR respects THINKFLEET_STATE_DIR override", async () => {
-      await withEnvOverride(
-        { THINKFLEET_STATE_DIR: undefined, THINKFLEET_STATE_DIR: "/custom/state/dir" },
-        async () => {
-          const { STATE_DIR } = await import("./config.js");
-          expect(STATE_DIR).toBe(path.resolve("/custom/state/dir"));
-        },
-      );
-    });
-
-    it("STATE_DIR prefers THINKFLEET_STATE_DIR over legacy override", async () => {
-      await withEnvOverride(
-        { THINKFLEET_STATE_DIR: "/custom/new", THINKFLEET_STATE_DIR: "/custom/legacy" },
-        async () => {
-          const { STATE_DIR } = await import("./config.js");
-          expect(STATE_DIR).toBe(path.resolve("/custom/new"));
-        },
-      );
+      await withEnvOverride({ THINKFLEET_STATE_DIR: "/custom/state/dir" }, async () => {
+        const { STATE_DIR } = await import("./config.js");
+        expect(STATE_DIR).toBe(path.resolve("/custom/state/dir"));
+      });
     });
 
     it("CONFIG_PATH defaults to ~/.thinkfleet/thinkfleet.json when env not set", async () => {
       await withEnvOverride(
         {
-          THINKFLEET_CONFIG_PATH: undefined,
-          THINKFLEET_STATE_DIR: undefined,
           THINKFLEET_CONFIG_PATH: undefined,
           THINKFLEET_STATE_DIR: undefined,
         },
@@ -83,7 +65,6 @@ describe("Nix integration (U3, U5, U9)", () => {
     it("CONFIG_PATH respects THINKFLEET_CONFIG_PATH override", async () => {
       await withEnvOverride(
         {
-          THINKFLEET_CONFIG_PATH: undefined,
           THINKFLEET_CONFIG_PATH: "/nix/store/abc/thinkfleet.json",
         },
         async () => {
@@ -93,24 +74,10 @@ describe("Nix integration (U3, U5, U9)", () => {
       );
     });
 
-    it("CONFIG_PATH prefers THINKFLEET_CONFIG_PATH over legacy override", async () => {
-      await withEnvOverride(
-        {
-          THINKFLEET_CONFIG_PATH: "/nix/store/new/thinkfleet.json",
-          THINKFLEET_CONFIG_PATH: "/nix/store/legacy/thinkfleet.json",
-        },
-        async () => {
-          const { CONFIG_PATH } = await import("./config.js");
-          expect(CONFIG_PATH).toBe(path.resolve("/nix/store/new/thinkfleet.json"));
-        },
-      );
-    });
-
     it("CONFIG_PATH expands ~ in THINKFLEET_CONFIG_PATH override", async () => {
       await withTempHome(async (home) => {
         await withEnvOverride(
           {
-            THINKFLEET_CONFIG_PATH: undefined,
             THINKFLEET_CONFIG_PATH: "~/.thinkfleet/custom.json",
           },
           async () => {
@@ -124,8 +91,6 @@ describe("Nix integration (U3, U5, U9)", () => {
     it("CONFIG_PATH uses STATE_DIR when only state dir is overridden", async () => {
       await withEnvOverride(
         {
-          THINKFLEET_CONFIG_PATH: undefined,
-          THINKFLEET_STATE_DIR: undefined,
           THINKFLEET_CONFIG_PATH: undefined,
           THINKFLEET_STATE_DIR: "/custom/state",
         },

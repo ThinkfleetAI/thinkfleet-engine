@@ -1,10 +1,17 @@
 package bot.molt.android.tasks
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
+import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -16,6 +23,10 @@ import androidx.compose.ui.unit.dp
 import bot.molt.android.model.AppState
 import bot.molt.android.networking.*
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 enum class SourceMode { All, Agent, Crew }
 
@@ -30,7 +41,14 @@ fun TaskBoardScreen(appState: AppState) {
     var selectedAgentId by remember { mutableStateOf<String?>(null) }
     var selectedCrewId by remember { mutableStateOf<String?>(null) }
     var showCreateTask by remember { mutableStateOf(false) }
+    var selectedTask by remember { mutableStateOf<AgentTask?>(null) }
     val scope = rememberCoroutineScope()
+
+    // Show task detail screen if a task is selected
+    selectedTask?.let { task ->
+        TaskDetailScreen(task = task, agents = agents, onBack = { selectedTask = null }, appState = appState)
+        return
+    }
 
     val filteredTasks = tasks
         .let { list ->
@@ -48,7 +66,7 @@ fun TaskBoardScreen(appState: AppState) {
         isLoading = true
         try {
             val response = appState.apiClient.rpc(
-                "assistants.tasks.list",
+                "assistants.tasks.listByOrg",
                 ListAgentsInput(orgId),
                 ListAgentsInput.serializer(),
                 TaskListResponse.serializer()
@@ -170,7 +188,7 @@ fun TaskBoardScreen(appState: AppState) {
                 ) {
                     LazyColumn(Modifier.fillMaxSize()) {
                         items(filteredTasks, key = { it.id }) { task ->
-                            TaskRow(task, agents)
+                            TaskRow(task, agents, onClick = { selectedTask = task })
                             HorizontalDivider()
                         }
                     }
@@ -194,7 +212,7 @@ fun TaskBoardScreen(appState: AppState) {
 }
 
 @Composable
-private fun TaskRow(task: AgentTask, agents: List<Agent>) {
+fun TaskRow(task: AgentTask, agents: List<Agent>, onClick: (() -> Unit)? = null) {
     val assignedAgentName = if (task.delegatedToAgentId != null) {
         agents.find { it.id == task.delegatedToAgentId }?.name
     } else {
@@ -202,6 +220,7 @@ private fun TaskRow(task: AgentTask, agents: List<Agent>) {
     }
 
     ListItem(
+        modifier = if (onClick != null) Modifier.clickable { onClick() } else Modifier,
         headlineContent = { Text(task.title, maxLines = 2) },
         supportingContent = {
             Column {
@@ -395,4 +414,288 @@ private fun urgencyColor(urgency: Int): Color = when (urgency) {
     2 -> Color(0xFFFF9800)
     3 -> Color(0xFFFFC107)
     else -> Color.Gray
+}
+
+// MARK: - Task Detail
+
+@Composable
+fun TaskDetailScreen(task: AgentTask, agents: List<Agent>, onBack: () -> Unit, appState: AppState? = null) {
+    val assignedAgent = if (task.delegatedToAgentId != null) {
+        agents.find { it.id == task.delegatedToAgentId }
+    } else {
+        agents.find { it.id == task.agentId }
+    }
+    var showChat by remember { mutableStateOf(false) }
+    var attachments by remember { mutableStateOf<List<TaskAttachment>>(emptyList()) }
+
+    // Load attachments for this task
+    LaunchedEffect(task.id) {
+        val state = appState ?: return@LaunchedEffect
+        val orgId = state.currentOrganization.value?.id ?: return@LaunchedEffect
+        try {
+            val response = state.apiClient.rpc(
+                "assistants.attachments.list",
+                TaskAttachmentListInput(task.id, orgId),
+                TaskAttachmentListInput.serializer(),
+                AttachmentListResponse.serializer()
+            )
+            attachments = response.attachments
+        } catch (_: Exception) { }
+    }
+
+    // Show agent chat screen
+    if (showChat && appState != null) {
+        val agent = agents.find { it.id == task.agentId }
+        if (agent != null) {
+            bot.molt.android.ui.AgentChatFullScreen(
+                appState = appState,
+                agent = agent,
+                onBack = { showChat = false },
+            )
+            return
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(task.title, maxLines = 1) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+        ) {
+            // Status & Urgency
+            ListItem(
+                headlineContent = { Text(task.status.displayName()) },
+                supportingContent = {
+                    task.urgency?.let {
+                        Surface(
+                            color = urgencyColor(it).copy(alpha = 0.15f),
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            Text(
+                                urgencyLabel(it),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = urgencyColor(it),
+                            )
+                        }
+                    }
+                },
+                leadingContent = {
+                    Icon(
+                        when (task.status) {
+                            TaskStatus.todo -> Icons.Default.RadioButtonUnchecked
+                            TaskStatus.in_progress -> Icons.Default.Autorenew
+                            TaskStatus.delivered -> Icons.Default.LocalShipping
+                            TaskStatus.done -> Icons.Default.CheckCircle
+                            TaskStatus.archived -> Icons.Default.Inventory
+                        },
+                        contentDescription = null,
+                        tint = task.status.color(),
+                        modifier = Modifier.size(32.dp),
+                    )
+                },
+            )
+            HorizontalDivider()
+
+            // Chat with Agent
+            if (assignedAgent?.status == AgentStatus.RUNNING && appState != null) {
+                ListItem(
+                    modifier = Modifier.clickable { showChat = true },
+                    headlineContent = {
+                        Text("Chat with ${assignedAgent.name}", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Medium))
+                    },
+                    supportingContent = { Text("Discuss this task or provide more details") },
+                    leadingContent = {
+                        Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null, tint = Color(0xFF2196F3))
+                    },
+                    trailingContent = {
+                        Icon(Icons.Default.ChevronRight, contentDescription = null)
+                    },
+                )
+                HorizontalDivider()
+            }
+
+            // Description
+            task.description?.takeIf { it.isNotEmpty() }?.let { desc ->
+                Text(
+                    "Description",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+                Text(
+                    desc,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                )
+                Spacer(Modifier.height(8.dp))
+                HorizontalDivider()
+            }
+
+            // Deliverables
+            task.deliverables?.takeIf { it.isNotEmpty() }?.let { del ->
+                Text(
+                    "Deliverables",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+                Text(
+                    del,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                )
+                Spacer(Modifier.height(8.dp))
+                HorizontalDivider()
+            }
+
+            // File Attachments
+            if (attachments.isNotEmpty()) {
+                Text(
+                    "Files",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+                attachments.forEach { attachment ->
+                    var isDownloading by remember { mutableStateOf(false) }
+                    val downloadScope = rememberCoroutineScope()
+                    val ctx = androidx.compose.ui.platform.LocalContext.current
+                    ListItem(
+                        modifier = Modifier.clickable {
+                            if (isDownloading || appState == null) return@clickable
+                            downloadScope.launch {
+                                isDownloading = true
+                                try {
+                                    val orgId = appState.currentOrganization.value?.id ?: return@launch
+                                    val response = appState.apiClient.rpc(
+                                        "assistants.attachments.downloadUrl",
+                                        AttachmentDownloadInput(attachment.id, attachment.taskId, orgId),
+                                        AttachmentDownloadInput.serializer(),
+                                        AttachmentDownloadResponse.serializer()
+                                    )
+                                    ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(response.downloadUrl)))
+                                } catch (_: Exception) { }
+                                isDownloading = false
+                            }
+                        },
+                        headlineContent = { Text(attachment.filename, maxLines = 1) },
+                        supportingContent = { Text(formatFileSize(attachment.fileSize)) },
+                        leadingContent = {
+                            Icon(
+                                when {
+                                    attachment.mimeType.startsWith("image/") -> Icons.Default.Image
+                                    attachment.mimeType.startsWith("video/") -> Icons.Default.Videocam
+                                    attachment.mimeType == "application/pdf" -> Icons.Default.PictureAsPdf
+                                    else -> Icons.AutoMirrored.Filled.InsertDriveFile
+                                },
+                                contentDescription = null,
+                                tint = Color(0xFF2196F3),
+                            )
+                        },
+                        trailingContent = {
+                            if (isDownloading) {
+                                CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                            } else {
+                                Icon(Icons.Default.Download, contentDescription = "Download", tint = Color(0xFF2196F3))
+                            }
+                        },
+                    )
+                }
+                HorizontalDivider()
+            }
+
+            // Details
+            Text(
+                "Details",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+
+            assignedAgent?.let { agent ->
+                ListItem(
+                    headlineContent = { Text("Agent") },
+                    trailingContent = { Text(agent.name) },
+                    leadingContent = { Icon(Icons.Default.Memory, contentDescription = null) },
+                )
+            }
+
+            task.delegationStatus?.takeIf { it.isNotEmpty() }?.let {
+                ListItem(
+                    headlineContent = { Text("Delegation") },
+                    trailingContent = { Text(it) },
+                    leadingContent = { Icon(Icons.Default.SwapHoriz, contentDescription = null) },
+                )
+            }
+
+            task.taskType?.takeIf { it.isNotEmpty() }?.let {
+                ListItem(
+                    headlineContent = { Text("Type") },
+                    trailingContent = { Text(it) },
+                    leadingContent = { Icon(Icons.Default.Category, contentDescription = null) },
+                )
+            }
+
+            task.labels?.takeIf { it.isNotEmpty() }?.let {
+                ListItem(
+                    headlineContent = { Text("Labels") },
+                    trailingContent = { Text(it.joinToString(", ")) },
+                    leadingContent = { Icon(Icons.AutoMirrored.Filled.Label, contentDescription = null) },
+                )
+            }
+
+            HorizontalDivider()
+
+            // Timestamps
+            Text(
+                "Timeline",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+
+            ListItem(
+                headlineContent = { Text("Created") },
+                trailingContent = { Text(formatIsoDate(task.createdAt)) },
+                leadingContent = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+            )
+            ListItem(
+                headlineContent = { Text("Updated") },
+                trailingContent = { Text(formatIsoDate(task.updatedAt)) },
+                leadingContent = { Icon(Icons.Default.Update, contentDescription = null) },
+            )
+            task.deliveredAt?.let {
+                ListItem(
+                    headlineContent = { Text("Delivered") },
+                    trailingContent = { Text(formatIsoDate(it)) },
+                    leadingContent = { Icon(Icons.Default.LocalShipping, contentDescription = null) },
+                )
+            }
+        }
+    }
+}
+
+private fun formatFileSize(bytes: Int): String {
+    if (bytes < 1024) return "$bytes B"
+    if (bytes < 1_048_576) return "%.1f KB".format(bytes / 1024.0)
+    return "%.1f MB".format(bytes / 1_048_576.0)
+}
+
+private fun formatIsoDate(isoString: String): String {
+    return try {
+        val instant = Instant.parse(isoString)
+        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+            .withZone(ZoneId.systemDefault())
+        formatter.format(instant)
+    } catch (_: Exception) {
+        isoString
+    }
 }

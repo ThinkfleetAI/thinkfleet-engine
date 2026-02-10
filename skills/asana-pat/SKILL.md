@@ -4,7 +4,7 @@ description: Manage Asana tasks and projects via Personal Access Token (PAT): br
 license: MIT
 allowed-tools: ["exec"]
 user-invocable: true
-metadata: {"clawdbot":{"skillKey":"asana-pat","primaryEnv":"ASANA_PAT","requires":{"env":["ASANA_PAT"]},"homepage":"https://developers.asana.com/docs/personal-access-token"}}
+metadata: {"thinkfleet":{"skillKey":"asana-pat","primaryEnv":"ASANA_PAT","requires":{"env":["ASANA_PAT"]},"homepage":"https://developers.asana.com/docs/personal-access-token"}}
 ---
 
 # Asana (PAT) skill
@@ -31,7 +31,7 @@ This skill requires:
 
 - `ASANA_PAT` (required): Asana PAT (Bearer token)
 
-In Moltbot/Clawdbot, configure skill env vars via **skills config** (do not rely on host env vars when sandboxed).
+In Moltbot/ThinkFleet, configure skill env vars via **skills config** (do not rely on host env vars when sandboxed).
 
 - Skills config docs: https://docs.molt.bot/tools/skills-config
 

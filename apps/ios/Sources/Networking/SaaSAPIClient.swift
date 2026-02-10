@@ -1,4 +1,7 @@
 import Foundation
+import os.log
+
+private let rpcLogger = Logger(subsystem: "com.thinkfleet", category: "rpc")
 
 actor SaaSAPIClient {
     let baseURL: URL
@@ -11,10 +14,18 @@ actor SaaSAPIClient {
         self.session = session
     }
 
+    // MARK: - oRPC Protocol Envelope
+    // oRPC RPC protocol wraps requests as {"json": <input>} and responses as {"json": <output>}
+
+    private struct RPCRequest<T: Encodable>: Encodable { let json: T }
+    private struct RPCResponse<T: Decodable>: Decodable { let json: T }
+    private struct EmptyInput: Encodable {}
+
     // MARK: - oRPC Calls
 
     func rpc<T: Decodable>(_ path: String, input: Encodable? = nil) async throws -> T {
-        let url = baseURL.appendingPathComponent("/api/rpc/\(path)")
+        let rpcPath = path.replacingOccurrences(of: ".", with: "/")
+        let url = baseURL.appendingPathComponent("/api/rpc/\(rpcPath)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -22,12 +33,17 @@ actor SaaSAPIClient {
         applyAuth(to: &request)
 
         if let input {
-            request.httpBody = try JSONEncoder().encode(input)
+            request.httpBody = try encodeRPCInput(input)
         } else {
-            request.httpBody = Data("{}".utf8)
+            request.httpBody = try JSONEncoder().encode(RPCRequest(json: EmptyInput()))
         }
 
         let (data, response) = try await session.data(for: request)
+
+        if let httpResponse = response as? HTTPURLResponse {
+            let bodyPreview = String(data: data.prefix(500), encoding: .utf8) ?? "non-utf8"
+            rpcLogger.info("RPC \(rpcPath) → \(httpResponse.statusCode): \(bodyPreview)")
+        }
 
         if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 401 {
             let refreshed = await refreshSession()
@@ -37,9 +53,10 @@ actor SaaSAPIClient {
                 guard let retryHttp = retryResponse as? HTTPURLResponse, retryHttp.statusCode == 200 else {
                     throw APIError.requestFailed(statusCode: (retryResponse as? HTTPURLResponse)?.statusCode ?? 0)
                 }
-                return try JSONDecoder().decode(T.self, from: retryData)
+                return try decodeRPCResponse(retryData)
             }
-            await MainActor.run { sessionStore.clearSession() }
+            // Don't clear session here — the token may still be valid (server propagation delay).
+            // The caller (e.g. loadOrganizations) can retry, and signOut handles clearing.
             throw APIError.unauthorized
         }
 
@@ -47,7 +64,20 @@ actor SaaSAPIClient {
             throw APIError.requestFailed(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
 
-        return try JSONDecoder().decode(T.self, from: data)
+        return try decodeRPCResponse(data)
+    }
+
+    /// Wrap input in oRPC envelope: {"json": <input>}
+    private func encodeRPCInput(_ input: Encodable) throws -> Data {
+        let inputData = try JSONEncoder().encode(input)
+        let inputJson = try JSONSerialization.jsonObject(with: inputData)
+        let wrapped: [String: Any] = ["json": inputJson]
+        return try JSONSerialization.data(withJSONObject: wrapped)
+    }
+
+    /// Unwrap oRPC response envelope: {"json": <data>} → <data>
+    private func decodeRPCResponse<T: Decodable>(_ data: Data) throws -> T {
+        return try JSONDecoder().decode(RPCResponse<T>.self, from: data).json
     }
 
     // MARK: - Generic REST
@@ -62,10 +92,21 @@ actor SaaSAPIClient {
 
     // MARK: - Helpers
 
+    /// Cookie name used by Better Auth in production (https:// base URL enables __Secure- prefix).
+    private static let sessionCookieName = "__Secure-better-auth.session_token"
+
     private func applyAuth(to request: inout URLRequest) {
         if let token = sessionStore.sessionToken {
-            request.setValue("better-auth.session_token=\(token)", forHTTPHeaderField: "Cookie")
+            let cookie = "\(Self.sessionCookieName)=\(token)"
+            let urlPath = request.url?.lastPathComponent ?? "?"
+            rpcLogger.info("applyAuth: Cookie=\(cookie.prefix(50))... to \(urlPath)")
+            request.setValue(cookie, forHTTPHeaderField: "Cookie")
+        } else {
+            rpcLogger.warning("applyAuth: no session token!")
         }
+        // Origin header required by Better Auth for CSRF validation on POST requests
+        let origin = "\(baseURL.scheme ?? "https")://\(baseURL.host ?? "")"
+        request.setValue(origin, forHTTPHeaderField: "Origin")
         if let orgId = sessionStore.currentOrganizationId {
             request.setValue(orgId, forHTTPHeaderField: "x-organization-id")
         }
@@ -73,21 +114,28 @@ actor SaaSAPIClient {
 
     private func refreshSession() async -> Bool {
         guard let token = sessionStore.sessionToken else { return false }
-        var request = URLRequest(url: baseURL.appendingPathComponent("/api/auth/session"))
-        request.setValue("better-auth.session_token=\(token)", forHTTPHeaderField: "Cookie")
+        var request = URLRequest(url: baseURL.appendingPathComponent("/api/auth/get-session"))
+        request.setValue("\(Self.sessionCookieName)=\(token)", forHTTPHeaderField: "Cookie")
+        request.setValue("\(baseURL.scheme ?? "https")://\(baseURL.host ?? "")", forHTTPHeaderField: "Origin")
 
         guard let (_, response) = try? await session.data(for: request),
               let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200
         else { return false }
 
-        if let setCookie = httpResponse.value(forHTTPHeaderField: "Set-Cookie"),
-           let match = setCookie.firstMatch(of: /better-auth\.session_token=([^;]+)/)
-        {
-            let newToken = String(match.1)
-            await MainActor.run { sessionStore.setSession(token: newToken, user: sessionStore.currentUser!) }
+        // If server sends a refreshed signed token in Set-Cookie, update the stored token
+        if let newSignedToken = Self.extractSessionToken(from: httpResponse) {
+            await MainActor.run { sessionStore.setSession(token: newSignedToken, user: sessionStore.currentUser!) }
         }
         return true
+    }
+
+    /// Extract the signed session token from the Set-Cookie header.
+    private static func extractSessionToken(from response: HTTPURLResponse) -> String? {
+        guard let setCookie = response.value(forHTTPHeaderField: "Set-Cookie") else { return nil }
+        let pattern = /better-auth\.session_token=([^;,]+)/
+        guard let match = setCookie.firstMatch(of: pattern) else { return nil }
+        return String(match.1)
     }
 }
 

@@ -16,8 +16,8 @@ Visit https://bankr.bot/api to create a new API key
 
 **2. Create Configuration**
 ```bash
-mkdir -p ~/.clawdbot/skills/bankr
-cat > ~/.clawdbot/skills/bankr/config.json << 'EOF'
+mkdir -p ~/.thinkfleet/skills/bankr
+cat > ~/.thinkfleet/skills/bankr/config.json << 'EOF'
 {
   "apiKey": "bk_your_actual_key_here",
   "apiUrl": "https://api.bankr.bot"
@@ -28,7 +28,7 @@ EOF
 **3. Verify Setup**
 Test with a simple command:
 ```bash
-~/.clawdbot/skills/bankr/scripts/bankr.sh "What is my balance?"
+~/.thinkfleet/skills/bankr/scripts/bankr.sh "What is my balance?"
 ```
 
 ### Common API Key Issues
@@ -165,10 +165,10 @@ curl -sf https://api.bankr.bot || echo "Connection failed"
 ### Config File Not Found
 ```bash
 # Create config directory
-mkdir -p ~/.clawdbot/skills/bankr
+mkdir -p ~/.thinkfleet/skills/bankr
 
 # Create config file
-cat > ~/.clawdbot/skills/bankr/config.json << 'EOF'
+cat > ~/.thinkfleet/skills/bankr/config.json << 'EOF'
 {
   "apiKey": "bk_your_key_here",
   "apiUrl": "https://api.bankr.bot"
@@ -179,7 +179,7 @@ EOF
 ### Invalid JSON
 ```bash
 # Validate JSON
-jq . ~/.clawdbot/skills/bankr/config.json
+jq . ~/.thinkfleet/skills/bankr/config.json
 
 # If error, fix formatting
 ```
@@ -261,10 +261,10 @@ Before reporting an issue, check:
 ### Check Status
 ```bash
 # Test API connectivity
-~/.clawdbot/skills/bankr/scripts/bankr.sh "ping"
+~/.thinkfleet/skills/bankr/scripts/bankr.sh "ping"
 
 # Check your balance (validates auth)
-~/.clawdbot/skills/bankr/scripts/bankr.sh "What is my balance?"
+~/.thinkfleet/skills/bankr/scripts/bankr.sh "What is my balance?"
 ```
 
 ### Gather Information

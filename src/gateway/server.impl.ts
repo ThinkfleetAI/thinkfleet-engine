@@ -220,13 +220,16 @@ export async function startGatewayServer(
   const defaultAgentId = resolveDefaultAgentId(cfgAtStart);
   const defaultWorkspaceDir = resolveAgentWorkspaceDir(cfgAtStart, defaultAgentId);
 
-  // In SaaS mode, fetch agent config (name, persona, model) from the platform
-  // and apply it before plugins/channels start.
-  const { isSaasMode } = await import("../agents/saas-credential-client.js");
+  // Load SaaS connector when running in SaaS mode (env vars set).
+  // Registers credential resolvers, budget gates, env injectors, and startup hooks.
+  const { isSaasMode, autoloadSaasConnector } = await import("../saas/autoload.js");
   if (isSaasMode()) {
-    const { applySaasAgentConfig } = await import("../agents/saas-config-client.js");
-    await applySaasAgentConfig(defaultWorkspaceDir ?? "/home/node/clawd");
+    await autoloadSaasConnector();
   }
+
+  // Run gateway startup hooks (e.g. SaaS agent config application)
+  const { runGatewayStartupHooks } = await import("./startup-hooks.js");
+  await runGatewayStartupHooks(defaultWorkspaceDir ?? "/home/node/clawd");
 
   const baseMethods = listGatewayMethods();
   const { pluginRegistry, gatewayMethods: baseGatewayMethods } = loadGatewayPlugins({

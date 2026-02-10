@@ -3,7 +3,7 @@ name: resend
 description: Manage received (inbound) emails and attachments via Resend API. Use when user asks about their emails, received messages, or email attachments.
 homepage: https://resend.com
 metadata:
-  clawdbot:
+  thinkfleet:
     emoji: "📧"
     requires:
       bins: ["resend"]

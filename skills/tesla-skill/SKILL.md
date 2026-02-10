@@ -7,7 +7,7 @@ description: Control Tesla vehicles from macOS via the Tesla Owner API using tes
 
 **Author:** Parth Maniar — [@officialpm](https://github.com/officialpm)
 
-A practical Tesla control skill for Clawdbot built on `teslapy`.
+A practical Tesla control skill for ThinkFleet built on `teslapy`.
 
 ## Setup
 

@@ -50,7 +50,7 @@ describe("gateway tool", () => {
       };
       expect(parsed.payload?.kind).toBe("restart");
       expect(parsed.payload?.doctorHint).toBe(
-        "Run: thinkfleet --profile isolated doctor --non-interactive",
+        "Run: thinkfleet-engine --profile isolated doctor --non-interactive",
       );
 
       expect(kill).not.toHaveBeenCalled();

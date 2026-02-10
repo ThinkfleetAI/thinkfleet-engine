@@ -2,7 +2,7 @@
 name: revolut
 description: "Revolut Business API CLI — accounts, balances, transactions, counterparties, payments, FX exchange, CSV export. Auto-refreshes OAuth tokens. Business accounts only (not personal)."
 version: 1.0.0
-metadata: {"clawdbot":{"emoji":"💶","requires":{"bins":["python3"]}}}
+metadata: {"thinkfleet":{"emoji":"💶","requires":{"bins":["python3"]}}}
 ---
 
 # Revolut Business API
@@ -25,7 +25,7 @@ Walks you through everything: key generation, Revolut certificate upload, OAuth 
 - See [README](https://github.com/christianhaberl/revolut-openclaw-skill) for detailed step-by-step guide
 
 ### Credentials
-Stored in `~/.clawdbot/revolut/`:
+Stored in `~/.thinkfleet/revolut/`:
 - `private.pem` — RSA private key (for JWT signing)
 - `certificate.pem` — X509 cert (uploaded to Revolut)
 - `tokens.json` — OAuth tokens (auto-managed)
@@ -105,7 +105,7 @@ python3 {baseDir}/scripts/revolut.py token-info
 - No manual intervention needed after initial auth
 
 ## Security Notes
-- Private key and tokens are stored in `~/.clawdbot/revolut/` — treat as sensitive
+- Private key and tokens are stored in `~/.thinkfleet/revolut/` — treat as sensitive
 - Payments require explicit confirmation (use `--yes` to skip)
 - `--draft` creates payment drafts that need approval in Revolut app
 - Never share your private key, tokens, or client assertion JWT

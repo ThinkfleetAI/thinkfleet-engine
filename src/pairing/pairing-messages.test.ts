@@ -53,7 +53,7 @@ describe("buildPairingReply", () => {
       expect(text).toContain(`Pairing code: ${testCase.code}`);
       // CLI commands should respect THINKFLEET_PROFILE when set (most tests run with isolated profile)
       const commandRe = new RegExp(
-        `(?:thinkfleet|thinkfleet) --profile isolated pairing approve ${testCase.channel} <code>`,
+        `(?:thinkfleet-engine|thinkfleet) --profile isolated pairing approve ${testCase.channel} <code>`,
       );
       expect(text).toMatch(commandRe);
     });

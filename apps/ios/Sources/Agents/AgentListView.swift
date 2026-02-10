@@ -93,10 +93,10 @@ struct AgentRow: View {
     private var statusColor: Color {
         switch agent.status {
         case .RUNNING: .green
-        case .STOPPED: .secondary
-        case .PENDING: .yellow
+        case .STOPPED, .TERMINATED: .secondary
+        case .PENDING, .PROVISIONING: .yellow
         case .ERROR: .red
-        case .TERMINATED: .secondary
+        case .DELETING: .orange
         }
     }
 }
@@ -113,10 +113,10 @@ struct AgentStatusIndicator: View {
     private var color: Color {
         switch status {
         case .RUNNING: .green
-        case .STOPPED: .gray
-        case .PENDING: .yellow
+        case .STOPPED, .TERMINATED: .gray
+        case .PENDING, .PROVISIONING: .yellow
         case .ERROR: .red
-        case .TERMINATED: .gray
+        case .DELETING: .orange
         }
     }
 }

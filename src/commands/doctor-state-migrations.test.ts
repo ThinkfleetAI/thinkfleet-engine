@@ -327,7 +327,7 @@ describe("doctor legacy state migrations", () => {
     expect(store["agent:main:main"]?.sessionId).toBe("legacy");
   });
 
-  it("auto-migrates legacy state dir to ~/.thinkfleet", async () => {
+  it("skips state dir migration when legacy and target resolve to the same path", async () => {
     const root = await makeTempRoot();
     const legacyDir = path.join(root, ".thinkfleet");
     fs.mkdirSync(legacyDir, { recursive: true });
@@ -338,28 +338,26 @@ describe("doctor legacy state migrations", () => {
       homedir: () => root,
     });
 
-    const targetDir = path.join(root, ".thinkfleet");
-    expect(fs.existsSync(path.join(targetDir, "foo.txt"))).toBe(true);
-    const legacyStat = fs.lstatSync(legacyDir);
-    expect(legacyStat.isSymbolicLink()).toBe(true);
-    expect(fs.realpathSync(legacyDir)).toBe(fs.realpathSync(targetDir));
-    expect(result.migrated).toBe(true);
+    // Legacy and target resolve to the same directory (.thinkfleet),
+    // so no migration is needed — data stays in place.
+    expect(fs.existsSync(path.join(legacyDir, "foo.txt"))).toBe(true);
+    expect(result.migrated).toBe(false);
+    expect(result.skipped).toBe(true);
   });
 
-  it("skips state dir migration when target exists", async () => {
+  it("skips state dir migration when legacy and target are the same directory", async () => {
     const root = await makeTempRoot();
-    const legacyDir = path.join(root, ".thinkfleet");
-    const targetDir = path.join(root, ".thinkfleet");
-    fs.mkdirSync(legacyDir, { recursive: true });
-    fs.mkdirSync(targetDir, { recursive: true });
+    const stateDir = path.join(root, ".thinkfleet");
+    fs.mkdirSync(stateDir, { recursive: true });
 
     const result = await autoMigrateLegacyStateDir({
       env: {} as NodeJS.ProcessEnv,
       homedir: () => root,
     });
 
+    // Both legacy and target resolve to .thinkfleet — no migration needed.
     expect(result.migrated).toBe(false);
-    expect(result.warnings.length).toBeGreaterThan(0);
+    expect(result.skipped).toBe(true);
   });
 
   it("skips state dir migration when env override is set", async () => {

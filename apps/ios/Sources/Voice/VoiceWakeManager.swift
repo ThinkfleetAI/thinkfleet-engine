@@ -86,7 +86,7 @@ final class VoiceWakeManager: NSObject {
     var triggerWords: [String] = VoiceWakePreferences.loadTriggerWords()
     var lastTriggeredCommand: String?
 
-    private let audioEngine = AVAudioEngine()
+    private var audioEngine: AVAudioEngine?
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
@@ -203,10 +203,11 @@ final class VoiceWakeManager: NSObject {
         self.recognitionTask = nil
         self.recognitionRequest = nil
 
-        if self.audioEngine.isRunning {
-            self.audioEngine.stop()
-            self.audioEngine.inputNode.removeTap(onBus: 0)
+        if let engine = self.audioEngine, engine.isRunning {
+            engine.stop()
+            engine.inputNode.removeTap(onBus: 0)
         }
+        self.audioEngine = nil
 
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
@@ -228,10 +229,11 @@ final class VoiceWakeManager: NSObject {
         self.recognitionTask = nil
         self.recognitionRequest = nil
 
-        if self.audioEngine.isRunning {
-            self.audioEngine.stop()
-            self.audioEngine.inputNode.removeTap(onBus: 0)
+        if let engine = self.audioEngine, engine.isRunning {
+            engine.stop()
+            engine.inputNode.removeTap(onBus: 0)
         }
+        self.audioEngine = nil
 
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         return true
@@ -254,7 +256,10 @@ final class VoiceWakeManager: NSObject {
         request.shouldReportPartialResults = true
         self.recognitionRequest = request
 
-        let inputNode = self.audioEngine.inputNode
+        let engine = AVAudioEngine()
+        self.audioEngine = engine
+
+        let inputNode = engine.inputNode
         inputNode.removeTap(onBus: 0)
 
         let recordingFormat = inputNode.outputFormat(forBus: 0)
@@ -268,8 +273,8 @@ final class VoiceWakeManager: NSObject {
             format: recordingFormat,
             block: tapBlock)
 
-        self.audioEngine.prepare()
-        try self.audioEngine.start()
+        engine.prepare()
+        try engine.start()
 
         let handler = self.makeRecognitionResultHandler()
         self.recognitionTask = self.speechRecognizer?.recognitionTask(with: request, resultHandler: handler)

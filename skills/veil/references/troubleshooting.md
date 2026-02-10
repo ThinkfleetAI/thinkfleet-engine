@@ -11,9 +11,9 @@
 **Solution**: Use a dedicated RPC from [Alchemy](https://www.alchemy.com/), [Infura](https://www.infura.io/), or similar:
 
 ```bash
-mkdir -p ~/.clawdbot/skills/veil
-echo "RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY" > ~/.clawdbot/skills/veil/.env
-chmod 600 ~/.clawdbot/skills/veil/.env
+mkdir -p ~/.thinkfleet/skills/veil
+echo "RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY" > ~/.thinkfleet/skills/veil/.env
+chmod 600 ~/.thinkfleet/skills/veil/.env
 ```
 
 ### VEIL_KEY_MISSING
@@ -65,7 +65,7 @@ scripts/veil-balance.sh --address 0xYOUR_ADDRESS
 **Solution**: Ensure Bankr is configured:
 
 ```bash
-cat ~/.clawdbot/skills/bankr/config.json
+cat ~/.thinkfleet/skills/bankr/config.json
 # Should contain: {"apiKey": "bk_...", "apiUrl": "https://api.bankr.bot"}
 ```
 

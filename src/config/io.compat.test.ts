@@ -16,9 +16,9 @@ async function withTempHome(run: (home: string) => Promise<void>): Promise<void>
 
 async function writeConfig(
   home: string,
-  dirname: ".thinkfleet" | ".thinkfleet",
+  dirname: string,
   port: number,
-  filename: "thinkfleet.json" | "thinkfleet.json" = "thinkfleet.json",
+  filename: string = "thinkfleet.json",
 ) {
   const dir = path.join(home, dirname);
   await fs.mkdir(dir, { recursive: true });
@@ -27,77 +27,78 @@ async function writeConfig(
   return configPath;
 }
 
-describe("config io compat (new + legacy folders)", () => {
-  it("prefers ~/.thinkfleet/thinkfleet.json when both configs exist", async () => {
+describe("config io compat", () => {
+  it("loads config from ~/.thinkfleet/thinkfleet.json", async () => {
     await withTempHome(async (home) => {
-      const newConfigPath = await writeConfig(home, ".thinkfleet", 19001);
-      await writeConfig(home, ".thinkfleet", 18789);
+      const configPath = await writeConfig(home, ".thinkfleet", 19001);
 
       const io = createConfigIO({
         env: {} as NodeJS.ProcessEnv,
         homedir: () => home,
       });
-      expect(io.configPath).toBe(newConfigPath);
+      expect(io.configPath).toBe(configPath);
       expect(io.loadConfig().gateway?.port).toBe(19001);
     });
   });
 
-  it("falls back to ~/.thinkfleet/thinkfleet.json when only legacy exists", async () => {
+  it("returns empty config when no config file exists", async () => {
     await withTempHome(async (home) => {
-      const legacyConfigPath = await writeConfig(home, ".thinkfleet", 20001);
-
       const io = createConfigIO({
         env: {} as NodeJS.ProcessEnv,
         homedir: () => home,
       });
 
-      expect(io.configPath).toBe(legacyConfigPath);
-      expect(io.loadConfig().gateway?.port).toBe(20001);
+      const cfg = io.loadConfig();
+      expect(cfg.gateway?.port).toBeUndefined();
     });
   });
 
-  it("falls back to ~/.thinkfleet/thinkfleet.json when only legacy filename exists", async () => {
+  it("honors explicit config path env override", async () => {
     await withTempHome(async (home) => {
-      const legacyConfigPath = await writeConfig(home, ".thinkfleet", 20002, "thinkfleet.json");
+      await writeConfig(home, ".thinkfleet", 19002);
+      const overridePath = await writeConfig(home, "custom-config", 20002);
 
       const io = createConfigIO({
-        env: {} as NodeJS.ProcessEnv,
+        env: { THINKFLEET_CONFIG_PATH: overridePath } as NodeJS.ProcessEnv,
         homedir: () => home,
       });
 
-      expect(io.configPath).toBe(legacyConfigPath);
+      expect(io.configPath).toBe(overridePath);
       expect(io.loadConfig().gateway?.port).toBe(20002);
     });
   });
 
-  it("prefers thinkfleet.json over legacy filename in the same dir", async () => {
+  it("uses STATE_DIR override for config path", async () => {
     await withTempHome(async (home) => {
-      const preferred = await writeConfig(home, ".thinkfleet", 20003, "thinkfleet.json");
-      await writeConfig(home, ".thinkfleet", 20004, "thinkfleet.json");
+      const customStateDir = path.join(home, "custom-state");
+      const configPath = await writeConfig(home, "custom-state", 30001);
 
       const io = createConfigIO({
-        env: {} as NodeJS.ProcessEnv,
+        env: { THINKFLEET_STATE_DIR: customStateDir } as NodeJS.ProcessEnv,
         homedir: () => home,
       });
 
-      expect(io.configPath).toBe(preferred);
-      expect(io.loadConfig().gateway?.port).toBe(20003);
+      expect(io.configPath).toBe(configPath);
+      expect(io.loadConfig().gateway?.port).toBe(30001);
     });
   });
 
-  it("honors explicit legacy config path env override", async () => {
+  it("config path env override takes precedence over state dir", async () => {
     await withTempHome(async (home) => {
-      const newConfigPath = await writeConfig(home, ".thinkfleet", 19002);
-      const legacyConfigPath = await writeConfig(home, ".thinkfleet", 20002);
+      const customStateDir = path.join(home, "custom-state");
+      await writeConfig(home, "custom-state", 30001);
+      const explicitPath = await writeConfig(home, "explicit", 40001);
 
       const io = createConfigIO({
-        env: { THINKFLEET_CONFIG_PATH: legacyConfigPath } as NodeJS.ProcessEnv,
+        env: {
+          THINKFLEET_STATE_DIR: customStateDir,
+          THINKFLEET_CONFIG_PATH: explicitPath,
+        } as NodeJS.ProcessEnv,
         homedir: () => home,
       });
 
-      expect(io.configPath).not.toBe(newConfigPath);
-      expect(io.configPath).toBe(legacyConfigPath);
-      expect(io.loadConfig().gateway?.port).toBe(20002);
+      expect(io.configPath).toBe(explicitPath);
+      expect(io.loadConfig().gateway?.port).toBe(40001);
     });
   });
 });

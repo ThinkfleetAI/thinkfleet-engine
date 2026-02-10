@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Tray } from "electron";
 import path from "node:path";
 import { createTray, updateTrayMenu } from "./tray.js";
 import { GatewayManager } from "./gateway-manager.js";
+import { DesktopAutomationManager } from "./desktop-automation-manager.js";
 import { registerIpcHandlers } from "./ipc-handlers.js";
 import { createStore } from "./store.js";
 import { setupAutoUpdater } from "./auto-updater.js";
@@ -16,6 +17,7 @@ let isQuitting = false;
 const store = createStore();
 const gatewayManager = new GatewayManager(store);
 const authManager = new AuthManager(store);
+const automationManager = new DesktopAutomationManager(store);
 
 function createChatWindow(): BrowserWindow {
   if (mainWindow && !mainWindow.isDestroyed()) {
@@ -121,13 +123,20 @@ if (!gotLock) {
     }
 
     // Register IPC handlers
-    registerIpcHandlers(ipcMain, gatewayManager, authManager, store, getMainWindow);
+    registerIpcHandlers(ipcMain, gatewayManager, authManager, store, getMainWindow, automationManager);
 
     // Create system tray
     tray = createTray(createChatWindow, gatewayManager, store);
 
     // Start gateway
     await gatewayManager.start();
+
+    // Start desktop automation sidecar if enabled
+    if (store.get("automationEnabled", true) && store.get("automationAutoStart", true)) {
+      automationManager.start().catch((err) => {
+        console.error("Failed to start automation sidecar:", err);
+      });
+    }
 
     // In dev, auto-open the chat window
     if (!app.isPackaged) {
@@ -160,6 +169,7 @@ app.on("window-all-closed", () => {
 app.on("before-quit", () => {
   isQuitting = true;
   gatewayManager.stop();
+  automationManager.stop();
 });
 
 // macOS: re-show window when clicking dock icon

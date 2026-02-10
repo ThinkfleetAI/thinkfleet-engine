@@ -16,7 +16,7 @@ final class TalkModeManager: NSObject {
     var isSpeaking: Bool = false
     var statusText: String = "Off"
 
-    private let audioEngine = AVAudioEngine()
+    private var audioEngine: AVAudioEngine?
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
@@ -150,7 +150,10 @@ final class TalkModeManager: NSObject {
         self.recognitionRequest?.shouldReportPartialResults = true
         guard let request = self.recognitionRequest else { return }
 
-        let input = self.audioEngine.inputNode
+        let engine = AVAudioEngine()
+        self.audioEngine = engine
+
+        let input = engine.inputNode
         let format = input.outputFormat(forBus: 0)
         guard format.sampleRate > 0, format.channelCount > 0 else {
             throw NSError(domain: "TalkMode", code: 3, userInfo: [
@@ -161,8 +164,8 @@ final class TalkModeManager: NSObject {
         let tapBlock = Self.makeAudioTapAppendCallback(request: request)
         input.installTap(onBus: 0, bufferSize: 2048, format: format, block: tapBlock)
 
-        self.audioEngine.prepare()
-        try self.audioEngine.start()
+        engine.prepare()
+        try engine.start()
 
         self.recognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
             guard let self else { return }
@@ -185,8 +188,11 @@ final class TalkModeManager: NSObject {
         self.recognitionTask = nil
         self.recognitionRequest?.endAudio()
         self.recognitionRequest = nil
-        self.audioEngine.inputNode.removeTap(onBus: 0)
-        self.audioEngine.stop()
+        if let engine = self.audioEngine {
+            engine.inputNode.removeTap(onBus: 0)
+            engine.stop()
+        }
+        self.audioEngine = nil
         self.speechRecognizer = nil
     }
 

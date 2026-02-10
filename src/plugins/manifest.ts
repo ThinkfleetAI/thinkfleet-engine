@@ -4,9 +4,10 @@ import path from "node:path";
 import { LEGACY_MANIFEST_KEY, LEGACY_PLUGIN_MANIFEST_FILENAME } from "../compat/legacy-names.js";
 import type { PluginConfigUiHint, PluginKind } from "./types.js";
 
-export const PLUGIN_MANIFEST_FILENAME = "thinkfleet.plugin.json";
+export const PLUGIN_MANIFEST_FILENAME = "thinkfleet-engine.plugin.json";
 export const PLUGIN_MANIFEST_FILENAMES = [
   PLUGIN_MANIFEST_FILENAME,
+  "thinkfleet.plugin.json",
   LEGACY_PLUGIN_MANIFEST_FILENAME,
 ] as const;
 
@@ -102,7 +103,7 @@ export function loadPluginManifest(rootDir: string): PluginManifestLoadResult {
   };
 }
 
-// package.json "thinkfleet" metadata (used for onboarding/catalog)
+// package.json "thinkfleet-engine" metadata (used for onboarding/catalog)
 export type PluginPackageChannel = {
   id?: string;
   label?: string;
@@ -140,6 +141,7 @@ export type PackageManifest = {
   name?: string;
   version?: string;
   description?: string;
+  "thinkfleet-engine"?: ThinkfleetPackageManifest;
   thinkfleet?: ThinkfleetPackageManifest;
   [LEGACY_MANIFEST_KEY]?: ThinkfleetPackageManifest;
 };
@@ -148,5 +150,5 @@ export function getPackageManifestMetadata(
   manifest: PackageManifest | undefined,
 ): ThinkfleetPackageManifest | undefined {
   if (!manifest) return undefined;
-  return manifest.thinkfleet ?? manifest[LEGACY_MANIFEST_KEY];
+  return manifest["thinkfleet-engine"] ?? manifest.thinkfleet ?? manifest[LEGACY_MANIFEST_KEY];
 }

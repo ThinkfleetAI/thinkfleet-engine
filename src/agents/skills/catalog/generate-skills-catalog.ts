@@ -224,10 +224,10 @@ function generateSkillsCatalog(): string {
       // ignore
     }
 
-    const thinkfleet = (metadata.thinkfleetbot ?? metadata.thinkfleet ?? {}) as Record<
-      string,
-      unknown
-    >;
+    const thinkfleet = (metadata["thinkfleet-engine"] ??
+      metadata.thinkfleetbot ??
+      metadata.thinkfleet ??
+      {}) as Record<string, unknown>;
 
     return {
       name: skill.name,

@@ -320,6 +320,13 @@ final class GatewayConnectionController {
         let locationMode = ThinkFleetBotLocationMode(rawValue: locationModeRaw) ?? .off
         if locationMode != .off { caps.append(ThinkFleetBotCapability.location.rawValue) }
 
+        if UserDefaults.standard.bool(forKey: "calendar.enabled") {
+            caps.append(ThinkFleetBotCapability.calendar.rawValue)
+        }
+        if UserDefaults.standard.bool(forKey: "contacts.enabled") {
+            caps.append(ThinkFleetBotCapability.contacts.rawValue)
+        }
+
         return caps
     }
 
@@ -349,6 +356,15 @@ final class GatewayConnectionController {
         }
         if caps.contains(ThinkFleetBotCapability.location.rawValue) {
             commands.append(ThinkFleetBotLocationCommand.get.rawValue)
+        }
+        if caps.contains(ThinkFleetBotCapability.calendar.rawValue) {
+            commands.append(ThinkFleetBotCalendarCommand.upcoming.rawValue)
+            commands.append(ThinkFleetBotCalendarCommand.create.rawValue)
+            commands.append(ThinkFleetBotCalendarCommand.search.rawValue)
+        }
+        if caps.contains(ThinkFleetBotCapability.contacts.rawValue) {
+            commands.append(ThinkFleetBotContactsCommand.search.rawValue)
+            commands.append(ThinkFleetBotContactsCommand.get.rawValue)
         }
 
         return commands

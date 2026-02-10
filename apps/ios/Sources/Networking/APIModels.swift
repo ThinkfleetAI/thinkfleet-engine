@@ -17,10 +17,12 @@ struct Agent: Codable, Identifiable, Sendable {
 
 enum AgentStatus: String, Codable, Sendable {
     case PENDING
+    case PROVISIONING
     case RUNNING
     case STOPPED
-    case TERMINATED
     case ERROR
+    case DELETING
+    case TERMINATED // legacy/fallback
 }
 
 struct AgentContainer: Codable, Identifiable, Sendable {
@@ -36,13 +38,20 @@ struct AgentChannel: Codable, Identifiable, Sendable {
     let type: String
     let name: String?
     let enabled: Bool
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case type = "channelType"
+        case name
+        case enabled = "isActive"
+    }
 }
 
 struct AgentHealthCheck: Codable, Sendable {
     let id: String
-    let status: String
+    let isHealthy: Bool
     let responseTime: Int?
-    let lastCheck: String?
+    let checkedAt: String?
 }
 
 // MARK: - Organization Models
@@ -165,11 +174,86 @@ struct CredentialInfo: Codable, Identifiable, Sendable {
 
 struct ChatMessage: Codable, Identifiable, Sendable {
     let id: String
-    let content: String
+    var content: String
     let role: String
     let agentId: String
     let userId: String?
     let createdAt: String
+    var isStreaming: Bool?
+
+    private enum CodingKeys: String, CodingKey {
+        case id, content, role, agentId, userId, createdAt
+    }
+}
+
+// MARK: - Chat Event Models (Socket.IO streaming)
+
+struct ChatEventPayload: Sendable {
+    let sessionKey: String?
+    let state: String // "delta", "final", "error"
+    let role: String?
+    let text: String?
+
+    /// Parse from raw Socket.IO `agent:event` dictionary
+    init?(from dict: [String: Any]) {
+        guard let eventType = dict["event"] as? String, eventType == "chat",
+              let payload = dict["payload"] as? [String: Any]
+        else { return nil }
+
+        self.sessionKey = payload["sessionKey"] as? String
+        self.state = payload["state"] as? String ?? "delta"
+
+        // Extract text from message.content[].text
+        if let message = payload["message"] as? [String: Any] {
+            self.role = message["role"] as? String
+            if let contentArray = message["content"] as? [[String: Any]] {
+                self.text = contentArray.compactMap { $0["text"] as? String }.joined()
+            } else if let contentStr = message["content"] as? String {
+                self.text = contentStr
+            } else {
+                self.text = nil
+            }
+        } else if let content = payload["content"] as? String {
+            self.role = payload["role"] as? String
+            self.text = content
+        } else {
+            self.role = nil
+            self.text = nil
+        }
+    }
+}
+
+// MARK: - Chat Attachment Models
+
+struct ChatAttachmentInput: Sendable {
+    let mimeType: String
+    let content: String // base64
+    let fileName: String?
+
+    var asDictionary: [String: String] {
+        var dict: [String: String] = ["mimeType": mimeType, "content": content]
+        if let fileName { dict["fileName"] = fileName }
+        return dict
+    }
+}
+
+struct ChatSaveInput: Codable {
+    let agentId: String
+    let organizationId: String
+    let role: String
+    let content: String
+}
+
+struct ChatHistoryInput: Codable {
+    let agentId: String
+    let organizationId: String
+    let limit: Int?
+}
+
+struct ChatHistoryFullResponse: Codable {
+    let messages: [ChatMessage]
+    let total: Int?
+    let hasMore: Bool?
 }
 
 // MARK: - RPC Input Structs
@@ -274,6 +358,56 @@ struct StartCrewExecutionInput: Codable {
     let crewId: String
     let organizationId: String
     let objective: String?
+}
+
+// MARK: - Composio Integration Models
+
+struct ComposioApp: Codable, Identifiable, Sendable {
+    let id: String
+    let name: String
+    let displayName: String?
+    let logo: String?
+    let categories: [String]?
+}
+
+struct ComposioConnection: Codable, Identifiable, Sendable {
+    let id: String
+    let appName: String
+    let status: String
+}
+
+struct ComposioAppsInput: Codable {
+    let organizationId: String
+    let oauthOnly: Bool?
+}
+
+struct ComposioAppsResponse: Codable {
+    let apps: [ComposioApp]
+    let total: Int?
+}
+
+struct ComposioConnectionsInput: Codable {
+    let organizationId: String
+}
+
+struct ComposioConnectionsResponse: Codable {
+    let connections: [ComposioConnection]
+}
+
+struct ComposioConnectInput: Codable {
+    let organizationId: String
+    let appName: String
+}
+
+struct ComposioConnectResponse: Codable {
+    let redirectUrl: String?
+    let connectionId: String?
+    let connected: Bool?
+}
+
+struct ComposioDisconnectInput: Codable {
+    let organizationId: String
+    let appName: String
 }
 
 // MARK: - Attachment RPC Types

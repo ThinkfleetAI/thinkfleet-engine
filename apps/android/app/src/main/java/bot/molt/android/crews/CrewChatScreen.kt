@@ -185,14 +185,17 @@ fun CrewChatScreen(appState: AppState, crew: Crew, onBack: () -> Unit) {
                             val targets = mentioned.ifEmpty { runningMembers.map { it.agentId } }
 
                             scope.launch {
-                                val orgId = appState.currentOrganization.value?.id ?: return@launch
                                 for (agentId in targets) {
                                     try {
-                                        appState.apiClient.rpc(
-                                            "assistants.chats.send",
-                                            ChatSendInput(agentId, orgId, text),
-                                            ChatSendInput.serializer(),
-                                            ChatSendResponse.serializer()
+                                        val params = mapOf(
+                                            "message" to text,
+                                            "sessionKey" to "mobile-crew:$agentId",
+                                            "idempotencyKey" to java.util.UUID.randomUUID().toString(),
+                                        )
+                                        appState.socketManager.sendRPC(
+                                            agentId = agentId,
+                                            method = "chat.send",
+                                            params = params,
                                         )
                                     } catch (_: Exception) { }
                                 }

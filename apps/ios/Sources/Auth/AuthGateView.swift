@@ -3,16 +3,25 @@ import SwiftUI
 struct AuthGateView<Content: View>: View {
     @Environment(AppState.self) private var appState
     let content: () -> Content
+    @State private var isRestoring = true
 
     init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content
     }
 
     var body: some View {
-        if appState.sessionStore.isAuthenticated {
-            content()
-        } else {
-            LoginView()
+        Group {
+            if isRestoring {
+                ProgressView("Restoring session…")
+            } else if appState.isAuthenticated {
+                content()
+            } else {
+                LoginView()
+            }
+        }
+        .task {
+            await appState.restoreSessionIfNeeded()
+            isRestoring = false
         }
     }
 }
@@ -22,8 +31,6 @@ struct LoginView: View {
 
     @State private var email = ""
     @State private var password = ""
-    @State private var name = ""
-    @State private var isSignUp = false
     @State private var isForgotPassword = false
     @State private var isLoading = false
     @State private var errorMessage: String?
@@ -35,12 +42,13 @@ struct LoginView: View {
                 VStack(spacing: 24) {
                     // Logo area
                     VStack(spacing: 8) {
-                        Image(systemName: "bolt.shield.fill")
-                            .font(.system(size: 64))
-                            .foregroundStyle(.tint)
+                        Image("AppLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80, height: 80)
                         Text("ThinkFleet")
                             .font(.largeTitle.bold())
-                        Text(isSignUp ? "Create your account" : isForgotPassword ? "Reset your password" : "Sign in to continue")
+                        Text(isForgotPassword ? "Reset your password" : "Sign in to continue")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -48,12 +56,6 @@ struct LoginView: View {
 
                     // Form
                     VStack(spacing: 16) {
-                        if isSignUp {
-                            TextField("Name", text: $name)
-                                .textContentType(.name)
-                                .textFieldStyle(.roundedBorder)
-                        }
-
                         TextField("Email", text: $email)
                             .textContentType(.emailAddress)
                             .keyboardType(.emailAddress)
@@ -63,7 +65,7 @@ struct LoginView: View {
 
                         if !isForgotPassword {
                             SecureField("Password", text: $password)
-                                .textContentType(isSignUp ? .newPassword : .password)
+                                .textContentType(.password)
                                 .textFieldStyle(.roundedBorder)
                         }
                     }
@@ -101,26 +103,18 @@ struct LoginView: View {
                     // Secondary actions
                     VStack(spacing: 12) {
                         if !isForgotPassword {
-                            Button(isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up") {
-                                withAnimation {
-                                    isSignUp.toggle()
-                                    errorMessage = nil
-                                    successMessage = nil
-                                }
-                            }
-                            .font(.subheadline)
+                            Link("Don't have an account? Sign up", destination: URL(string: "https://www.thinkfleet.ai/auth/signup")!)
+                                .font(.subheadline)
                         }
 
-                        if !isSignUp {
-                            Button(isForgotPassword ? "Back to sign in" : "Forgot password?") {
-                                withAnimation {
-                                    isForgotPassword.toggle()
-                                    errorMessage = nil
-                                    successMessage = nil
-                                }
+                        Button(isForgotPassword ? "Back to sign in" : "Forgot password?") {
+                            withAnimation {
+                                isForgotPassword.toggle()
+                                errorMessage = nil
+                                successMessage = nil
                             }
-                            .font(.subheadline)
                         }
+                        .font(.subheadline)
                     }
                 }
             }
@@ -129,13 +123,11 @@ struct LoginView: View {
     }
 
     private var primaryButtonLabel: String {
-        if isForgotPassword { return "Send Reset Link" }
-        return isSignUp ? "Sign Up" : "Sign In"
+        isForgotPassword ? "Send Reset Link" : "Sign In"
     }
 
     private var isFormValid: Bool {
         if isForgotPassword { return !email.isEmpty }
-        if isSignUp { return !name.isEmpty && !email.isEmpty && !password.isEmpty }
         return !email.isEmpty && !password.isEmpty
     }
 
@@ -148,22 +140,11 @@ struct LoginView: View {
             if isForgotPassword {
                 try await appState.authService.forgotPassword(email: email)
                 successMessage = "Check your email for a reset link."
-            } else if isSignUp {
-                let result = try await appState.authService.signUpWithEmail(
-                    name: name, email: email, password: password
-                )
-                switch result {
-                case .authenticated(let token, let user):
-                    appState.sessionStore.setSession(token: token, user: user)
-                case .emailVerificationRequired:
-                    successMessage = "Account created! Check your email to verify, then sign in."
-                    isSignUp = false
-                }
             } else {
-                let (token, user) = try await appState.authService.signInWithEmail(
+                let (signedToken, rawToken, user) = try await appState.authService.signInWithEmail(
                     email: email, password: password
                 )
-                appState.sessionStore.setSession(token: token, user: user)
+                await appState.handleLoginSuccess(signedToken: signedToken, rawToken: rawToken, user: user)
             }
         } catch {
             errorMessage = error.localizedDescription

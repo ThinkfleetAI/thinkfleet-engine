@@ -209,7 +209,9 @@ export function loadThinkfleetPlugins(options: PluginLoadOptions = {}): PluginRe
     ...(pluginSdkAlias
       ? {
           alias: {
+            "thinkfleet-engine/plugin-sdk": pluginSdkAlias,
             "thinkfleet/plugin-sdk": pluginSdkAlias,
+            "thinkfleetbot/plugin-sdk": pluginSdkAlias,
           },
         }
       : {}),

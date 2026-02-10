@@ -64,6 +64,13 @@ export type {
   ThinkfleetPluginServiceContext,
 } from "../plugins/types.js";
 export type {
+  CredentialResolver,
+  CredentialResolverResult,
+  KeySource,
+} from "../agents/credential-resolvers.js";
+export type { BudgetGate, BudgetGateResult } from "../agents/budget-gates.js";
+export type { EnvInjector } from "../agents/env-injectors.js";
+export type {
   GatewayRequestHandler,
   GatewayRequestHandlerOptions,
   RespondFn,

@@ -45,7 +45,7 @@ transcribe /tmp/memo.ogg | pbcopy
 add words to `vocab.txt` (one per line) to help the model recognize names/jargon:
 ```
 Clawdis
-Clawdbot
+ThinkFleet
 ```
 
 ## text replacements

@@ -7,6 +7,8 @@ struct CrewChatView: View {
     @State private var inputText = ""
     @State private var isLoading = false
     @State private var showMentionPicker = false
+    @State private var subscribedAgentIds: Set<String> = []
+    @State private var streamingMessageIds: [String: String] = [:] // agentId → messageId
 
     private var runningMembers: [CrewMember] {
         crew.members?.filter { $0.agent?.status == .RUNNING } ?? []
@@ -90,6 +92,12 @@ struct CrewChatView: View {
         }
         .navigationTitle(crew.name)
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            subscribeToCrewEvents()
+        }
+        .onDisappear {
+            unsubscribeAll()
+        }
         .sheet(isPresented: $showMentionPicker) {
             MentionPickerSheet(members: crew.members ?? []) { agentName in
                 inputText += "@\(agentName) "
@@ -99,8 +107,84 @@ struct CrewChatView: View {
         }
     }
 
+    private func subscribeToCrewEvents() {
+        for member in runningMembers {
+            let agentId = member.agentId
+            let agentName = member.agent?.name ?? "Agent"
+            guard !subscribedAgentIds.contains(agentId) else { continue }
+            subscribedAgentIds.insert(agentId)
+
+            appState.socketManager.subscribeToChatEvents(agentId) { event in
+                Task { @MainActor in
+                    handleCrewEvent(agentId: agentId, agentName: agentName, event: event)
+                }
+            }
+        }
+    }
+
+    private func unsubscribeAll() {
+        for agentId in subscribedAgentIds {
+            appState.socketManager.unsubscribeFromAgent(agentId)
+        }
+        subscribedAgentIds.removeAll()
+    }
+
+    @MainActor
+    private func handleCrewEvent(agentId: String, agentName: String, event: ChatEventPayload) {
+        guard let text = event.text, !text.isEmpty else {
+            if event.state == "final" || event.state == "error" {
+                streamingMessageIds.removeValue(forKey: agentId)
+            }
+            return
+        }
+
+        switch event.state {
+        case "delta":
+            if let msgId = streamingMessageIds[agentId],
+               let idx = messages.firstIndex(where: { $0.id == msgId }) {
+                messages[idx] = CrewChatMessage(
+                    id: msgId, text: messages[idx].text + text,
+                    sender: .agent, agentId: agentId, agentName: agentName,
+                    timestamp: messages[idx].timestamp, isStreaming: true
+                )
+            } else {
+                let id = UUID().uuidString
+                streamingMessageIds[agentId] = id
+                messages.append(CrewChatMessage(
+                    id: id, text: text,
+                    sender: .agent, agentId: agentId, agentName: agentName,
+                    timestamp: Date(), isStreaming: true
+                ))
+            }
+        case "final":
+            if let msgId = streamingMessageIds[agentId],
+               let idx = messages.firstIndex(where: { $0.id == msgId }) {
+                messages[idx] = CrewChatMessage(
+                    id: msgId, text: messages[idx].text.isEmpty ? text : messages[idx].text,
+                    sender: .agent, agentId: agentId, agentName: agentName,
+                    timestamp: messages[idx].timestamp, isStreaming: false
+                )
+            } else {
+                messages.append(CrewChatMessage(
+                    id: UUID().uuidString, text: text,
+                    sender: .agent, agentId: agentId, agentName: agentName,
+                    timestamp: Date(), isStreaming: false
+                ))
+            }
+            streamingMessageIds.removeValue(forKey: agentId)
+        case "error":
+            streamingMessageIds.removeValue(forKey: agentId)
+            messages.append(CrewChatMessage(
+                id: UUID().uuidString, text: "Error from \(agentName): \(text)",
+                sender: .agent, agentId: agentId, agentName: agentName,
+                timestamp: Date(), isStreaming: false
+            ))
+        default:
+            break
+        }
+    }
+
     private func sendCrewMessage() async {
-        guard let orgId = appState.currentOrganization?.id else { return }
         let text = inputText.trimmingCharacters(in: .whitespaces)
         guard !text.isEmpty else { return }
         inputText = ""
@@ -129,16 +213,16 @@ struct CrewChatView: View {
             : mentioned
 
         for agentId in targetAgents {
-            struct SendInput: Codable {
-                let agentId: String
-                let organizationId: String
-                let content: String
-            }
-            struct SendResponse: Codable { let messageId: String? }
-            _ = try? await appState.apiClient.rpc(
-                "assistants.chats.send",
-                input: SendInput(agentId: agentId, organizationId: orgId, content: text)
-            ) as SendResponse
+            let params: [String: Any] = [
+                "message": text,
+                "sessionKey": "mobile-crew:\(agentId)",
+                "idempotencyKey": UUID().uuidString,
+            ]
+            _ = try? await appState.socketManager.sendRPC(
+                agentId: agentId,
+                method: "chat.send",
+                params: params
+            )
         }
     }
 }

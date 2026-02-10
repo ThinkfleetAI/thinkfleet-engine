@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DeliverableListView: View {
     @Environment(AppState.self) private var appState
@@ -53,7 +54,9 @@ struct DeliverableListView: View {
                     if !deliveredTasks.isEmpty {
                         Section("Task Outputs") {
                             ForEach(deliveredTasks) { task in
-                                DeliverableTaskRow(task: task)
+                                NavigationLink(destination: TaskDetailView(task: task, agents: appState.agents)) {
+                                    DeliverableTaskRow(task: task)
+                                }
                             }
                         }
                     }
@@ -79,7 +82,7 @@ struct DeliverableListView: View {
 
         struct TaskInput: Codable { let organizationId: String }
         if let response: TaskListResponse = try? await appState.apiClient.rpc(
-            "assistants.tasks.list",
+            "assistants.tasks.listByOrg",
             input: TaskInput(organizationId: orgId)
         ) {
             tasks = response.tasks
@@ -90,7 +93,7 @@ struct DeliverableListView: View {
         for agent in appState.agents {
             let input = AttachmentListInput(agentId: agent.id, organizationId: orgId)
             if let response: AttachmentListResponse = try? await appState.apiClient.rpc(
-                "assistants.agents.attachments.list", input: input
+                "assistants.attachments.listByAgent", input: input
             ) {
                 allAttachments.append(contentsOf: response.attachments)
             }
@@ -135,30 +138,57 @@ struct DeliverableTaskRow: View {
 }
 
 struct AttachmentRow: View {
+    @Environment(AppState.self) private var appState
     let attachment: TaskAttachment
+    @State private var isDownloading = false
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: mimeIcon)
-                .font(.title2)
-                .foregroundStyle(.blue)
-                .frame(width: 32)
+        Button {
+            Task { await downloadAndOpen() }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: mimeIcon)
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                    .frame(width: 32)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(attachment.filename)
-                    .font(.body)
-                    .lineLimit(1)
-                Text(formattedSize)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(attachment.filename)
+                        .font(.body)
+                        .lineLimit(1)
+                        .foregroundStyle(.primary)
+                    Text(formattedSize)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                if isDownloading {
+                    ProgressView()
+                } else {
+                    Image(systemName: "arrow.down.circle")
+                        .foregroundStyle(.blue)
+                }
             }
-
-            Spacer()
-
-            Image(systemName: "arrow.down.circle")
-                .foregroundStyle(.blue)
+            .padding(.vertical, 4)
         }
-        .padding(.vertical, 4)
+        .disabled(isDownloading)
+    }
+
+    private func downloadAndOpen() async {
+        guard let orgId = appState.currentOrganization?.id else { return }
+        isDownloading = true
+        defer { isDownloading = false }
+        let input = AttachmentDownloadInput(
+            attachmentId: attachment.id, taskId: attachment.taskId, organizationId: orgId
+        )
+        guard let response: AttachmentDownloadResponse = try? await appState.apiClient.rpc(
+            "assistants.attachments.downloadUrl", input: input
+        ) else { return }
+        if let url = URL(string: response.downloadUrl) {
+            await MainActor.run { UIApplication.shared.open(url) }
+        }
     }
 
     private var mimeIcon: String {

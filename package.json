@@ -1,16 +1,17 @@
 {
-  "name": "thinkfleet",
+  "name": "thinkfleet-engine",
   "version": "2026.1.27-beta.1",
-  "description": "WhatsApp gateway CLI (Baileys web) with Pi RPC agent",
+  "description": "Open-source AI agent runtime engine with plugin SDK",
   "type": "module",
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
     "./plugin-sdk": "./dist/plugin-sdk/index.js",
     "./plugin-sdk/*": "./dist/plugin-sdk/*",
-    "./cli-entry": "./thinkfleet.mjs"
+    "./cli-entry": "./thinkfleet-engine.mjs"
   },
   "bin": {
+    "thinkfleet-engine": "./thinkfleet-engine.mjs",
     "thinkfleet": "./thinkfleet.mjs"
   },
   "files": [
@@ -55,6 +56,7 @@
     "docs/**",
     "extensions/**",
     "assets/**",
+    "thinkfleet-engine.mjs",
     "thinkfleet.mjs",
     "skills/**",
     "patches/**",

@@ -1,7 +1,7 @@
 ---
 name: excel
 description: Read, write, edit, and format Excel files (.xlsx). Create spreadsheets, manipulate data, apply formatting, manage sheets, merge cells, find/replace, and export to CSV/JSON/Markdown. Use for any Excel file manipulation task.
-metadata: {"clawdbot":{"emoji":"📊","requires":{"bins":["python3"],"pip":["openpyxl"]}}}
+metadata: {"thinkfleet":{"emoji":"📊","requires":{"bins":["python3"],"pip":["openpyxl"]}}}
 ---
 
 # Excel

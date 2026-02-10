@@ -2,7 +2,7 @@
 name: nest-devices
 description: Control Nest smart home devices (thermostat, cameras, doorbell) via the Device Access API. Use when asked to check or adjust home temperature, view camera feeds, check who's at the door, monitor rooms, or set up temperature schedules.
 metadata:
-  clawdbot:
+  thinkfleet:
     emoji: "🏠"
 ---
 
@@ -133,11 +133,11 @@ For instant alerts when someone rings the doorbell or motion is detected, you ne
 
 - Google Cloud CLI (`gcloud`) installed and authenticated
 - Cloudflare account (free tier works) for the tunnel
-- Clawdbot hooks enabled in config
+- ThinkFleet hooks enabled in config
 
-### 1. Enable Clawdbot Hooks
+### 1. Enable ThinkFleet Hooks
 
-Add to your `clawdbot.json`:
+Add to your `thinkfleet.json`:
 
 ```json
 {
@@ -222,8 +222,8 @@ After=network.target
 [Service]
 Type=simple
 User=YOUR_USER
-Environment=CLAWDBOT_GATEWAY_URL=http://localhost:18789
-Environment=CLAWDBOT_HOOKS_TOKEN=your-hooks-token-here
+Environment=THINKFLEET_GATEWAY_URL=http://localhost:18789
+Environment=THINKFLEET_HOOKS_TOKEN=your-hooks-token-here
 ExecStart=/usr/bin/python3 /path/to/skills/nest-devices/scripts/nest-webhook.py
 Restart=always
 RestartSec=5
@@ -302,8 +302,8 @@ When a doorbell or person event triggers an alert:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `CLAWDBOT_GATEWAY_URL` | No | Gateway URL (default: `http://localhost:18789`) |
-| `CLAWDBOT_HOOKS_TOKEN` | Yes | Gateway hooks token for awareness notifications |
+| `THINKFLEET_GATEWAY_URL` | No | Gateway URL (default: `http://localhost:18789`) |
+| `THINKFLEET_HOOKS_TOKEN` | Yes | Gateway hooks token for awareness notifications |
 | `OP_SVC_ACCT_TOKEN` | Yes | 1Password service account token for Nest API credentials |
 | `TELEGRAM_BOT_TOKEN` | Yes | Telegram bot token for sending alerts |
 | `TELEGRAM_CHAT_ID` | Yes | Telegram chat ID to receive alerts |

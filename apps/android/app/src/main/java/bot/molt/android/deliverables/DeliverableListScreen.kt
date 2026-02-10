@@ -1,5 +1,6 @@
 package bot.molt.android.deliverables
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import bot.molt.android.model.AppState
 import bot.molt.android.networking.*
+import bot.molt.android.tasks.TaskDetailScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -25,7 +27,14 @@ fun DeliverableListScreen(appState: AppState) {
     var attachments by remember { mutableStateOf<List<TaskAttachment>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var selectedAgentId by remember { mutableStateOf<String?>(null) }
+    var selectedTask by remember { mutableStateOf<AgentTask?>(null) }
     val scope = rememberCoroutineScope()
+
+    // Show task detail if selected
+    selectedTask?.let { task ->
+        TaskDetailScreen(task = task, agents = agents, onBack = { selectedTask = null }, appState = appState)
+        return
+    }
 
     val deliveredTasks = tasks
         .filter { it.status == TaskStatus.delivered || it.status == TaskStatus.done }
@@ -40,7 +49,7 @@ fun DeliverableListScreen(appState: AppState) {
 
         try {
             val response = appState.apiClient.rpc(
-                "assistants.tasks.list",
+                "assistants.tasks.listByOrg",
                 ListAgentsInput(orgId),
                 ListAgentsInput.serializer(),
                 TaskListResponse.serializer()
@@ -52,7 +61,7 @@ fun DeliverableListScreen(appState: AppState) {
         for (agent in agents) {
             try {
                 val response = appState.apiClient.rpc(
-                    "assistants.agents.attachments.list",
+                    "assistants.attachments.listByAgent",
                     AttachmentListInput(agent.id, orgId),
                     AttachmentListInput.serializer(),
                     AttachmentListResponse.serializer()
@@ -140,7 +149,7 @@ fun DeliverableListScreen(appState: AppState) {
                                 )
                             }
                             items(deliveredTasks, key = { it.id }) { task ->
-                                DeliverableTaskRow(task)
+                                DeliverableTaskRow(task, onClick = { selectedTask = task })
                                 HorizontalDivider()
                             }
                         }
@@ -166,8 +175,9 @@ fun DeliverableListScreen(appState: AppState) {
 }
 
 @Composable
-private fun DeliverableTaskRow(task: AgentTask) {
+private fun DeliverableTaskRow(task: AgentTask, onClick: (() -> Unit)? = null) {
     ListItem(
+        modifier = if (onClick != null) Modifier.clickable { onClick() } else Modifier,
         headlineContent = { Text(task.title, maxLines = 2) },
         supportingContent = {
             Column {

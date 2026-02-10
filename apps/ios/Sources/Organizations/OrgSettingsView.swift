@@ -11,7 +11,7 @@ struct OrgSettingsView: View {
             if let org = appState.currentOrganization {
                 Section("Organization") {
                     LabeledContent("Name", value: org.name)
-                    LabeledContent("Slug", value: org.slug)
+                    LabeledContent("Slug", value: org.slug ?? "")
                     if org.isPersonal == true {
                         Label("Personal Organization", systemImage: "person.fill")
                             .foregroundStyle(.secondary)

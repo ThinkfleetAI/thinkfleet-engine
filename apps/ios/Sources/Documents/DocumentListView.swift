@@ -69,10 +69,22 @@ struct DocumentListView: View {
 
 struct AgentDocument: Codable, Identifiable, Sendable {
     let id: String
-    let name: String
-    let type: String?
-    let size: Int?
+    let filename: String
+    let fileSize: Int?
+    let mimeType: String?
+    let category: String?
+    let description: String?
     let createdAt: String
+
+    // Convenience for display
+    var name: String { filename }
+    var size: Int? { fileSize }
+    var type: String? {
+        if let ext = filename.split(separator: ".").last {
+            return String(ext)
+        }
+        return mimeType
+    }
 }
 
 struct DocumentRow: View {

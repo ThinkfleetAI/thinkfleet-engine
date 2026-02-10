@@ -10,8 +10,8 @@ SKILL_DIR="$(dirname "$SCRIPT_DIR")"
 # Find config file
 if [ -f "$SKILL_DIR/config.json" ]; then
     CONFIG_FILE="$SKILL_DIR/config.json"
-elif [ -f "$HOME/.clawdbot/skills/bankr/config.json" ]; then
-    CONFIG_FILE="$HOME/.clawdbot/skills/bankr/config.json"
+elif [ -f "$HOME/.thinkfleet/skills/bankr/config.json" ]; then
+    CONFIG_FILE="$HOME/.thinkfleet/skills/bankr/config.json"
 else
     echo "{\"error\": \"config.json not found\"}" >&2
     exit 1

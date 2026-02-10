@@ -1,7 +1,7 @@
 /**
  * SaaS Bridge Gateway Handlers
  *
- * These methods allow the Clawdbot chat agent to call back to the SaaS
+ * These methods allow the ThinkFleet chat agent to call back to the SaaS
  * platform for operations that live outside the container:
  * - Create/manage tasks on the kanban board
  * - Delegate complex work to Agent Zero
@@ -17,7 +17,11 @@
 import { ErrorCodes, errorShape } from "../protocol/index.js";
 import type { GatewayRequestHandlers } from "./types.js";
 
-const SAAS_BASE = process.env.THINKFLEET_API_URL || process.env.CLAWDBOT_PROXY_BASE_URL || "";
+const SAAS_BASE =
+  process.env.THINKFLEET_API_URL ||
+  process.env.THINKFLEET_PROXY_BASE_URL ||
+  process.env.CLAWDBOT_PROXY_BASE_URL ||
+  "";
 const GATEWAY_TOKEN = process.env.THINKFLEET_GATEWAY_TOKEN || "";
 const AGENT_DB_ID = process.env.THINKFLEET_AGENT_DB_ID || "";
 

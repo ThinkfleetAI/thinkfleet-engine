@@ -78,11 +78,13 @@ export function resolveThinkfleetMetadata(
   const raw = getFrontmatterValue(frontmatter, "metadata");
   if (!raw) return undefined;
   try {
-    const parsed = JSON5.parse(raw) as { thinkfleet?: unknown } & Partial<
-      Record<typeof LEGACY_MANIFEST_KEY, unknown>
-    >;
+    const parsed = JSON5.parse(raw) as {
+      "thinkfleet-engine"?: unknown;
+      thinkfleet?: unknown;
+    } & Partial<Record<typeof LEGACY_MANIFEST_KEY, unknown>>;
     if (!parsed || typeof parsed !== "object") return undefined;
-    const metadataRaw = parsed.thinkfleet ?? parsed[LEGACY_MANIFEST_KEY];
+    const metadataRaw =
+      parsed["thinkfleet-engine"] ?? parsed.thinkfleet ?? parsed[LEGACY_MANIFEST_KEY];
     if (!metadataRaw || typeof metadataRaw !== "object") return undefined;
     const metadataObj = metadataRaw as Record<string, unknown>;
     const requiresRaw =

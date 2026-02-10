@@ -96,7 +96,9 @@ struct TaskBoardView: View {
                 ContentUnavailableView("No Tasks", systemImage: "checklist", description: Text("Create a task to get started."))
             } else {
                 List(filteredTasks) { task in
-                    TaskRow(task: task, agents: appState.agents)
+                    NavigationLink(destination: TaskDetailView(task: task, agents: appState.agents)) {
+                        TaskRow(task: task, agents: appState.agents)
+                    }
                 }
                 .refreshable { await loadTasks() }
             }
@@ -120,7 +122,7 @@ struct TaskBoardView: View {
         isLoading = true
         struct Input: Codable { let organizationId: String }
         if let response: TaskListResponse = try? await appState.apiClient.rpc(
-            "assistants.tasks.list", input: Input(organizationId: orgId)
+            "assistants.tasks.listByOrg", input: Input(organizationId: orgId)
         ) {
             self.tasks = response.tasks
         }
@@ -357,5 +359,153 @@ struct CreateTaskSheet: View {
             errorMessage = error.localizedDescription
         }
         isCreating = false
+    }
+}
+
+// MARK: - Task Detail
+
+struct TaskDetailView: View {
+    @Environment(AppState.self) private var appState
+    let task: AgentTask
+    let agents: [Agent]
+    @State private var attachments: [TaskAttachment] = []
+    @State private var showChat = false
+
+    private var assignedAgent: Agent? {
+        if let delegatedId = task.delegatedToAgentId {
+            return agents.first(where: { $0.id == delegatedId })
+        }
+        return agents.first(where: { $0.id == task.agentId })
+    }
+
+    var body: some View {
+        List {
+            // Status & Urgency
+            Section {
+                HStack {
+                    Image(systemName: task.status.icon)
+                        .foregroundStyle(task.status.color)
+                        .font(.title2)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(task.status.displayName)
+                            .font(.headline)
+                        if let urgency = task.urgency {
+                            UrgencyBadge(urgency: urgency)
+                        }
+                    }
+                    Spacer()
+                }
+            }
+
+            // Chat with Agent
+            if let agent = assignedAgent, agent.status == .RUNNING {
+                Section {
+                    NavigationLink(destination: SaaSChatView(agentId: task.agentId)) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "bubble.left.and.bubble.right.fill")
+                                .foregroundStyle(.blue)
+                                .font(.title3)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Chat with \(agent.name)")
+                                    .font(.body.weight(.medium))
+                                Text("Discuss this task or provide more details")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Description
+            if let description = task.description, !description.isEmpty {
+                Section("Description") {
+                    Text(description)
+                        .font(.body)
+                }
+            }
+
+            // Deliverables
+            if let deliverables = task.deliverables, !deliverables.isEmpty {
+                Section("Deliverables") {
+                    Text(deliverables)
+                        .font(.body)
+                }
+            }
+
+            // File Attachments
+            if !attachments.isEmpty {
+                Section("Files") {
+                    ForEach(attachments) { attachment in
+                        AttachmentRow(attachment: attachment)
+                    }
+                }
+            }
+
+            // Details
+            Section("Details") {
+                if let agent = assignedAgent {
+                    LabeledContent("Agent") {
+                        HStack(spacing: 4) {
+                            AgentStatusIndicator(status: agent.status)
+                            Text(agent.name)
+                        }
+                    }
+                }
+
+                if let delegationStatus = task.delegationStatus, !delegationStatus.isEmpty {
+                    LabeledContent("Delegation", value: delegationStatus)
+                }
+
+                if let taskType = task.taskType, !taskType.isEmpty {
+                    LabeledContent("Type", value: taskType)
+                }
+
+                if let labels = task.labels, !labels.isEmpty {
+                    LabeledContent("Labels", value: labels.joined(separator: ", "))
+                }
+            }
+
+            // Timestamps
+            Section("Timeline") {
+                LabeledContent("Created", value: formatDate(task.createdAt))
+                LabeledContent("Updated", value: formatDate(task.updatedAt))
+                if let deliveredAt = task.deliveredAt {
+                    LabeledContent("Delivered", value: formatDate(deliveredAt))
+                }
+            }
+        }
+        .navigationTitle(task.title)
+        .navigationBarTitleDisplayMode(.inline)
+        .task { await loadAttachments() }
+    }
+
+    private func loadAttachments() async {
+        guard let orgId = appState.currentOrganization?.id else { return }
+        let input = TaskAttachmentListInput(taskId: task.id, organizationId: orgId)
+        if let response: AttachmentListResponse = try? await appState.apiClient.rpc(
+            "assistants.attachments.list", input: input
+        ) {
+            attachments = response.attachments
+        }
+    }
+
+    private func formatDate(_ isoString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: isoString) {
+            let display = DateFormatter()
+            display.dateStyle = .medium
+            display.timeStyle = .short
+            return display.string(from: date)
+        }
+        formatter.formatOptions = [.withInternetDateTime]
+        if let date = formatter.date(from: isoString) {
+            let display = DateFormatter()
+            display.dateStyle = .medium
+            display.timeStyle = .short
+            return display.string(from: date)
+        }
+        return isoString
     }
 }

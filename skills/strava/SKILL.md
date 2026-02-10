@@ -2,7 +2,7 @@
 name: strava
 description: Load and analyze Strava activities, stats, and workouts using the Strava API
 homepage: https://developers.strava.com/
-metadata: {"clawdbot":{"emoji":"🏃","requires":{"bins":["curl"],"env":["STRAVA_ACCESS_TOKEN"]},"primaryEnv":"STRAVA_ACCESS_TOKEN"}}
+metadata: {"thinkfleet":{"emoji":"🏃","requires":{"bins":["curl"],"env":["STRAVA_ACCESS_TOKEN"]},"primaryEnv":"STRAVA_ACCESS_TOKEN"}}
 ---
 
 # Strava Skill
@@ -39,7 +39,7 @@ This returns `access_token` and `refresh_token`.
 
 ### 3. Configure Credentials
 
-Add to `~/.clawdbot/clawdbot.json`:
+Add to `~/.thinkfleet/thinkfleet.json`:
 ```json
 {
   "skills": {

@@ -1,4 +1,7 @@
 import type { AnyAgentTool } from "../agents/tools/common.js";
+import { registerBudgetGate } from "../agents/budget-gates.js";
+import { registerCredentialResolver } from "../agents/credential-resolvers.js";
+import { registerEnvInjector } from "../agents/env-injectors.js";
 import type { ChannelDock } from "../channels/dock.js";
 import type { ChannelPlugin } from "../channels/plugins/types.js";
 import type {
@@ -489,6 +492,9 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
       registerCli: (registrar, opts) => registerCli(record, registrar, opts),
       registerService: (service) => registerService(record, service),
       registerCommand: (command) => registerCommand(record, command),
+      registerCredentialResolver: (resolver) => registerCredentialResolver(resolver),
+      registerBudgetGate: (gate) => registerBudgetGate(gate),
+      registerEnvInjector: (injector) => registerEnvInjector(injector),
       resolvePath: (input: string) => resolveUserPath(input),
       on: (hookName, handler, opts) => registerTypedHook(record, hookName, handler, opts),
     };

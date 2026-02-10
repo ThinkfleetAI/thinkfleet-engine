@@ -247,7 +247,7 @@ fun AgentDetailScreen(appState: AppState, agent: Agent, onBack: () -> Unit) {
 
             // Tab content
             when (selectedTab) {
-                AgentDetailTab.Chat -> AgentChatTab(appState, agent)
+                AgentDetailTab.Chat -> bot.molt.android.ui.AgentChatContent(appState, agent)
                 AgentDetailTab.Overview -> AgentOverviewTab(agent)
                 AgentDetailTab.Tasks -> AgentTasksTab(appState, agent.id)
                 AgentDetailTab.Channels -> AgentChannelsTab(agent)
@@ -260,9 +260,11 @@ fun AgentDetailScreen(appState: AppState, agent: Agent, onBack: () -> Unit) {
 
 @Composable
 private fun AgentChatTab(appState: AppState, agent: Agent) {
-    var messages by remember { mutableStateOf<List<ChatMessageItem>>(emptyList()) }
+    var messages by remember { mutableStateOf<List<ChatMessage>>(emptyList()) }
     var inputText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
+    var isStreaming by remember { mutableStateOf(false) }
+    var streamingMessageId by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(agent.id) {
@@ -270,8 +272,8 @@ private fun AgentChatTab(appState: AppState, agent: Agent) {
         try {
             val orgId = appState.currentOrganization.value?.id ?: return@LaunchedEffect
             val response = appState.apiClient.rpc(
-                "assistants.agents.chat.history",
-                ChatHistoryInput(agent.id, orgId),
+                "assistants.chat.history",
+                ChatHistoryInput(agent.id, orgId, limit = 50),
                 ChatHistoryInput.serializer(),
                 ChatHistoryResponse.serializer()
             )
@@ -279,15 +281,51 @@ private fun AgentChatTab(appState: AppState, agent: Agent) {
         } catch (_: Exception) { }
         isLoading = false
 
-        // Subscribe to real-time messages
-        appState.socketManager.subscribeToAgent(agent.id) { _, data ->
-            val msg = ChatMessageItem(
-                id = java.util.UUID.randomUUID().toString(),
-                role = "assistant",
-                content = data.optString("content", ""),
-                timestamp = data.optString("timestamp", ""),
-            )
-            messages = messages + msg
+        // Subscribe to typed chat events
+        appState.socketManager.subscribeToChatEvents(agent.id) { event ->
+            val text = event.text
+            val role = event.role ?: "assistant"
+
+            when (event.state) {
+                "delta" -> {
+                    if (!text.isNullOrEmpty()) {
+                        isStreaming = true
+                        val sid = streamingMessageId
+                        if (sid != null) {
+                            messages = messages.map { msg ->
+                                if (msg.id == sid) msg.copy(content = msg.content + text) else msg
+                            }
+                        } else {
+                            val newId = java.util.UUID.randomUUID().toString()
+                            streamingMessageId = newId
+                            messages = messages + ChatMessage(
+                                id = newId, content = text, role = role,
+                                agentId = agent.id, createdAt = ""
+                            )
+                        }
+                    }
+                }
+                "final" -> {
+                    isStreaming = false
+                    if (streamingMessageId == null && !text.isNullOrEmpty()) {
+                        messages = messages + ChatMessage(
+                            id = java.util.UUID.randomUUID().toString(),
+                            content = text, role = role,
+                            agentId = agent.id, createdAt = ""
+                        )
+                    }
+                    streamingMessageId = null
+                }
+                "error" -> {
+                    isStreaming = false
+                    streamingMessageId = null
+                    messages = messages + ChatMessage(
+                        id = java.util.UUID.randomUUID().toString(),
+                        content = "Error: ${text ?: "Unknown error"}",
+                        role = "system", agentId = agent.id, createdAt = ""
+                    )
+                }
+            }
         }
     }
 
@@ -309,9 +347,10 @@ private fun AgentChatTab(appState: AppState, agent: Agent) {
                 Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),
                 reverseLayout = true,
             ) {
-                items(messages.reversed().size, key = { messages.reversed()[it].id }) { idx ->
-                    val msg = messages.reversed()[idx]
-                    ChatBubble(msg)
+                val reversed = messages.reversed()
+                items(reversed.size, key = { reversed[it].id }) { idx ->
+                    val msg = reversed[idx]
+                    ChatBubble(msg, isStreaming = msg.id == streamingMessageId)
                 }
             }
         }
@@ -328,54 +367,74 @@ private fun AgentChatTab(appState: AppState, agent: Agent) {
                     singleLine = true,
                 )
                 Spacer(Modifier.width(8.dp))
-                Button(
-                    onClick = {
-                        val text = inputText.trim()
-                        if (text.isNotEmpty()) {
-                            inputText = ""
-                            val userMsg = ChatMessageItem(
-                                id = java.util.UUID.randomUUID().toString(),
-                                role = "user",
-                                content = text,
-                                timestamp = "",
-                            )
-                            messages = messages + userMsg
-                            scope.launch {
-                                try {
-                                    val orgId = appState.currentOrganization.value?.id ?: return@launch
-                                    appState.apiClient.rpc(
-                                        "assistants.agents.chat.send",
-                                        ChatSendInput(agent.id, orgId, text),
-                                        ChatSendInput.serializer(),
-                                        ChatSendResponse.serializer()
-                                    )
-                                } catch (_: Exception) { }
+                if (isStreaming) {
+                    CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                } else {
+                    Button(
+                        onClick = {
+                            val text = inputText.trim()
+                            if (text.isNotEmpty()) {
+                                inputText = ""
+                                messages = messages + ChatMessage(
+                                    id = java.util.UUID.randomUUID().toString(),
+                                    content = text, role = "user",
+                                    agentId = agent.id, createdAt = ""
+                                )
+                                scope.launch {
+                                    try {
+                                        appState.socketManager.sendRPC(
+                                            agentId = agent.id,
+                                            method = "chat.send",
+                                            params = mapOf("message" to text, "sessionKey" to "mobile:${agent.id}", "idempotencyKey" to java.util.UUID.randomUUID().toString())
+                                        )
+                                    } catch (e: Exception) {
+                                        messages = messages + ChatMessage(
+                                            id = java.util.UUID.randomUUID().toString(),
+                                            content = "Failed to send: ${e.message}",
+                                            role = "system", agentId = agent.id, createdAt = ""
+                                        )
+                                    }
+                                }
                             }
-                        }
-                    },
-                    enabled = inputText.isNotBlank(),
-                ) { Text("Send") }
+                        },
+                        enabled = inputText.isNotBlank(),
+                    ) { Text("Send") }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun ChatBubble(msg: ChatMessageItem) {
+private fun ChatBubble(msg: ChatMessage, isStreaming: Boolean = false) {
     val isUser = msg.role == "user"
+    val isSystem = msg.role == "system"
     Row(
         Modifier.fillMaxWidth().padding(vertical = 4.dp),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
     ) {
         Surface(
-            color = if (isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+            color = when {
+                isSystem -> MaterialTheme.colorScheme.errorContainer
+                isUser -> MaterialTheme.colorScheme.primaryContainer
+                else -> MaterialTheme.colorScheme.surfaceVariant
+            },
             shape = MaterialTheme.shapes.medium,
         ) {
-            Text(
-                msg.content,
-                modifier = Modifier.padding(12.dp).widthIn(max = 280.dp),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Row(
+                Modifier.padding(12.dp).widthIn(max = 280.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    msg.content,
+                    modifier = Modifier.weight(1f, fill = false),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (isStreaming) {
+                    Spacer(Modifier.width(8.dp))
+                    CircularProgressIndicator(modifier = Modifier.size(12.dp), strokeWidth = 2.dp)
+                }
+            }
         }
     }
 }
@@ -400,8 +459,10 @@ private fun AgentOverviewTab(agent: Agent) {
 
 @Composable
 private fun AgentTasksTab(appState: AppState, agentId: String) {
+    val agents by appState.agents.collectAsState()
     var tasks by remember { mutableStateOf<List<AgentTask>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var selectedTask by remember { mutableStateOf<AgentTask?>(null) }
 
     LaunchedEffect(agentId) {
         isLoading = true
@@ -418,6 +479,11 @@ private fun AgentTasksTab(appState: AppState, agentId: String) {
         isLoading = false
     }
 
+    selectedTask?.let { task ->
+        bot.molt.android.tasks.TaskDetailScreen(task = task, agents = agents, onBack = { selectedTask = null }, appState = appState)
+        return
+    }
+
     if (isLoading) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
     } else if (tasks.isEmpty()) {
@@ -427,10 +493,7 @@ private fun AgentTasksTab(appState: AppState, agentId: String) {
     } else {
         LazyColumn(Modifier.fillMaxSize()) {
             items(tasks, key = { it.id }) { task ->
-                ListItem(
-                    headlineContent = { Text(task.title) },
-                    supportingContent = { Text(task.status.name.replace("_", " ").replaceFirstChar { it.uppercase() }) },
-                )
+                bot.molt.android.tasks.TaskRow(task, agents, onClick = { selectedTask = task })
                 HorizontalDivider()
             }
         }
@@ -554,6 +617,8 @@ private fun statusColor(status: AgentStatus): Color = when (status) {
     AgentStatus.RUNNING -> Color(0xFF4CAF50)
     AgentStatus.STOPPED -> Color.Gray
     AgentStatus.PENDING -> Color(0xFFFFC107)
+    AgentStatus.PROVISIONING -> Color(0xFFFFC107)
     AgentStatus.ERROR -> Color(0xFFF44336)
+    AgentStatus.DELETING -> Color(0xFFF44336)
     AgentStatus.TERMINATED -> Color.Gray
 }

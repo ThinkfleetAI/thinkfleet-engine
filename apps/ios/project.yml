@@ -80,15 +80,17 @@ targets:
         PROVISIONING_PROFILE_SPECIFIER: "bot.molt.ios Development"
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
-        ENABLE_APPINTENTS_METADATA: NO
+        ENABLE_APPINTENTS_METADATA: YES
     info:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: ThinkFleet
         CFBundleIconName: AppIcon
-        CFBundleShortVersionString: "2026.1.27-beta.1"
+        CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "20260126"
-        UILaunchScreen: {}
+        UILaunchScreen:
+          UIImageName: AppLogo
+          UIColorName: LaunchBackground
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UIBackgroundModes:
@@ -105,9 +107,6 @@ targets:
         NSSpeechRecognitionUsageDescription: ThinkFleet uses on-device speech recognition for voice wake.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-          - UIInterfaceOrientationPortraitUpsideDown
-          - UIInterfaceOrientationLandscapeLeft
-          - UIInterfaceOrientationLandscapeRight
         UISupportedInterfaceOrientations~ipad:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationPortraitUpsideDown
@@ -135,5 +134,5 @@ targets:
       path: Tests/Info.plist
       properties:
         CFBundleDisplayName: ThinkFleetTests
-        CFBundleShortVersionString: "2026.1.27-beta.1"
+        CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "20260126"

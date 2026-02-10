@@ -16,8 +16,8 @@ Interact with the Farcaster decentralized social protocol via Neynar's API.
 2. Create config:
 
 ```bash
-mkdir -p ~/.clawdbot/skills/neynar
-cat > ~/.clawdbot/skills/neynar/config.json << 'EOF'
+mkdir -p ~/.thinkfleet/skills/neynar
+cat > ~/.thinkfleet/skills/neynar/config.json << 'EOF'
 {
   "apiKey": "YOUR_NEYNAR_API_KEY",
   "signerUuid": "YOUR_SIGNER_UUID"

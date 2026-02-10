@@ -3,7 +3,7 @@ name: withings-health
 description: Fetches health data from the Withings API including weight, body composition (fat, muscle, bone, water), activity, and sleep. Use this skill when the user asks about their Withings data, weight history, body metrics, daily steps, sleep quality, or any health measurement from Withings devices.
 version: 1.1.0
 homepage: https://developer.withings.com/
-metadata: {"clawdbot":{"emoji":"⚖️","requires":{"bins":["node"],"env":["WITHINGS_CLIENT_ID","WITHINGS_CLIENT_SECRET"]}}}
+metadata: {"thinkfleet":{"emoji":"⚖️","requires":{"bins":["node"],"env":["WITHINGS_CLIENT_ID","WITHINGS_CLIENT_SECRET"]}}}
 ---
 
 This skill allows you to interact with the user's Withings account to retrieve comprehensive health metrics from Withings devices (smart scales, sleep analyzers, activity trackers, etc.).
@@ -32,7 +32,7 @@ Before using this skill, you need to create a free Withings developer applicatio
 
 1. Navigate to **My Apps** → **Create an Application**
 2. Fill in the application details:
-   - **Application Name**: Choose a name (e.g., "My Clawdbot Health")
+   - **Application Name**: Choose a name (e.g., "My ThinkFleet Health")
    - **Description**: Brief description of your use case
    - **Contact Email**: Your email address
    - **Callback URL**: `http://localhost:8080` (required for OAuth)
@@ -49,7 +49,7 @@ Once your application is created:
 
 ### Step 4: Configure Environment Variables
 
-Add these to your Clawdbot environment:
+Add these to your ThinkFleet environment:
 ```bash
 export WITHINGS_CLIENT_ID="your_client_id_here"
 export WITHINGS_CLIENT_SECRET="your_client_secret_here"

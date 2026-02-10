@@ -15,8 +15,8 @@ enum ThinkFleetConfig {
            let url = URL(string: plistURL) {
             return url
         }
-        // 3. Default — localhost for development
-        return URL(string: "http://localhost:3002")!
+        // 3. Default — production
+        return URL(string: "https://www.thinkfleet.ai")!
     }()
 
     static let socketIOPath = "/api/socket.io"

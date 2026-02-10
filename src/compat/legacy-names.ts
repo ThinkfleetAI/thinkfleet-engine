@@ -1,4 +1,4 @@
-export const LEGACY_PROJECT_NAME = "thinkfleet" as const;
+export const LEGACY_PROJECT_NAME = "thinkfleetbot" as const;
 
 export const LEGACY_MANIFEST_KEY = LEGACY_PROJECT_NAME;
 

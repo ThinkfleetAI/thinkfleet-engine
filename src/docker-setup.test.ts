@@ -60,13 +60,13 @@ describe("docker-setup.sh", () => {
       ...process.env,
       PATH: `${binDir}:${process.env.PATH ?? ""}`,
       DOCKER_STUB_LOG: logPath,
-      THINKFLEET_GATEWAY_TOKEN: "test-token",
-      THINKFLEET_CONFIG_DIR: join(rootDir, "config"),
-      THINKFLEET_WORKSPACE_DIR: join(rootDir, "clawd"),
+      THINKFLEETBOT_GATEWAY_TOKEN: "test-token",
+      THINKFLEETBOT_CONFIG_DIR: join(rootDir, "config"),
+      THINKFLEETBOT_WORKSPACE_DIR: join(rootDir, "clawd"),
     };
-    delete env.THINKFLEET_DOCKER_APT_PACKAGES;
-    delete env.THINKFLEET_EXTRA_MOUNTS;
-    delete env.THINKFLEET_HOME_VOLUME;
+    delete env.THINKFLEETBOT_DOCKER_APT_PACKAGES;
+    delete env.THINKFLEETBOT_EXTRA_MOUNTS;
+    delete env.THINKFLEETBOT_HOME_VOLUME;
 
     const result = spawnSync("bash", [scriptPath], {
       cwd: rootDir,
@@ -77,9 +77,9 @@ describe("docker-setup.sh", () => {
     expect(result.status).toBe(0);
 
     const envFile = await readFile(join(rootDir, ".env"), "utf8");
-    expect(envFile).toContain("THINKFLEET_DOCKER_APT_PACKAGES=");
-    expect(envFile).toContain("THINKFLEET_EXTRA_MOUNTS=");
-    expect(envFile).toContain("THINKFLEET_HOME_VOLUME=");
+    expect(envFile).toContain("THINKFLEETBOT_DOCKER_APT_PACKAGES=");
+    expect(envFile).toContain("THINKFLEETBOT_EXTRA_MOUNTS=");
+    expect(envFile).toContain("THINKFLEETBOT_HOME_VOLUME=");
   });
 
   it("plumbs THINKFLEET_DOCKER_APT_PACKAGES into .env and docker build args", async () => {
@@ -110,12 +110,12 @@ describe("docker-setup.sh", () => {
       ...process.env,
       PATH: `${binDir}:${process.env.PATH ?? ""}`,
       DOCKER_STUB_LOG: logPath,
-      THINKFLEET_DOCKER_APT_PACKAGES: "ffmpeg build-essential",
-      THINKFLEET_GATEWAY_TOKEN: "test-token",
-      THINKFLEET_CONFIG_DIR: join(rootDir, "config"),
-      THINKFLEET_WORKSPACE_DIR: join(rootDir, "clawd"),
-      THINKFLEET_EXTRA_MOUNTS: "",
-      THINKFLEET_HOME_VOLUME: "",
+      THINKFLEETBOT_DOCKER_APT_PACKAGES: "ffmpeg build-essential",
+      THINKFLEETBOT_GATEWAY_TOKEN: "test-token",
+      THINKFLEETBOT_CONFIG_DIR: join(rootDir, "config"),
+      THINKFLEETBOT_WORKSPACE_DIR: join(rootDir, "clawd"),
+      THINKFLEETBOT_EXTRA_MOUNTS: "",
+      THINKFLEETBOT_HOME_VOLUME: "",
     };
 
     const result = spawnSync("bash", [scriptPath], {
@@ -127,10 +127,10 @@ describe("docker-setup.sh", () => {
     expect(result.status).toBe(0);
 
     const envFile = await readFile(join(rootDir, ".env"), "utf8");
-    expect(envFile).toContain("THINKFLEET_DOCKER_APT_PACKAGES=ffmpeg build-essential");
+    expect(envFile).toContain("THINKFLEETBOT_DOCKER_APT_PACKAGES=ffmpeg build-essential");
 
     const log = await readFile(logPath, "utf8");
-    expect(log).toContain("--build-arg THINKFLEET_DOCKER_APT_PACKAGES=ffmpeg build-essential");
+    expect(log).toContain("--build-arg THINKFLEETBOT_DOCKER_APT_PACKAGES=ffmpeg build-essential");
   });
 
   it("keeps docker-compose gateway command in sync", async () => {

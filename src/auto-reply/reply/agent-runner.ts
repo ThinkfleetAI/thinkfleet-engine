@@ -5,12 +5,7 @@ import { DEFAULT_CONTEXT_TOKENS } from "../../agents/defaults.js";
 import { resolveModelAuthMode } from "../../agents/model-auth.js";
 import { isCliProvider } from "../../agents/model-selection.js";
 import { queueEmbeddedPiMessage } from "../../agents/pi-embedded.js";
-import {
-  fetchCredentialFromSaas,
-  hasByokLlmCredential,
-  isBudgetExhausted,
-  isSaasMode,
-} from "../../agents/saas-credential-client.js";
+import { checkBudgetGates, hasBudgetGates } from "../../agents/budget-gates.js";
 import { hasNonzeroUsage } from "../../agents/usage.js";
 import {
   resolveAgentIdFromSessionKey,
@@ -112,21 +107,14 @@ export async function runReplyAgent(params: {
   const activeSessionStore = sessionStore;
   let activeIsNewSession = isNewSession;
 
-  // Ensure SaaS credential cache is populated before checking budget.
-  // Without this, the first message after startup has an empty cache —
-  // isBudgetExhausted() returns false, the gate is skipped, and the agent
-  // later fails with a cryptic "No API key found" instead of the friendly budget message.
-  if (isSaasMode()) {
-    await fetchCredentialFromSaas("anthropic");
-  }
-
-  // Budget enforcement: Block AI operations when token limit exceeded (SaaS mode only).
-  // BYOK users bypass this gate — they have their own keys and aren't consuming platform tokens.
-  if (isSaasMode() && isBudgetExhausted() && !hasByokLlmCredential()) {
-    typing.cleanup();
-    return {
-      text: "Your organization has reached its monthly token limit. Please upgrade your plan, add your own API key, or wait until the next billing period to continue using AI features.",
-    };
+  // Budget enforcement: plugins (e.g. SaaS connector) can register gates
+  // that block agent execution when token limits are exceeded.
+  if (hasBudgetGates()) {
+    const budgetResult = await checkBudgetGates();
+    if (budgetResult?.blocked) {
+      typing.cleanup();
+      return { text: budgetResult.message };
+    }
   }
 
   const isHeartbeat = opts?.isHeartbeat === true;

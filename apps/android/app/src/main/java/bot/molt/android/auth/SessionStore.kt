@@ -13,8 +13,13 @@ import kotlinx.coroutines.flow.asStateFlow
 class SessionStore(context: Context) {
     private val prefs: SharedPreferences
 
+    /** The signed session token (from Set-Cookie) — used for oRPC API calls. */
     private val _sessionToken = MutableStateFlow<String?>(null)
     val sessionToken: StateFlow<String?> = _sessionToken.asStateFlow()
+
+    /** The raw session token (from response body) — used for Socket.IO direct DB lookup. */
+    private val _rawToken = MutableStateFlow<String?>(null)
+    val rawToken: StateFlow<String?> = _rawToken.asStateFlow()
 
     private val _currentUser = MutableStateFlow<AuthUser?>(null)
     val currentUser: StateFlow<AuthUser?> = _currentUser.asStateFlow()
@@ -39,12 +44,16 @@ class SessionStore(context: Context) {
         )
 
         _sessionToken.value = prefs.getString(KEY_TOKEN, null)
+        _rawToken.value = prefs.getString(KEY_RAW_TOKEN, null)
         _organizationId.value = prefs.getString(KEY_ORG_ID, null)
     }
 
-    fun setSession(token: String, user: AuthUser) {
-        prefs.edit().putString(KEY_TOKEN, token).apply()
+    fun setSession(token: String, rawToken: String? = null, user: AuthUser) {
+        val editor = prefs.edit().putString(KEY_TOKEN, token)
+        if (rawToken != null) editor.putString(KEY_RAW_TOKEN, rawToken)
+        editor.apply()
         _sessionToken.value = token
+        if (rawToken != null) _rawToken.value = rawToken
         _currentUser.value = user
     }
 
@@ -56,12 +65,14 @@ class SessionStore(context: Context) {
     fun clearSession() {
         prefs.edit().clear().apply()
         _sessionToken.value = null
+        _rawToken.value = null
         _currentUser.value = null
         _organizationId.value = null
     }
 
     companion object {
         private const val KEY_TOKEN = "session_token"
+        private const val KEY_RAW_TOKEN = "raw_session_token"
         private const val KEY_ORG_ID = "organization_id"
     }
 }

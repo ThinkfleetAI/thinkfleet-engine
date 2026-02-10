@@ -8,6 +8,7 @@ struct AgentChatView: View {
     @State private var inputText = ""
     @State private var isSending = false
     @State private var isSubscribed = false
+    @State private var streamingMessageId: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -77,9 +78,8 @@ struct AgentChatView: View {
 
     private func loadHistory() async {
         guard let orgId = appState.currentOrganization?.id else { return }
-        struct Input: Codable { let agentId: String; let organizationId: String }
-        let input = Input(agentId: agent.id, organizationId: orgId)
-        if let response: ChatHistoryResponse = try? await appState.apiClient.rpc("assistants.chat.history", input: input) {
+        let input = ChatHistoryInput(agentId: agent.id, organizationId: orgId, limit: 50)
+        if let response: ChatHistoryFullResponse = try? await appState.apiClient.rpc("assistants.chat.history", input: input) {
             self.messages = response.messages
         }
     }
@@ -102,42 +102,92 @@ struct AgentChatView: View {
         )
         messages.append(localMsg)
 
-        // Send via Socket.IO RPC
+        // Send via Socket.IO RPC to forward through gateway to agent
         do {
             _ = try await appState.socketManager.sendRPC(
                 agentId: agent.id,
                 method: "chat.send",
-                params: ["message": text]
+                params: ["message": text, "sessionKey": "mobile:\(agent.id)", "idempotencyKey": UUID().uuidString]
             )
         } catch {
-            // Message send failed - could show error UI
+            messages.append(ChatMessage(
+                id: UUID().uuidString,
+                content: "Failed to send: \(error.localizedDescription)",
+                role: "system",
+                agentId: agent.id,
+                userId: nil,
+                createdAt: ISO8601DateFormatter().string(from: Date())
+            ))
+            isSending = false
         }
-
-        isSending = false
     }
 
     private func subscribeToEvents() {
         guard !isSubscribed else { return }
         isSubscribed = true
 
-        appState.socketManager.subscribeToAgent(agent.id) { _, event in
-            if let type = event["type"] as? String, type == "chat",
-               let payload = event["payload"] as? [String: Any],
-               let content = payload["content"] as? String,
-               let role = payload["role"] as? String
-            {
-                let msg = ChatMessage(
-                    id: payload["id"] as? String ?? UUID().uuidString,
-                    content: content,
-                    role: role,
-                    agentId: agent.id,
-                    userId: nil,
-                    createdAt: payload["createdAt"] as? String ?? ISO8601DateFormatter().string(from: Date())
-                )
-                Task { @MainActor in
-                    messages.append(msg)
-                }
+        appState.socketManager.subscribeToChatEvents(agent.id) { event in
+            Task { @MainActor in
+                handleChatEvent(event)
             }
+        }
+    }
+
+    @MainActor
+    private func handleChatEvent(_ event: ChatEventPayload) {
+        guard let text = event.text, !text.isEmpty else {
+            if event.state == "final" || event.state == "error" {
+                isSending = false
+                if let id = streamingMessageId,
+                   let idx = messages.firstIndex(where: { $0.id == id }) {
+                    messages[idx].isStreaming = false
+                }
+                streamingMessageId = nil
+            }
+            return
+        }
+
+        let role = event.role ?? "assistant"
+
+        switch event.state {
+        case "delta":
+            if let id = streamingMessageId,
+               let idx = messages.firstIndex(where: { $0.id == id }) {
+                messages[idx].content += text
+            } else {
+                let id = UUID().uuidString
+                streamingMessageId = id
+                messages.append(ChatMessage(
+                    id: id, content: text, role: role,
+                    agentId: agent.id, userId: nil,
+                    createdAt: ISO8601DateFormatter().string(from: Date()),
+                    isStreaming: true
+                ))
+            }
+        case "final":
+            isSending = false
+            if let id = streamingMessageId,
+               let idx = messages.firstIndex(where: { $0.id == id }) {
+                messages[idx].isStreaming = false
+                if messages[idx].content.isEmpty { messages[idx].content = text }
+            } else {
+                messages.append(ChatMessage(
+                    id: UUID().uuidString, content: text, role: role,
+                    agentId: agent.id, userId: nil,
+                    createdAt: ISO8601DateFormatter().string(from: Date())
+                ))
+            }
+            streamingMessageId = nil
+        case "error":
+            isSending = false
+            streamingMessageId = nil
+            messages.append(ChatMessage(
+                id: UUID().uuidString, content: "Error: \(text)", role: "system",
+                agentId: agent.id, userId: nil,
+                createdAt: ISO8601DateFormatter().string(from: Date())
+            ))
+        default:
+            break
         }
     }
 
@@ -151,19 +201,36 @@ struct ChatBubble: View {
     let message: ChatMessage
 
     private var isUser: Bool { message.role == "user" }
+    private var isSystem: Bool { message.role == "system" }
 
     var body: some View {
         HStack {
             if isUser { Spacer(minLength: 60) }
 
             VStack(alignment: isUser ? .trailing : .leading, spacing: 4) {
-                Text(message.content)
-                    .font(.body)
+                if isSystem {
+                    Text(message.content)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color(.systemOrange).opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    HStack(spacing: 6) {
+                        Text(message.content)
+                            .font(.body)
+                        if message.isStreaming == true {
+                            ProgressView()
+                                .controlSize(.mini)
+                        }
+                    }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
                     .background(isUser ? Color.accentColor : Color(.systemGray5))
                     .foregroundStyle(isUser ? .white : .primary)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
             }
 
             if !isUser { Spacer(minLength: 60) }

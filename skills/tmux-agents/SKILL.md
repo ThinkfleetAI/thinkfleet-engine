@@ -14,7 +14,7 @@ triggers:
   - local agent
   - ollama agent
 metadata:
-  clawdbot:
+  thinkfleet:
     emoji: "🖥️"
     requires:
       bins: ["tmux"]
@@ -136,7 +136,7 @@ ollama launch codex --model glm-4.7-flash --config
 
 ## Tips
 
-- Sessions persist even if Clawdbot restarts
+- Sessions persist even if ThinkFleet restarts
 - Use local agents for risky/experimental work
 - Use cloud for production-critical tasks
 - Check `tmux ls` to see all active work

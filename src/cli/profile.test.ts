@@ -80,60 +80,68 @@ describe("applyCliProfileEnv", () => {
 
 describe("formatCliCommand", () => {
   it("returns command unchanged when no profile is set", () => {
-    expect(formatCliCommand("thinkfleet doctor --fix", {})).toBe("thinkfleet doctor --fix");
+    expect(formatCliCommand("thinkfleet-engine doctor --fix", {})).toBe(
+      "thinkfleet-engine doctor --fix",
+    );
   });
 
   it("returns command unchanged when profile is default", () => {
-    expect(formatCliCommand("thinkfleet doctor --fix", { THINKFLEET_PROFILE: "default" })).toBe(
-      "thinkfleet doctor --fix",
-    );
+    expect(
+      formatCliCommand("thinkfleet-engine doctor --fix", { THINKFLEET_PROFILE: "default" }),
+    ).toBe("thinkfleet-engine doctor --fix");
   });
 
   it("returns command unchanged when profile is Default (case-insensitive)", () => {
-    expect(formatCliCommand("thinkfleet doctor --fix", { THINKFLEET_PROFILE: "Default" })).toBe(
-      "thinkfleet doctor --fix",
-    );
+    expect(
+      formatCliCommand("thinkfleet-engine doctor --fix", { THINKFLEET_PROFILE: "Default" }),
+    ).toBe("thinkfleet-engine doctor --fix");
   });
 
   it("returns command unchanged when profile is invalid", () => {
-    expect(formatCliCommand("thinkfleet doctor --fix", { THINKFLEET_PROFILE: "bad profile" })).toBe(
-      "thinkfleet doctor --fix",
-    );
+    expect(
+      formatCliCommand("thinkfleet-engine doctor --fix", { THINKFLEET_PROFILE: "bad profile" }),
+    ).toBe("thinkfleet-engine doctor --fix");
   });
 
   it("returns command unchanged when --profile is already present", () => {
     expect(
-      formatCliCommand("thinkfleet --profile work doctor --fix", { THINKFLEET_PROFILE: "work" }),
-    ).toBe("thinkfleet --profile work doctor --fix");
+      formatCliCommand("thinkfleet-engine --profile work doctor --fix", {
+        THINKFLEET_PROFILE: "work",
+      }),
+    ).toBe("thinkfleet-engine --profile work doctor --fix");
   });
 
   it("returns command unchanged when --dev is already present", () => {
-    expect(formatCliCommand("thinkfleet --dev doctor", { THINKFLEET_PROFILE: "dev" })).toBe(
-      "thinkfleet --dev doctor",
+    expect(formatCliCommand("thinkfleet-engine --dev doctor", { THINKFLEET_PROFILE: "dev" })).toBe(
+      "thinkfleet-engine --dev doctor",
     );
   });
 
   it("inserts --profile flag when profile is set", () => {
-    expect(formatCliCommand("thinkfleet doctor --fix", { THINKFLEET_PROFILE: "work" })).toBe(
-      "thinkfleet --profile work doctor --fix",
+    expect(formatCliCommand("thinkfleet-engine doctor --fix", { THINKFLEET_PROFILE: "work" })).toBe(
+      "thinkfleet-engine --profile work doctor --fix",
     );
   });
 
   it("trims whitespace from profile", () => {
-    expect(formatCliCommand("thinkfleet doctor --fix", { THINKFLEET_PROFILE: "  jbclawd  " })).toBe(
-      "thinkfleet --profile jbclawd doctor --fix",
-    );
+    expect(
+      formatCliCommand("thinkfleet-engine doctor --fix", { THINKFLEET_PROFILE: "  jbclawd  " }),
+    ).toBe("thinkfleet-engine --profile jbclawd doctor --fix");
   });
 
-  it("handles command with no args after thinkfleet", () => {
-    expect(formatCliCommand("thinkfleet", { THINKFLEET_PROFILE: "test" })).toBe(
-      "thinkfleet --profile test",
+  it("handles command with no args after thinkfleet-engine", () => {
+    expect(formatCliCommand("thinkfleet-engine", { THINKFLEET_PROFILE: "test" })).toBe(
+      "thinkfleet-engine --profile test",
     );
   });
 
   it("handles pnpm wrapper", () => {
-    expect(formatCliCommand("pnpm thinkfleet doctor", { THINKFLEET_PROFILE: "work" })).toBe(
-      "pnpm thinkfleet --profile work doctor",
+    expect(formatCliCommand("pnpm thinkfleet-engine doctor", { THINKFLEET_PROFILE: "work" })).toBe(
+      "pnpm thinkfleet-engine --profile work doctor",
     );
+  });
+
+  it("normalizes legacy thinkfleet command to thinkfleet-engine", () => {
+    expect(formatCliCommand("thinkfleet doctor --fix", {})).toBe("thinkfleet-engine doctor --fix");
   });
 });

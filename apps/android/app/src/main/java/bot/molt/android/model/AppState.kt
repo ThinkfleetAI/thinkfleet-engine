@@ -1,6 +1,7 @@
 package bot.molt.android.model
 
 import android.content.Context
+import android.util.Log
 import bot.molt.android.auth.AuthService
 import bot.molt.android.auth.SessionStore
 import bot.molt.android.networking.AgentActionInput
@@ -18,6 +19,8 @@ import bot.molt.android.networking.SocketIOManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+
+private const val TAG = "AppState"
 
 class AppState(context: Context) {
     private val baseUrl = resolveBaseUrl()
@@ -44,8 +47,8 @@ class AppState(context: Context) {
     val isLoadingAgents: StateFlow<Boolean> = _isLoadingAgents.asStateFlow()
 
     suspend fun onAuthenticated() {
-        socketManager.connect()
         loadOrganizations()
+        // socketManager.connect() is called by selectOrganization() during loadOrganizations()
         loadAgents()
         loadCrews()
         pushManager.registerToken(this)
@@ -70,7 +73,7 @@ class AppState(context: Context) {
 
         val result = try { authService.getSession(token) } catch (_: Exception) { null }
         if (result != null) {
-            sessionStore.setSession(result.first, result.second)
+            sessionStore.setSession(result.first, user = result.second)
             onAuthenticated()
         } else {
             sessionStore.clearSession()
@@ -78,25 +81,43 @@ class AppState(context: Context) {
     }
 
     suspend fun loadOrganizations() {
-        try {
-            val response = apiClient.rpcNoInput(
-                "organizations.list",
-                OrganizationListResponse.serializer()
-            )
-            _organizations.value = response.organizations
-            if (_currentOrganization.value == null) {
-                response.organizations.firstOrNull()?.let { selectOrganization(it) }
+        Log.i(TAG, "loadOrganizations: starting, token=${sessionStore.sessionToken.value?.take(8)}...")
+        // Retry with back-off — the server may need a moment to persist a fresh session token
+        for (attempt in 1..3) {
+            try {
+                val response = apiClient.rpcNoInput(
+                    "organizations.list",
+                    OrganizationListResponse.serializer()
+                )
+                Log.i(TAG, "loadOrganizations: loaded ${response.organizations.size} orgs")
+                _organizations.value = response.organizations
+                if (_currentOrganization.value == null) {
+                    response.organizations.firstOrNull()?.let {
+                        Log.i(TAG, "loadOrganizations: selecting org ${it.name} (${it.id})")
+                        selectOrganization(it)
+                    }
+                }
+                return
+            } catch (e: Exception) {
+                Log.e(TAG, "loadOrganizations: attempt $attempt failed: ${e.message}", e)
+                if (attempt < 3) kotlinx.coroutines.delay(500L * attempt)
             }
-        } catch (_: Exception) { }
+        }
+        Log.e(TAG, "loadOrganizations: all 3 attempts failed")
     }
 
     fun selectOrganization(org: Organization) {
         _currentOrganization.value = org
         sessionStore.setOrganization(org.id)
+        // Reconnect Socket.IO with new org context
+        socketManager.connect()
     }
 
     suspend fun loadAgents() {
-        val orgId = _currentOrganization.value?.id ?: return
+        val orgId = _currentOrganization.value?.id ?: run {
+            Log.w(TAG, "loadAgents: no currentOrganization")
+            return
+        }
         _isLoadingAgents.value = true
         try {
             val response = apiClient.rpc(
@@ -105,13 +126,19 @@ class AppState(context: Context) {
                 ListAgentsInput.serializer(),
                 AgentListResponse.serializer()
             )
+            Log.i(TAG, "loadAgents: loaded ${response.agents.size} agents")
             _agents.value = response.agents
-        } catch (_: Exception) { }
+        } catch (e: Exception) {
+            Log.e(TAG, "loadAgents: failed: ${e.message}", e)
+        }
         _isLoadingAgents.value = false
     }
 
     suspend fun loadCrews() {
-        val orgId = _currentOrganization.value?.id ?: return
+        val orgId = _currentOrganization.value?.id ?: run {
+            Log.w(TAG, "loadCrews: no currentOrganization")
+            return
+        }
         try {
             val response = apiClient.rpc(
                 "assistants.crews.list",
@@ -119,8 +146,11 @@ class AppState(context: Context) {
                 ListCrewsInput.serializer(),
                 CrewListResponse.serializer()
             )
+            Log.i(TAG, "loadCrews: loaded ${response.crews.size} crews")
             _crews.value = response.crews
-        } catch (_: Exception) { }
+        } catch (e: Exception) {
+            Log.e(TAG, "loadCrews: failed: ${e.message}", e)
+        }
     }
 
     suspend fun startAgent(agentId: String) {

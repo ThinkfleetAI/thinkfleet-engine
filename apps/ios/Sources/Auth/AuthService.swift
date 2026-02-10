@@ -3,6 +3,9 @@ import os.log
 
 private let authLogger = Logger(subsystem: "com.thinkfleet", category: "auth")
 
+/// Cookie name used by Better Auth in production (https:// base URL enables __Secure- prefix).
+private let sessionCookieName = "__Secure-better-auth.session_token"
+
 actor AuthService {
     private let baseURL: URL
     private let session: URLSession
@@ -10,6 +13,7 @@ actor AuthService {
     init(baseURL: URL, session: URLSession = .shared) {
         self.baseURL = baseURL
         self.session = session
+        authLogger.info("AuthService initialized with baseURL: \(baseURL.absoluteString)")
     }
 
     // MARK: - Email Auth
@@ -31,7 +35,7 @@ actor AuthService {
         let expiresAt: String?
     }
 
-    func signInWithEmail(email: String, password: String) async throws -> (token: String, user: AuthUser) {
+    func signInWithEmail(email: String, password: String) async throws -> (signedToken: String, rawToken: String, user: AuthUser) {
         let body: [String: String] = ["email": email, "password": password]
         let (data, response) = try await post(path: "/api/auth/sign-in/email", body: body)
 
@@ -39,27 +43,28 @@ actor AuthService {
             throw AuthError.networkError
         }
 
-        authLogger.info("Sign-in status: \(httpResponse.statusCode), body: \(String(data: data, encoding: .utf8) ?? "nil")")
+        authLogger.info("Sign-in status: \(httpResponse.statusCode)")
 
         guard httpResponse.statusCode == 200 else {
             throw AuthError.invalidCredentials
         }
 
-        // Extract session token from Set-Cookie header or response body
-        let cookieToken = extractSessionToken(from: httpResponse)
-
         let decoded = try JSONDecoder().decode(SignInResponse.self, from: data)
-        let finalToken = cookieToken ?? decoded.session?.token ?? decoded.token
+        // Signed token from Set-Cookie — needed for oRPC API calls (Better Auth HMAC-SHA-256 signed cookies)
+        let signedToken = extractSessionToken(from: httpResponse)
+        // Raw token from response body — needed for Socket.IO (direct DB lookup)
+        let rawToken = decoded.token ?? decoded.session?.token
+        authLogger.info("Sign-in signed=\(signedToken?.prefix(20) ?? "nil")... raw=\(rawToken?.prefix(12) ?? "nil")...")
 
-        guard let sessionToken = finalToken, let user = decoded.user else {
+        guard let signed = signedToken, let raw = rawToken, let user = decoded.user else {
             throw AuthError.invalidCredentials
         }
 
-        return (sessionToken, user)
+        return (signed, raw, user)
     }
 
     enum SignUpResult {
-        case authenticated(token: String, user: AuthUser)
+        case authenticated(signedToken: String, rawToken: String, user: AuthUser)
         case emailVerificationRequired
     }
 
@@ -71,18 +76,18 @@ actor AuthService {
             throw AuthError.networkError
         }
 
-        authLogger.info("Sign-up status: \(httpResponse.statusCode), body: \(String(data: data, encoding: .utf8) ?? "nil")")
+        authLogger.info("Sign-up status: \(httpResponse.statusCode)")
 
         guard httpResponse.statusCode == 200 else {
             throw AuthError.signUpFailed
         }
 
-        let cookieToken = extractSessionToken(from: httpResponse)
         let decoded = try JSONDecoder().decode(SignInResponse.self, from: data)
-        let finalToken = cookieToken ?? decoded.session?.token ?? decoded.token
+        let signedToken = extractSessionToken(from: httpResponse)
+        let rawToken = decoded.token ?? decoded.session?.token
 
-        if let sessionToken = finalToken, let user = decoded.user {
-            return .authenticated(token: sessionToken, user: user)
+        if let signed = signedToken, let raw = rawToken, let user = decoded.user {
+            return .authenticated(signedToken: signed, rawToken: raw, user: user)
         }
 
         return .emailVerificationRequired
@@ -96,8 +101,9 @@ actor AuthService {
     // MARK: - Session Management
 
     func getSession(token: String) async throws -> (token: String, user: AuthUser)? {
-        var request = URLRequest(url: baseURL.appendingPathComponent("/api/auth/session"))
-        request.setValue("better-auth.session_token=\(token)", forHTTPHeaderField: "Cookie")
+        var request = URLRequest(url: baseURL.appendingPathComponent("/api/auth/get-session"))
+        request.setValue("\(sessionCookieName)=\(token)", forHTTPHeaderField: "Cookie")
+        request.setValue(origin, forHTTPHeaderField: "Origin")
 
         let (data, response) = try await session.data(for: request)
 
@@ -105,8 +111,9 @@ actor AuthService {
             return nil
         }
 
-        let newToken = extractSessionToken(from: httpResponse) ?? token
         let decoded = try JSONDecoder().decode(SessionResponse.self, from: data)
+        // If server sends a new signed token in Set-Cookie, use it; otherwise keep the existing one
+        let newToken = extractSessionToken(from: httpResponse) ?? token
 
         guard let user = decoded.user else { return nil }
         return (newToken, user)
@@ -115,25 +122,53 @@ actor AuthService {
     func signOut(token: String) async throws {
         var request = URLRequest(url: baseURL.appendingPathComponent("/api/auth/sign-out"))
         request.httpMethod = "POST"
-        request.setValue("better-auth.session_token=\(token)", forHTTPHeaderField: "Cookie")
+        request.setValue("\(sessionCookieName)=\(token)", forHTTPHeaderField: "Cookie")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(origin, forHTTPHeaderField: "Origin")
         _ = try await session.data(for: request)
     }
 
     // MARK: - Helpers
 
+    private var origin: String {
+        "\(baseURL.scheme ?? "https")://\(baseURL.host ?? "")"
+    }
+
     private func post(path: String, body: [String: String]) async throws -> (Data, URLResponse) {
-        var request = URLRequest(url: baseURL.appendingPathComponent(path))
+        let url = baseURL.appendingPathComponent(path)
+        authLogger.debug("POST \(url.absoluteString)")
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(origin, forHTTPHeaderField: "Origin")
         request.httpBody = try JSONEncoder().encode(body)
         return try await session.data(for: request)
     }
 
+    /// Extract the signed session token from the Set-Cookie header.
+    /// The cookie name in production is `__Secure-better-auth.session_token` (https:// enables __Secure- prefix).
+    /// We match on `better-auth.session_token=` to handle both prefixed and unprefixed names.
     private func extractSessionToken(from response: HTTPURLResponse) -> String? {
-        guard let setCookie = response.value(forHTTPHeaderField: "Set-Cookie") else { return nil }
-        let pattern = /better-auth\.session_token=([^;]+)/
-        guard let match = setCookie.firstMatch(of: pattern) else { return nil }
+        // HTTPURLResponse may merge multiple Set-Cookie headers; check allHeaderFields
+        let allHeaders = response.allHeaderFields
+        // Collect all Set-Cookie values
+        var setCookieValues: [String] = []
+        for (key, value) in allHeaders {
+            if let keyStr = key as? String, keyStr.lowercased() == "set-cookie", let val = value as? String {
+                setCookieValues.append(val)
+            }
+        }
+        // Also check via the standard accessor (may return a merged string)
+        if let single = response.value(forHTTPHeaderField: "Set-Cookie") {
+            setCookieValues.append(single)
+        }
+
+        let joined = setCookieValues.joined(separator: ", ")
+        let pattern = /better-auth\.session_token=([^;,]+)/
+        guard let match = joined.firstMatch(of: pattern) else {
+            authLogger.warning("No session token found in Set-Cookie headers")
+            return nil
+        }
         return String(match.1)
     }
 }

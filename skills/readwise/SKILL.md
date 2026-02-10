@@ -2,7 +2,7 @@
 name: readwise
 description: Access Readwise highlights and Reader saved articles
 homepage: https://readwise.io
-metadata: {"clawdbot":{"emoji":"📚","requires":{"bins":["node"],"env":["READWISE_TOKEN"]},"primaryEnv":"READWISE_TOKEN"}}
+metadata: {"thinkfleet":{"emoji":"📚","requires":{"bins":["node"],"env":["READWISE_TOKEN"]},"primaryEnv":"READWISE_TOKEN"}}
 ---
 
 # Readwise & Reader Skill
@@ -18,7 +18,7 @@ Set the environment variable:
 export READWISE_TOKEN="your_token_here"
 ```
 
-Or add to ~/.clawdbot/clawdbot.json under "env".
+Or add to ~/.thinkfleet/thinkfleet.json under "env".
 
 ## Readwise (Highlights)
 

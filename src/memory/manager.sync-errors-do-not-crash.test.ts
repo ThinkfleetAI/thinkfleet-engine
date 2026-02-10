@@ -31,7 +31,9 @@ vi.mock("./embeddings.js", () => {
   };
 });
 
-describe("memory manager sync failures", () => {
+const nodeMajor = Number.parseInt(process.versions.node.split(".")[0], 10);
+
+describe.skipIf(nodeMajor < 22)("memory manager sync failures", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;

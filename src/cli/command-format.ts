@@ -2,7 +2,7 @@ import { normalizeProfileName } from "./profile-utils.js";
 import { replaceCliName, resolveCliName } from "./cli-name.js";
 
 const CLI_PREFIX_RE =
-  /^(?:pnpm|npm|bunx|npx)\s+(?:thinkfleet|thinkfleet)\b|^(?:thinkfleet|thinkfleet)\b/;
+  /^(?:pnpm|npm|bunx|npx)\s+(?:thinkfleet-engine|thinkfleet)\b|^(?:thinkfleet-engine|thinkfleet)\b/;
 const PROFILE_FLAG_RE = /(?:^|\s)--profile(?:\s|=|$)/;
 const DEV_FLAG_RE = /(?:^|\s)--dev(?:\s|$)/;
 

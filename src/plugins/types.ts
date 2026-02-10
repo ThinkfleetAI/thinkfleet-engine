@@ -266,6 +266,26 @@ export type ThinkfleetPluginApi = {
    * Use this for simple state-toggling or status commands that don't need AI reasoning.
    */
   registerCommand: (command: ThinkfleetPluginCommandDefinition) => void;
+  /**
+   * Register a credential resolver that is tried before the engine's built-in
+   * resolution chain (env vars, auth profiles, config).
+   * Resolvers are called in registration order; the first non-null result wins.
+   */
+  registerCredentialResolver: (
+    resolver: (
+      provider: string,
+    ) => Promise<{ apiKey: string; keySource: "platform" | "byok" } | null>,
+  ) => void;
+  /**
+   * Register a budget gate that is checked before agent execution.
+   * If any gate returns blocked=true, the agent run is skipped.
+   */
+  registerBudgetGate: (gate: () => Promise<{ blocked: true; message: string } | null>) => void;
+  /**
+   * Register an environment injector that sets env vars before skill execution.
+   * Must return a cleanup function that restores the original env state.
+   */
+  registerEnvInjector: (injector: () => Promise<(() => void) | undefined>) => void;
   resolvePath: (input: string) => string;
   /** Register a lifecycle hook handler */
   on: <K extends PluginHookName>(

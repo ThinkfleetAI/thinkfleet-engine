@@ -32,6 +32,8 @@ final class NodeAppModel {
     let voiceWake = VoiceWakeManager()
     let talkMode = TalkModeManager()
     private let locationService = LocationService()
+    private let calendarService = CalendarService()
+    private let contactService = ContactService()
     private var lastAutoA2uiURL: String?
 
     private var gatewayConnected = false
@@ -542,6 +544,13 @@ final class NodeAppModel {
                 return try await self.handleCameraInvoke(req)
             case ThinkFleetBotScreenCommand.record.rawValue:
                 return try await self.handleScreenRecordInvoke(req)
+            case ThinkFleetBotCalendarCommand.upcoming.rawValue,
+                 ThinkFleetBotCalendarCommand.create.rawValue,
+                 ThinkFleetBotCalendarCommand.search.rawValue:
+                return try await self.handleCalendarInvoke(req)
+            case ThinkFleetBotContactsCommand.search.rawValue,
+                 ThinkFleetBotContactsCommand.get.rawValue:
+                return try await self.handleContactsInvoke(req)
             default:
                 return BridgeInvokeResponse(
                     id: req.id,
@@ -621,6 +630,91 @@ final class NodeAppModel {
             source: nil)
         let json = try Self.encodePayload(payload)
         return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: json)
+    }
+
+    // MARK: - Calendar Commands
+
+    private func handleCalendarInvoke(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {
+        guard UserDefaults.standard.bool(forKey: "calendar.enabled") else {
+            return BridgeInvokeResponse(
+                id: req.id, ok: false,
+                error: ThinkFleetBotNodeError(code: .unavailable, message: "CALENDAR_DISABLED: enable Calendar in Settings"))
+        }
+
+        switch req.command {
+        case ThinkFleetBotCalendarCommand.upcoming.rawValue:
+            let params = (try? Self.decodeParams(ThinkFleetBotCalendarUpcomingParams.self, from: req.paramsJSON))
+                ?? ThinkFleetBotCalendarUpcomingParams()
+            let events = try await calendarService.getUpcomingEvents(days: params.days ?? 7, limit: params.limit ?? 20)
+            let json = try Self.encodePayload(events)
+            return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: json)
+
+        case ThinkFleetBotCalendarCommand.create.rawValue:
+            guard let params = try? Self.decodeParams(ThinkFleetBotCalendarCreateParams.self, from: req.paramsJSON) else {
+                return BridgeInvokeResponse(
+                    id: req.id, ok: false,
+                    error: ThinkFleetBotNodeError(code: .invalidRequest, message: "INVALID_PARAMS: title, startDate, endDate required"))
+            }
+            let event = try await calendarService.createEvent(params: params)
+            let json = try Self.encodePayload(event)
+            return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: json)
+
+        case ThinkFleetBotCalendarCommand.search.rawValue:
+            guard let params = try? Self.decodeParams(ThinkFleetBotCalendarSearchParams.self, from: req.paramsJSON) else {
+                return BridgeInvokeResponse(
+                    id: req.id, ok: false,
+                    error: ThinkFleetBotNodeError(code: .invalidRequest, message: "INVALID_PARAMS: query required"))
+            }
+            let events = try await calendarService.searchEvents(params: params)
+            let json = try Self.encodePayload(events)
+            return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: json)
+
+        default:
+            return BridgeInvokeResponse(
+                id: req.id, ok: false,
+                error: ThinkFleetBotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown calendar command"))
+        }
+    }
+
+    // MARK: - Contacts Commands
+
+    private func handleContactsInvoke(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {
+        guard UserDefaults.standard.bool(forKey: "contacts.enabled") else {
+            return BridgeInvokeResponse(
+                id: req.id, ok: false,
+                error: ThinkFleetBotNodeError(code: .unavailable, message: "CONTACTS_DISABLED: enable Contacts in Settings"))
+        }
+
+        switch req.command {
+        case ThinkFleetBotContactsCommand.search.rawValue:
+            guard let params = try? Self.decodeParams(ThinkFleetBotContactsSearchParams.self, from: req.paramsJSON) else {
+                return BridgeInvokeResponse(
+                    id: req.id, ok: false,
+                    error: ThinkFleetBotNodeError(code: .invalidRequest, message: "INVALID_PARAMS: query required"))
+            }
+            let contacts = try await contactService.searchContacts(query: params.query, limit: params.limit ?? 20)
+            let json = try Self.encodePayload(contacts)
+            return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: json)
+
+        case ThinkFleetBotContactsCommand.get.rawValue:
+            guard let params = try? Self.decodeParams(ThinkFleetBotContactsGetParams.self, from: req.paramsJSON) else {
+                return BridgeInvokeResponse(
+                    id: req.id, ok: false,
+                    error: ThinkFleetBotNodeError(code: .invalidRequest, message: "INVALID_PARAMS: id required"))
+            }
+            guard let contact = try await contactService.getContact(id: params.id) else {
+                return BridgeInvokeResponse(
+                    id: req.id, ok: false,
+                    error: ThinkFleetBotNodeError(code: .unavailable, message: "CONTACT_NOT_FOUND"))
+            }
+            let json = try Self.encodePayload(contact)
+            return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: json)
+
+        default:
+            return BridgeInvokeResponse(
+                id: req.id, ok: false,
+                error: ThinkFleetBotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown contacts command"))
+        }
     }
 
     private func handleCanvasInvoke(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {

@@ -330,8 +330,8 @@ describe("statusCommand", () => {
     expect(
       logs.some(
         (l) =>
-          l.includes("thinkfleet status --all") ||
-          l.includes("thinkfleet --profile isolated status --all") ||
+          l.includes("thinkfleet-engine status --all") ||
+          l.includes("thinkfleet-engine --profile isolated status --all") ||
           l.includes("thinkfleet status --all") ||
           l.includes("thinkfleet --profile isolated status --all"),
       ),

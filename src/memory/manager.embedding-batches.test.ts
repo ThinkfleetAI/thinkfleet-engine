@@ -21,7 +21,9 @@ vi.mock("./embeddings.js", () => ({
   }),
 }));
 
-describe("memory embedding batches", () => {
+const nodeMajor = Number.parseInt(process.versions.node.split(".")[0], 10);
+
+describe.skipIf(nodeMajor < 22)("memory embedding batches", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;

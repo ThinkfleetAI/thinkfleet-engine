@@ -215,15 +215,15 @@ describe("canvas host", () => {
       const res = await fetch(`http://127.0.0.1:${server.port}/__thinkfleet__/a2ui/`);
       const html = await res.text();
       expect(res.status).toBe(200);
-      expect(html).toContain("thinkfleet-a2ui-host");
-      expect(html).toContain("thinkfleetCanvasA2UIAction");
+      expect(html).toContain("thinkfleetbot-a2ui-host");
+      expect(html).toContain("thinkfleetbotCanvasA2UIAction");
 
       const bundleRes = await fetch(
         `http://127.0.0.1:${server.port}/__thinkfleet__/a2ui/a2ui.bundle.js`,
       );
       const js = await bundleRes.text();
       expect(bundleRes.status).toBe(200);
-      expect(js).toContain("thinkfleetA2UI");
+      expect(js).toContain("thinkfleetbotA2UI");
     } finally {
       await server.close();
       await fs.rm(dir, { recursive: true, force: true });

@@ -35,7 +35,9 @@ vi.mock("./embeddings.js", () => {
   };
 });
 
-describe("memory index", () => {
+const nodeMajor = Number.parseInt(process.versions.node.split(".")[0], 10);
+
+describe.skipIf(nodeMajor < 22)("memory index", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;

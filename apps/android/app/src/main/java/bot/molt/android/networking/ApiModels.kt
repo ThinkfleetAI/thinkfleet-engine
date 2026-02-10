@@ -1,5 +1,6 @@
 package bot.molt.android.networking
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // MARK: - Agent Models
@@ -20,7 +21,7 @@ data class Agent(
 
 @Serializable
 enum class AgentStatus {
-    PENDING, RUNNING, STOPPED, TERMINATED, ERROR
+    PENDING, PROVISIONING, RUNNING, STOPPED, ERROR, DELETING, TERMINATED
 }
 
 @Serializable
@@ -35,17 +36,17 @@ data class AgentContainer(
 @Serializable
 data class AgentChannel(
     val id: String,
-    val type: String,
+    @SerialName("channelType") val type: String,
     val name: String? = null,
-    val enabled: Boolean,
+    @SerialName("isActive") val enabled: Boolean,
 )
 
 @Serializable
 data class AgentHealthCheck(
     val id: String,
-    val status: String,
+    val isHealthy: Boolean,
     val responseTime: Int? = null,
-    val lastCheck: String? = null,
+    val checkedAt: String? = null,
 )
 
 // MARK: - Organization Models
@@ -205,24 +206,17 @@ data class AgentResponse(
 data class OrganizationListResponse(val organizations: List<Organization>)
 
 @Serializable
-data class ChatMessageItem(
-    val id: String,
-    val role: String,
-    val content: String,
-    val timestamp: String,
+data class ChatHistoryInput(val agentId: String, val organizationId: String, val limit: Int? = null)
+
+@Serializable
+data class ChatHistoryResponse(
+    val messages: List<ChatMessage>,
+    val total: Int? = null,
+    val hasMore: Boolean? = null,
 )
 
 @Serializable
-data class ChatHistoryInput(val agentId: String, val organizationId: String)
-
-@Serializable
-data class ChatHistoryResponse(val messages: List<ChatMessageItem>)
-
-@Serializable
-data class ChatSendInput(val agentId: String, val organizationId: String, val content: String)
-
-@Serializable
-data class ChatSendResponse(val messageId: String? = null)
+data class ChatSaveInput(val agentId: String, val organizationId: String, val role: String, val content: String)
 
 @Serializable
 data class TaskListResponse(val tasks: List<AgentTask>)
@@ -261,6 +255,45 @@ data class CrewExecutionTasksInput(val executionId: String, val organizationId: 
 
 @Serializable
 data class StartCrewExecutionInput(val crewId: String, val organizationId: String, val objective: String? = null)
+
+// MARK: - Composio Integration Models
+
+@Serializable
+data class ComposioApp(
+    val id: String,
+    val name: String,
+    val displayName: String? = null,
+    val logo: String? = null,
+    val categories: List<String>? = null,
+)
+
+@Serializable
+data class ComposioConnection(
+    val id: String,
+    val appName: String,
+    val status: String,
+)
+
+@Serializable
+data class ComposioAppsInput(val organizationId: String, val oauthOnly: Boolean? = null)
+
+@Serializable
+data class ComposioAppsResponse(val apps: List<ComposioApp>, val total: Int? = null)
+
+@Serializable
+data class ComposioConnectionsInput(val organizationId: String)
+
+@Serializable
+data class ComposioConnectionsResponse(val connections: List<ComposioConnection>)
+
+@Serializable
+data class ComposioConnectInput(val organizationId: String, val appName: String)
+
+@Serializable
+data class ComposioConnectResponse(val redirectUrl: String? = null, val connectionId: String? = null, val connected: Boolean? = null)
+
+@Serializable
+data class ComposioDisconnectInput(val organizationId: String, val appName: String)
 
 // MARK: - Attachment RPC Types
 

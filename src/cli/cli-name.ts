@@ -1,10 +1,10 @@
 import path from "node:path";
 
-export const DEFAULT_CLI_NAME = "thinkfleet";
+export const DEFAULT_CLI_NAME = "thinkfleet-engine";
 export const LEGACY_CLI_NAME = "thinkfleet";
 
 const KNOWN_CLI_NAMES = new Set([DEFAULT_CLI_NAME, LEGACY_CLI_NAME]);
-const CLI_PREFIX_RE = /^(?:((?:pnpm|npm|bunx|npx)\s+))?(thinkfleet)\b/;
+const CLI_PREFIX_RE = /^(?:((?:pnpm|npm|bunx|npx)\s+))?(thinkfleet-engine|thinkfleet)\b/;
 
 export function resolveCliName(
   argv: string[] = process.argv,

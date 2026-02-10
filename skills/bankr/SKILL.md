@@ -27,8 +27,8 @@ There are two ways to get started:
 If the user already has a Bankr API key, they can provide it directly:
 
 ```bash
-mkdir -p ~/.clawdbot/skills/bankr
-cat > ~/.clawdbot/skills/bankr/config.json << 'EOF'
+mkdir -p ~/.thinkfleet/skills/bankr
+cat > ~/.thinkfleet/skills/bankr/config.json << 'EOF'
 {
   "apiKey": "bk_YOUR_KEY_HERE",
   "apiUrl": "https://api.bankr.bot"
@@ -48,8 +48,8 @@ Clawd can walk the user through the full signup flow:
 4. **Configure** — Save the key (starts with `bk_`) to config:
 
 ```bash
-mkdir -p ~/.clawdbot/skills/bankr
-cat > ~/.clawdbot/skills/bankr/config.json << 'EOF'
+mkdir -p ~/.thinkfleet/skills/bankr
+cat > ~/.thinkfleet/skills/bankr/config.json << 'EOF'
 {
   "apiKey": "bk_YOUR_KEY_HERE",
   "apiUrl": "https://api.bankr.bot"
@@ -421,7 +421,7 @@ For comprehensive error troubleshooting, setup instructions, and debugging steps
 
 ```bash
 # Ensure scripts are executable
-chmod +x ~/.clawdbot/skills/bankr/scripts/*.sh
+chmod +x ~/.thinkfleet/skills/bankr/scripts/*.sh
 
 # Test connectivity
 curl -I https://api.bankr.bot

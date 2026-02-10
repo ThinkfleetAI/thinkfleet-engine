@@ -1,7 +1,7 @@
 ---
 name: ansible
 description: Run Ansible playbooks and manage AWX/Tower via API. Automate infrastructure configuration.
-metadata: {"clawdbot":{"emoji":"🅰️","requires":{"env":["AWX_URL","AWX_TOKEN"]}}}
+metadata: {"thinkfleet":{"emoji":"🅰️","requires":{"env":["AWX_URL","AWX_TOKEN"]}}}
 ---
 # Ansible / AWX
 Infrastructure automation.

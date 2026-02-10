@@ -6,12 +6,7 @@ import {
   resolveDefaultAgentId,
 } from "../../agents/agent-scope.js";
 import { runCliAgent } from "../../agents/cli-runner.js";
-import {
-  fetchCredentialFromSaas,
-  hasByokLlmCredential,
-  isBudgetExhausted,
-  isSaasMode,
-} from "../../agents/saas-credential-client.js";
+import { checkBudgetGates, hasBudgetGates } from "../../agents/budget-gates.js";
 import { getCliSessionId, setCliSessionId } from "../../agents/cli-session.js";
 import { lookupContextTokens } from "../../agents/context.js";
 import { DEFAULT_CONTEXT_TOKENS, DEFAULT_MODEL, DEFAULT_PROVIDER } from "../../agents/defaults.js";
@@ -100,19 +95,17 @@ export async function runCronIsolatedAgentTurn(params: {
   agentId?: string;
   lane?: string;
 }): Promise<RunCronAgentTurnResult> {
-  // Ensure SaaS credential cache is populated before checking budget.
-  if (isSaasMode()) {
-    await fetchCredentialFromSaas("anthropic");
-  }
-
-  // Budget enforcement: Skip cron job execution when token limit exceeded (SaaS mode only).
-  // BYOK users bypass this gate — they have their own keys and aren't consuming platform tokens.
-  if (isSaasMode() && isBudgetExhausted() && !hasByokLlmCredential()) {
-    return {
-      status: "skipped",
-      summary: "Cron job skipped: organization token limit exceeded",
-      error: "Token budget exhausted",
-    };
+  // Budget enforcement: plugins (e.g. SaaS connector) can register gates
+  // that block cron execution when token limits are exceeded.
+  if (hasBudgetGates()) {
+    const budgetResult = await checkBudgetGates();
+    if (budgetResult?.blocked) {
+      return {
+        status: "skipped",
+        summary: "Cron job skipped: organization token limit exceeded",
+        error: budgetResult.message,
+      };
+    }
   }
 
   const defaultAgentId = resolveDefaultAgentId(params.cfg);

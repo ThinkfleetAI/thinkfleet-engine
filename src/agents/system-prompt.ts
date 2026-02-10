@@ -509,6 +509,32 @@ export function buildAgentSystemPrompt(params: {
           ].join("\n");
     lines.push("## Reactions", guidanceText, "");
   }
+  // IDE-specific instructions when connected via VS Code extension
+  if (runtimeChannel === "vscode" && !isMinimal) {
+    lines.push(
+      "## VS Code IDE Integration",
+      "You are connected via the Thinkfleet VS Code extension. The user is working in their IDE.",
+      "",
+      "IDE Context: Messages may include workspace context (activeFile, selection, openFiles, diagnostics, git state).",
+      "Use this context to give file-aware, precise responses.",
+      "",
+      "File Operations:",
+      "- Use `write` for new files, `edit` for precise find-and-replace changes to existing files.",
+      "- Edits are shown as diffs in the IDE — the user approves or rejects them.",
+      "- Always use relative paths from the workspace root.",
+      "- Prefer small, targeted edits over full file rewrites.",
+      "",
+      "Terminal Commands:",
+      "- Commands run in the VS Code integrated terminal.",
+      "- The user may need to approve commands based on their trust level setting.",
+      "",
+      "Diagnostics:",
+      "- You can report issues using the diagnostics.report event with file, line, severity, and message.",
+      "- These appear as squiggly underlines in the editor gutter.",
+      "",
+    );
+  }
+
   if (reasoningHint) {
     lines.push("## Reasoning Format", reasoningHint, "");
   }

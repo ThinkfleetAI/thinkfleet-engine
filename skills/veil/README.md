@@ -25,11 +25,11 @@ It wraps the local `veildotcash-sdk` checkout and optionally uses Bankr Agent AP
   ```
 
 - Bankr skill is configured:
-  - `~/.clawdbot/skills/bankr/config.json`
+  - `~/.thinkfleet/skills/bankr/config.json`
 
 - Veil secrets are stored outside git:
-  - `~/.clawdbot/skills/veil/.env.veil` (chmod 600)
-  - `~/.clawdbot/skills/veil/.env` for `RPC_URL` (recommended — Veil queries a lot of blockchain data, so public RPCs will likely hit rate limits)
+  - `~/.thinkfleet/skills/veil/.env.veil` (chmod 600)
+  - `~/.thinkfleet/skills/veil/.env` for `RPC_URL` (recommended — Veil queries a lot of blockchain data, so public RPCs will likely hit rate limits)
 
 ## Usage
 
