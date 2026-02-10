@@ -24,8 +24,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
   && apt-get update && apt-get install -y gh \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# kubectl
-RUN curl -fsSL "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/$(dpkg --print-architecture)/kubectl" \
+# kubectl (pinned version to avoid flaky dl.k8s.io/release/stable.txt lookups)
+ARG KUBECTL_VERSION=v1.35.0
+RUN curl -fsSL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/$(dpkg --print-architecture)/kubectl" \
       -o /usr/local/bin/kubectl \
   && chmod +x /usr/local/bin/kubectl
 
