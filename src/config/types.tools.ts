@@ -338,6 +338,23 @@ export type MemorySearchConfig = {
     /** Minimum relevance score for proactive retrieval (0-1, default: 0.4). */
     minRelevanceScore?: number;
   };
+  /** Observational memory: two-agent compression (Observer + Reflector). */
+  observational?: {
+    /** Enable observational memory (default: false). */
+    enabled?: boolean;
+    /** LLM provider for Observer/Reflector calls (default: "openai"). */
+    provider?: string;
+    /** LLM model for Observer/Reflector calls (default: "gpt-4o-mini"). */
+    model?: string;
+    /** Token threshold for triggering Observer on raw messages (default: 30000). */
+    observerThresholdTokens?: number;
+    /** Token threshold for triggering Reflector on observations (default: 40000). */
+    reflectorThresholdTokens?: number;
+    /** Debounce interval in ms before running Observer (default: 10000). */
+    debounceMs?: number;
+    /** Max observation block as fraction of context window (default: 0.4). */
+    maxObservationRatio?: number;
+  };
 };
 
 export type ToolsConfig = {

@@ -275,6 +275,77 @@ export const saasBridgeHandlers: GatewayRequestHandlers = {
   },
 
   /**
+   * List org-level documents assigned to this agent.
+   */
+  "saas.org-docs.list": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/documents", {
+        method: "POST",
+        body: {
+          action: "org-docs.list",
+          category: params.category,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to list org documents"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Search org-level documents assigned to this agent.
+   */
+  "saas.org-docs.search": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/documents", {
+        method: "POST",
+        body: {
+          action: "org-docs.search",
+          query: params.query,
+          limit: params.limit ?? 5,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to search org documents"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
+   * Deliver a file from the agent to the org document repository.
+   */
+  "saas.org-docs.deliver": async ({ respond, params }) => {
+    try {
+      const { ok, data } = await saasFetch("/api/internal/bridge/documents", {
+        method: "POST",
+        body: {
+          action: "org-docs.deliver",
+          filename: params.filename,
+          content: params.content, // base64
+          mimeType: params.mimeType,
+          category: params.category ?? "deliverable",
+          description: params.description,
+        },
+      });
+      respond(
+        ok,
+        data,
+        ok ? undefined : errorShape(ErrorCodes.UNAVAILABLE, "Failed to deliver document"),
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, `SaaS unreachable: ${err}`));
+    }
+  },
+
+  /**
    * Proxy a request through the SaaS to a platform-managed service.
    * Platform API keys (Composio, Brave, etc.) never reach the container.
    */

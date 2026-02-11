@@ -79,6 +79,15 @@ export type ResolvedMemorySearchConfig = {
     maxProactiveItems: number;
     minRelevanceScore: number;
   };
+  observational?: {
+    enabled: true;
+    provider: string;
+    model: string;
+    observerThresholdTokens: number;
+    reflectorThresholdTokens: number;
+    debounceMs: number;
+    maxObservationRatio: number;
+  };
 };
 
 const DEFAULT_OPENAI_MODEL = "text-embedding-3-small";
@@ -282,6 +291,7 @@ function mergeConfig(
           : undefined,
     },
     extraction: resolveExtractionConfig(defaults?.extraction, overrides?.extraction),
+    observational: resolveObservationalConfig(defaults?.observational, overrides?.observational),
   };
 }
 
@@ -301,6 +311,29 @@ function resolveExtractionConfig(
     proactiveRetrieval: overrides?.proactiveRetrieval ?? defaults?.proactiveRetrieval ?? true,
     maxProactiveItems: overrides?.maxProactiveItems ?? defaults?.maxProactiveItems ?? 5,
     minRelevanceScore: overrides?.minRelevanceScore ?? defaults?.minRelevanceScore ?? 0.4,
+  };
+}
+
+function resolveObservationalConfig(
+  defaults: MemorySearchConfigType["observational"],
+  overrides: MemorySearchConfigType["observational"],
+): ResolvedMemorySearchConfig["observational"] {
+  const enabled = overrides?.enabled ?? defaults?.enabled ?? false;
+  if (!enabled) return undefined;
+  return {
+    enabled: true,
+    provider: overrides?.provider ?? defaults?.provider ?? "openai",
+    model: overrides?.model ?? defaults?.model ?? "gpt-4o-mini",
+    observerThresholdTokens:
+      overrides?.observerThresholdTokens ?? defaults?.observerThresholdTokens ?? 30_000,
+    reflectorThresholdTokens:
+      overrides?.reflectorThresholdTokens ?? defaults?.reflectorThresholdTokens ?? 40_000,
+    debounceMs: overrides?.debounceMs ?? defaults?.debounceMs ?? 10_000,
+    maxObservationRatio: clampNumber(
+      overrides?.maxObservationRatio ?? defaults?.maxObservationRatio ?? 0.4,
+      0.1,
+      0.8,
+    ),
   };
 }
 

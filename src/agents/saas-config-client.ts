@@ -47,6 +47,8 @@ export interface SaasAgentConfig {
   maxConcurrentTasks: number;
   /** Super Bot mode: writable FS, full exec, persistent packages */
   developerMode: boolean;
+  /** Observational memory: compress old messages into dense observations */
+  observationalMemory?: boolean;
 }
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
@@ -228,6 +230,22 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
     console.log(
       `[saas-config] Reasoning mode enabled: thinking=${thinkingLevel}, blockStreaming=${blockStreaming}, heartbeat=${heartbeatEnabled ? heartbeatInterval : "off"}`,
     );
+  }
+
+  // ============================================================================
+  // OBSERVATIONAL MEMORY
+  // ============================================================================
+  if (config.observationalMemory) {
+    setConfigOverride("agents.defaults.memorySearch.observational", {
+      enabled: true,
+      provider: "openai",
+      model: "gpt-4o-mini",
+      observerThresholdTokens: 30000,
+      reflectorThresholdTokens: 40000,
+      debounceMs: 10000,
+      maxObservationRatio: 0.4,
+    });
+    console.log("[saas-config] Observational memory enabled");
   }
 
   // ============================================================================
