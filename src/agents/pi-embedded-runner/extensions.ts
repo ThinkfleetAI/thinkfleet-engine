@@ -75,6 +75,12 @@ export function buildEmbeddedExtensionPaths(params: {
   model: Model<Api> | undefined;
 }): string[] {
   const paths: string[] = [];
+
+  // Always register transcript-repair: final safety net that ensures tool_use /
+  // tool_result pairing is valid right before the API call, catching corruption
+  // from auto-compaction, context pruning, or any other mid-pipeline transform.
+  paths.push(resolvePiExtensionPath("transcript-repair"));
+
   if (resolveCompactionMode(params.cfg) === "safeguard") {
     const compactionCfg = params.cfg?.agents?.defaults?.compaction;
     setCompactionSafeguardRuntime(params.sessionManager, {

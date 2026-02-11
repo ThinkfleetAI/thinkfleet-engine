@@ -65,6 +65,7 @@ import {
   sanitizeToolsForGoogle,
 } from "../google.js";
 import { getDmHistoryLimitFromSessionKey, limitHistoryTurns } from "../history.js";
+import { sanitizeToolUseResultPairing } from "../../session-transcript-repair.js";
 import { log } from "../logger.js";
 import { buildModelAliasLines } from "../model.js";
 import {
@@ -598,10 +599,14 @@ export async function runEmbeddedAttempt(
           validated,
           getDmHistoryLimitFromSessionKey(params.sessionKey, params.config),
         );
-        cacheTrace?.recordStage("session:limited", { messages: limited });
+        // Re-repair tool_use/tool_result pairing after turn validation and
+        // history limiting which can break pairs established during the
+        // initial sanitization pass.
+        const repaired = sanitizeToolUseResultPairing(limited);
+        cacheTrace?.recordStage("session:limited", { messages: repaired });
 
         // Diagnostic: Log history message sizes for token debugging
-        const historyChars = limited.reduce((sum, msg) => {
+        const historyChars = repaired.reduce((sum, msg) => {
           // Type guard: only user/assistant messages have content property
           if (!("content" in msg)) return sum;
           const content = msg.content;
@@ -625,11 +630,11 @@ export async function runEmbeddedAttempt(
         }, 0);
         const historyTokens = Math.ceil(historyChars / 4);
         log.info(
-          `[token-debug] history: ${limited.length} messages, ~${historyChars} chars, ~${historyTokens} tokens`,
+          `[token-debug] history: ${repaired.length} messages, ~${historyChars} chars, ~${historyTokens} tokens`,
         );
 
-        if (limited.length > 0) {
-          activeSession.agent.replaceMessages(limited);
+        if (repaired.length > 0) {
+          activeSession.agent.replaceMessages(repaired);
         }
       } catch (err) {
         sessionManager.flushPendingToolResults?.();
