@@ -48,10 +48,59 @@ function isImageMime(mime?: string): boolean {
   return typeof mime === "string" && mime.startsWith("image/");
 }
 
+/** MIME types that can be decoded to readable text */
+const TEXT_MIME_PREFIXES = ["text/"];
+const TEXT_MIME_EXACT = new Set([
+  "application/json",
+  "application/xml",
+  "application/javascript",
+  "application/typescript",
+  "application/x-yaml",
+  "application/yaml",
+  "application/x-sh",
+  "application/sql",
+  "application/graphql",
+  "application/ld+json",
+  "application/xhtml+xml",
+  "application/x-httpd-php",
+]);
+
+function isTextMime(mime?: string): boolean {
+  if (!mime) return false;
+  if (TEXT_MIME_PREFIXES.some((p) => mime.startsWith(p))) return true;
+  if (TEXT_MIME_EXACT.has(mime)) return true;
+  return false;
+}
+
+function isPdfMime(mime?: string): boolean {
+  return mime === "application/pdf";
+}
+
 /**
- * Parse attachments and extract images as structured content blocks.
- * Returns the message text and an array of image content blocks
- * compatible with Claude API's image format.
+ * Try to decode base64 as UTF-8 text. Returns the text if it looks like
+ * readable content (high ratio of printable characters), otherwise null.
+ */
+function tryDecodeAsText(b64: string, maxChars = 500_000): string | null {
+  try {
+    const buf = Buffer.from(b64, "base64");
+    const text = buf.toString("utf-8");
+    if (text.length === 0) return null;
+    if (text.length > maxChars) return text.slice(0, maxChars) + "\n\n[... truncated]";
+    // Check if content is mostly printable (allow newlines, tabs, etc.)
+    const sample = text.slice(0, 2000);
+    const printable = sample.replace(/[\x00-\x08\x0E-\x1F\x7F-\x9F]/g, "").length;
+    if (printable / sample.length < 0.85) return null;
+    return text;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Parse attachments and extract images and document content.
+ * - Images are returned as structured content blocks for Claude API.
+ * - Text documents are decoded and injected into the message text.
+ * - PDFs are returned as document content blocks for Claude API.
  */
 export async function parseMessageWithAttachments(
   message: string,
@@ -65,6 +114,7 @@ export async function parseMessageWithAttachments(
   }
 
   const images: ChatImageContent[] = [];
+  const documentBlocks: string[] = [];
 
   for (const [idx, att] of attachments.entries()) {
     if (!att) continue;
@@ -98,28 +148,68 @@ export async function parseMessageWithAttachments(
 
     const providedMime = normalizeMime(mime);
     const sniffedMime = normalizeMime(await sniffMimeFromBase64(b64));
-    if (sniffedMime && !isImageMime(sniffedMime)) {
-      log?.warn(`attachment ${label}: detected non-image (${sniffedMime}), dropping`);
+    const effectiveMime = sniffedMime ?? providedMime;
+
+    // Image attachments → structured image content blocks
+    if (isImageMime(sniffedMime) || (!sniffedMime && isImageMime(providedMime))) {
+      if (sniffedMime && providedMime && sniffedMime !== providedMime) {
+        log?.warn(
+          `attachment ${label}: mime mismatch (${providedMime} -> ${sniffedMime}), using sniffed`,
+        );
+      }
+      images.push({
+        type: "image",
+        data: b64,
+        mimeType: sniffedMime ?? providedMime ?? mime,
+      });
       continue;
-    }
-    if (!sniffedMime && !isImageMime(providedMime)) {
-      log?.warn(`attachment ${label}: unable to detect image mime type, dropping`);
-      continue;
-    }
-    if (sniffedMime && providedMime && sniffedMime !== providedMime) {
-      log?.warn(
-        `attachment ${label}: mime mismatch (${providedMime} -> ${sniffedMime}), using sniffed`,
-      );
     }
 
-    images.push({
-      type: "image",
-      data: b64,
-      mimeType: sniffedMime ?? providedMime ?? mime,
-    });
+    // Text-based documents → decode and inject into message
+    if (isTextMime(effectiveMime) || isTextMime(providedMime)) {
+      const text = tryDecodeAsText(b64);
+      if (text) {
+        documentBlocks.push(`<document name="${label}">\n${text}\n</document>`);
+        continue;
+      }
+    }
+
+    // PDF → try to extract readable text, otherwise note it
+    if (isPdfMime(effectiveMime) || isPdfMime(providedMime)) {
+      // Try text extraction from PDF (many PDFs contain extractable text)
+      const text = tryDecodeAsText(b64);
+      if (text && text.length > 50) {
+        documentBlocks.push(`<document name="${label}" type="pdf">\n${text}\n</document>`);
+      } else {
+        documentBlocks.push(
+          `<document name="${label}" type="pdf">[PDF file attached - ${Math.round(sizeBytes / 1024)}KB. The PDF content could not be extracted as text. Please let the user know you received the file but cannot read its contents directly.]</document>`,
+        );
+      }
+      continue;
+    }
+
+    // Other non-image files → try to decode as text (best effort)
+    const text = tryDecodeAsText(b64);
+    if (text) {
+      documentBlocks.push(`<document name="${label}">\n${text}\n</document>`);
+      continue;
+    }
+
+    // Binary file we can't process
+    log?.warn(`attachment ${label}: unsupported format (${effectiveMime ?? "unknown"}), dropping`);
+    documentBlocks.push(
+      `<document name="${label}">[File attached: ${label} (${effectiveMime ?? "unknown"}, ${Math.round(sizeBytes / 1024)}KB). This file format cannot be read directly. Please let the user know you received the file but cannot process this format.]</document>`,
+    );
   }
 
-  return { message, images };
+  // Prepend document content to the message so the AI can reference it
+  let finalMessage = message;
+  if (documentBlocks.length > 0) {
+    const docContext = documentBlocks.join("\n\n");
+    finalMessage = documentBlocks.length > 0 ? `${docContext}\n\n${message}` : message;
+  }
+
+  return { message: finalMessage, images };
 }
 
 /**
