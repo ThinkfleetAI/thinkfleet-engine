@@ -1,3 +1,4 @@
+import JSZip from "jszip";
 import { detectMime } from "../media/mime.js";
 
 export type ChatAttachment = {
@@ -74,6 +75,85 @@ function isTextMime(mime?: string): boolean {
 
 function isPdfMime(mime?: string): boolean {
   return mime === "application/pdf";
+}
+
+const DOCX_MIMES = new Set([
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/msword",
+]);
+
+function isDocxMime(mime?: string): boolean {
+  return typeof mime === "string" && DOCX_MIMES.has(mime);
+}
+
+function hasDocxExtension(fileName?: string): boolean {
+  if (!fileName) return false;
+  const lower = fileName.toLowerCase();
+  return lower.endsWith(".docx") || lower.endsWith(".doc");
+}
+
+/**
+ * Extract text from a .docx file (which is a ZIP of XML).
+ * Uses jszip to read word/document.xml and strips XML tags.
+ */
+async function extractDocxText(b64: string, maxChars = 500_000): Promise<string | null> {
+  try {
+    const buffer = Buffer.from(b64, "base64");
+    const zip = await JSZip.loadAsync(buffer);
+    const docXml = zip.file("word/document.xml");
+    if (!docXml) return null;
+    const xmlContent = await docXml.async("string");
+    // Extract text by handling common Word XML elements
+    const text = xmlContent
+      .replace(/<w:br[^>]*\/?>/g, "\n")
+      .replace(/<\/w:p>/g, "\n")
+      .replace(/<w:tab\/>/g, "\t")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&apos;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    if (text.length === 0) return null;
+    if (text.length > maxChars) return text.slice(0, maxChars) + "\n\n[... truncated]";
+    return text;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Extract text from a PDF using pdfjs-dist.
+ * Lazy-loads the module to avoid import overhead when not needed.
+ */
+async function extractPdfTextFromBuffer(b64: string, maxChars = 500_000): Promise<string | null> {
+  try {
+    const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const buffer = Buffer.from(b64, "base64");
+    const pdf = await getDocument({
+      data: new Uint8Array(buffer),
+      disableWorker: true,
+    }).promise;
+    const maxPages = Math.min(pdf.numPages, 50);
+    const textParts: string[] = [];
+    for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map((item) => ("str" in item ? String(item.str) : ""))
+        .filter(Boolean)
+        .join(" ");
+      if (pageText) textParts.push(pageText);
+    }
+    const text = textParts.join("\n\n").trim();
+    if (text.length === 0) return null;
+    if (text.length > maxChars) return text.slice(0, maxChars) + "\n\n[... truncated]";
+    return text;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -165,6 +245,19 @@ export async function parseMessageWithAttachments(
       continue;
     }
 
+    // Word documents (.docx/.doc) → extract text from ZIP/XML
+    if (isDocxMime(effectiveMime) || isDocxMime(providedMime) || hasDocxExtension(att.fileName)) {
+      const text = await extractDocxText(b64);
+      if (text) {
+        documentBlocks.push(`<document name="${label}" type="docx">\n${text}\n</document>`);
+        continue;
+      }
+      documentBlocks.push(
+        `<document name="${label}" type="docx">[Word document attached - ${Math.round(sizeBytes / 1024)}KB. The document content could not be extracted as text.]</document>`,
+      );
+      continue;
+    }
+
     // Text-based documents → decode and inject into message
     if (isTextMime(effectiveMime) || isTextMime(providedMime)) {
       const text = tryDecodeAsText(b64);
@@ -174,10 +267,9 @@ export async function parseMessageWithAttachments(
       }
     }
 
-    // PDF → try to extract readable text, otherwise note it
+    // PDF → extract text using pdfjs-dist, fall back to raw decode
     if (isPdfMime(effectiveMime) || isPdfMime(providedMime)) {
-      // Try text extraction from PDF (many PDFs contain extractable text)
-      const text = tryDecodeAsText(b64);
+      const text = (await extractPdfTextFromBuffer(b64)) ?? tryDecodeAsText(b64);
       if (text && text.length > 50) {
         documentBlocks.push(`<document name="${label}" type="pdf">\n${text}\n</document>`);
       } else {
