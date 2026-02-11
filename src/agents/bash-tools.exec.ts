@@ -1030,6 +1030,9 @@ export function createExecTool(
                   resolvedPath: undefined,
                   sessionKey: defaults?.sessionKey,
                   timeoutMs: DEFAULT_APPROVAL_TIMEOUT_MS,
+                  category: "shell",
+                  description: `Execute shell command: ${commandText.length > 100 ? commandText.slice(0, 100) + "..." : commandText}`,
+                  riskLevel: hostSecurity === "full" ? "low" : "medium",
                 },
               )) as { decision?: string } | null;
               decision =

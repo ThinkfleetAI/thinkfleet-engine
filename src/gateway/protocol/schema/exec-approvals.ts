@@ -100,6 +100,25 @@ export const ExecApprovalRequestParamsSchema = Type.Object(
     resolvedPath: Type.Optional(Type.Union([Type.String(), Type.Null()])),
     sessionKey: Type.Optional(Type.Union([Type.String(), Type.Null()])),
     timeoutMs: Type.Optional(Type.Integer({ minimum: 1 })),
+    // Guardrail category for per-category approval policies
+    category: Type.Optional(
+      Type.Union([
+        Type.Literal("file_ops"),
+        Type.Literal("shell"),
+        Type.Literal("web"),
+        Type.Literal("desktop_automation"),
+        Type.Literal("purchases"),
+        Type.Null(),
+      ]),
+    ),
+    // Human-readable description of the action for approval UI
+    description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    // Risk level assessed by the action classifier
+    riskLevel: Type.Optional(
+      Type.Union([Type.Literal("low"), Type.Literal("medium"), Type.Literal("high"), Type.Null()]),
+    ),
+    // Target app or context for the action
+    targetApp: Type.Optional(Type.Union([Type.String(), Type.Null()])),
   },
   { additionalProperties: false },
 );

@@ -2,6 +2,9 @@ import { randomUUID } from "node:crypto";
 
 import type { ExecApprovalDecision } from "../infra/exec-approvals.js";
 
+export type GuardrailCategory = "file_ops" | "shell" | "web" | "desktop_automation" | "purchases";
+export type RiskLevel = "low" | "medium" | "high";
+
 export type ExecApprovalRequestPayload = {
   command: string;
   cwd?: string | null;
@@ -11,6 +14,10 @@ export type ExecApprovalRequestPayload = {
   agentId?: string | null;
   resolvedPath?: string | null;
   sessionKey?: string | null;
+  category?: GuardrailCategory | null;
+  description?: string | null;
+  riskLevel?: RiskLevel | null;
+  targetApp?: string | null;
 };
 
 export type ExecApprovalRecord = {

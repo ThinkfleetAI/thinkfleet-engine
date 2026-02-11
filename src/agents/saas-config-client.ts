@@ -28,6 +28,9 @@ export interface McpServerConfig {
   disabled?: boolean;
 }
 
+export type GuardrailMode = "auto_approve" | "ask_user" | "block";
+export type GuardrailCategory = "file_ops" | "shell" | "web" | "desktop_automation" | "purchases";
+
 export interface SaasAgentConfig {
   name: string;
   systemPrompt: string | null;
@@ -49,6 +52,8 @@ export interface SaasAgentConfig {
   developerMode: boolean;
   /** Observational memory: compress old messages into dense observations */
   observationalMemory?: boolean;
+  /** Per-category guardrail policies from org admin */
+  guardrailPolicies?: Record<GuardrailCategory, GuardrailMode>;
 }
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
@@ -246,6 +251,42 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
       maxObservationRatio: 0.4,
     });
     console.log("[saas-config] Observational memory enabled");
+  }
+
+  // ============================================================================
+  // GUARDRAIL POLICIES (per-category exec approval enforcement)
+  // ============================================================================
+  if (config.guardrailPolicies) {
+    const policies = config.guardrailPolicies;
+    const os = await import("node:os");
+    const guardrailsPath = path.join(os.homedir(), ".thinkfleet", "guardrail-policies.json");
+
+    try {
+      fs.mkdirSync(path.dirname(guardrailsPath), { recursive: true });
+      fs.writeFileSync(guardrailsPath, JSON.stringify(policies, null, 2), { mode: 0o600 });
+      console.log(`[saas-config] Wrote guardrail policies to ${guardrailsPath}`);
+    } catch (error) {
+      console.error("[saas-config] Error writing guardrail-policies.json:", error);
+    }
+
+    // Translate guardrail policies to exec approval settings:
+    // - If shell is "auto_approve" → security=full, ask=off for shell commands
+    // - If shell is "block" → security=none for shell commands
+    // - If shell is "ask_user" → security=full, ask=always (default behavior)
+    const shellPolicy = policies.shell ?? "ask_user";
+    if (shellPolicy === "auto_approve") {
+      setConfigOverride("tools.exec.security", "full");
+      setConfigOverride("tools.exec.ask", "off");
+    } else if (shellPolicy === "block") {
+      setConfigOverride("tools.exec.security", "none");
+    }
+    // "ask_user" is the default — no override needed
+
+    console.log(
+      `[saas-config] Guardrail policies: ${Object.entries(policies)
+        .map(([k, v]) => `${k}=${v}`)
+        .join(", ")}`,
+    );
   }
 
   // ============================================================================
@@ -539,4 +580,55 @@ function seedReasoningWorkspaceFiles(workspaceDir: string): void {
  */
 export function getCachedAgentConfig(): SaasAgentConfig | null {
   return cachedConfig;
+}
+
+/**
+ * Read guardrail policies from the cached config or the on-disk file.
+ * Returns the policy map or null if not available.
+ */
+export function getGuardrailPolicies(): Record<GuardrailCategory, GuardrailMode> | null {
+  // Prefer cached config
+  if (cachedConfig?.guardrailPolicies) {
+    return cachedConfig.guardrailPolicies;
+  }
+
+  // Fall back to on-disk file
+  try {
+    const os = require("node:os");
+    const guardrailsPath = path.join(os.homedir(), ".thinkfleet", "guardrail-policies.json");
+    if (fs.existsSync(guardrailsPath)) {
+      return JSON.parse(fs.readFileSync(guardrailsPath, "utf-8"));
+    }
+  } catch {
+    // ignore read errors
+  }
+
+  return null;
+}
+
+/**
+ * Check if a specific guardrail category should block execution entirely.
+ */
+export function isGuardrailBlocked(category: GuardrailCategory): boolean {
+  const policies = getGuardrailPolicies();
+  if (!policies) return false;
+  return policies[category] === "block";
+}
+
+/**
+ * Check if a specific guardrail category requires user approval.
+ */
+export function isGuardrailAskUser(category: GuardrailCategory): boolean {
+  const policies = getGuardrailPolicies();
+  if (!policies) return true; // Default to asking
+  return policies[category] === "ask_user";
+}
+
+/**
+ * Check if a specific guardrail category is auto-approved.
+ */
+export function isGuardrailAutoApproved(category: GuardrailCategory): boolean {
+  const policies = getGuardrailPolicies();
+  if (!policies) return false;
+  return policies[category] === "auto_approve";
 }

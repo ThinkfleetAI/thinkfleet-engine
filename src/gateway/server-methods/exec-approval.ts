@@ -40,6 +40,10 @@ export function createExecApprovalHandlers(
         resolvedPath?: string;
         sessionKey?: string;
         timeoutMs?: number;
+        category?: string;
+        description?: string;
+        riskLevel?: string;
+        targetApp?: string;
       };
       const timeoutMs = typeof p.timeoutMs === "number" ? p.timeoutMs : 120_000;
       const explicitId = typeof p.id === "string" && p.id.trim().length > 0 ? p.id.trim() : null;
@@ -60,6 +64,10 @@ export function createExecApprovalHandlers(
         agentId: p.agentId ?? null,
         resolvedPath: p.resolvedPath ?? null,
         sessionKey: p.sessionKey ?? null,
+        category: p.category ?? null,
+        description: p.description ?? null,
+        riskLevel: p.riskLevel ?? null,
+        targetApp: p.targetApp ?? null,
       };
       const record = manager.create(request, timeoutMs, explicitId);
       const decisionPromise = manager.waitForDecision(record, timeoutMs);

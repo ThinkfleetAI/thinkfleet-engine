@@ -10,6 +10,7 @@ import type { ThinkfleetPluginToolContext } from "thinkfleetbot/plugin-sdk";
 
 import { getClient } from "../client.js";
 import { isDesktopPlatform, getPlatformName } from "../platform.js";
+import { resolveGuiApprovals, isAppDenied } from "../approvals/manager.js";
 
 const GuiAutomationSchema = Type.Object({
   task: Type.String({
@@ -87,6 +88,41 @@ export function createGuiAutomationTool(
         };
       }
 
+      // Check guardrail policy for desktop_automation category
+      let guardrailMode: string = "ask_user";
+      try {
+        const { getGuardrailPolicies } = await import("thinkfleetbot/agents/saas-config-client");
+        const policies = getGuardrailPolicies();
+        if (policies?.desktop_automation) {
+          guardrailMode = policies.desktop_automation;
+        }
+      } catch {
+        // Not in SaaS mode or module not available — use default
+      }
+
+      if (guardrailMode === "block") {
+        return {
+          type: "text",
+          content:
+            "Error: Desktop automation is blocked by your organization's guardrail policy. " +
+            "Contact your admin to change the desktop_automation policy.",
+        };
+      }
+
+      // Check app-level denials
+      if (app) {
+        const resolved = resolveGuiApprovals();
+        if (isAppDenied(app, resolved)) {
+          return {
+            type: "text",
+            content: `Error: Automation of "${app}" is denied by the approval policy.`,
+          };
+        }
+      }
+
+      // Map guardrail mode to approval mode
+      const approvalMode = guardrailMode === "auto_approve" ? "none" : "destructive";
+
       const client = getClient();
 
       // Check sidecar status
@@ -107,7 +143,7 @@ export function createGuiAutomationTool(
           task: task.trim(),
           app_target: app?.trim(),
           timeout_sec,
-          approval_mode: "destructive", // Default to requiring approval for destructive actions
+          approval_mode: approvalMode,
           screenshot_after: true,
         });
 
