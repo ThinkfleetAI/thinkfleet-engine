@@ -31,6 +31,21 @@ export interface McpServerConfig {
 export type GuardrailMode = "auto_approve" | "ask_user" | "block";
 export type GuardrailCategory = "file_ops" | "shell" | "web" | "desktop_automation" | "purchases";
 
+export interface DocumentItem {
+  id: string;
+  filename: string;
+  category: string;
+  description: string | null;
+  chunks: number;
+  source?: "agent" | "org";
+}
+
+export interface DocumentSummary {
+  count: number;
+  categories: string[];
+  items: DocumentItem[];
+}
+
 export interface SaasAgentConfig {
   name: string;
   systemPrompt: string | null;
@@ -54,6 +69,8 @@ export interface SaasAgentConfig {
   observationalMemory?: boolean;
   /** Per-category guardrail policies from org admin */
   guardrailPolicies?: Record<GuardrailCategory, GuardrailMode>;
+  /** Summary of available documents (agent-owned + org-assigned) */
+  documents?: DocumentSummary | null;
 }
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
@@ -105,6 +122,16 @@ export async function fetchAgentConfig(): Promise<SaasAgentConfig | null> {
 export async function applySaasAgentConfig(workspaceDir: string): Promise<void> {
   const config = await fetchAgentConfig();
   if (!config) return;
+
+  // Ensure workspace directory exists before any file writes.
+  // Individual file-write blocks call mkdirSync(path.dirname(...)) but if the
+  // workspace root itself doesn't exist (e.g. K8s volume not yet mounted),
+  // all writes fail with ENOENT. Creating it once here is more robust.
+  try {
+    fs.mkdirSync(workspaceDir, { recursive: true });
+  } catch (err) {
+    console.error(`[saas-config] Failed to create workspace directory ${workspaceDir}:`, err);
+  }
 
   const { setConfigOverride } = await import("../config/runtime-overrides.js");
 
@@ -429,6 +456,59 @@ export async function applySaasAgentConfig(workspaceDir: string): Promise<void> 
       console.log(`[saas-config] Wrote runtime context to ${bootstrapPath}`);
     } catch (error) {
       console.error("[saas-config] Error writing BOOTSTRAP.md:", error);
+    }
+  }
+
+  // Write KNOWLEDGE.md with available documents so the bot knows what it can search
+  const knowledgePath = path.join(workspaceDir, "KNOWLEDGE.md");
+  if (config.documents && config.documents.count > 0) {
+    try {
+      const lines: string[] = [
+        "# Available Knowledge",
+        "",
+        `You have access to ${config.documents.count} document(s) across categories: ${config.documents.categories.join(", ")}.`,
+        "",
+        "## Documents",
+        "",
+      ];
+
+      for (const doc of config.documents.items) {
+        const source = doc.source === "org" ? " (org)" : "";
+        const desc = doc.description ? ` — ${doc.description}` : "";
+        lines.push(`- **${doc.filename}**${source}: ${doc.category}${desc} (${doc.chunks} chunks)`);
+      }
+
+      lines.push(
+        "",
+        "## How to Access",
+        "",
+        "Use the `saas` tool with these actions to search documents:",
+        "- `doc_search` — search agent-owned documents (requires: query, optional: limit)",
+        "- `org_doc_search` — search org-level documents (requires: query, optional: limit)",
+        "- `org_doc_list` — list all org documents (optional: category filter)",
+        "",
+        'Example: `saas(action="org_doc_search", query="resume work experience")`',
+        "",
+        "When a user asks about topics covered by these documents, proactively search them.",
+        "",
+      );
+
+      fs.mkdirSync(path.dirname(knowledgePath), { recursive: true });
+      fs.writeFileSync(knowledgePath, lines.join("\n"), "utf-8");
+      console.log(
+        `[saas-config] Wrote knowledge manifest (${config.documents.count} docs) to ${knowledgePath}`,
+      );
+    } catch (error) {
+      console.error("[saas-config] Error writing KNOWLEDGE.md:", error);
+    }
+  } else {
+    // Clean up stale KNOWLEDGE.md if no documents are available
+    try {
+      if (fs.existsSync(knowledgePath)) {
+        fs.unlinkSync(knowledgePath);
+      }
+    } catch {
+      /* ignore cleanup errors */
     }
   }
 

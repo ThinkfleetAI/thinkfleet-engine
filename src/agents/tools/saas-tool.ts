@@ -12,6 +12,9 @@ const SAAS_ACTIONS = [
   "task_list",
   "task_create",
   "task_update",
+  "doc_search",
+  "org_doc_search",
+  "org_doc_list",
 ] as const;
 
 const SaasToolSchema = Type.Object({
@@ -25,6 +28,10 @@ const SaasToolSchema = Type.Object({
   status: Type.Optional(Type.String()),
   priority: Type.Optional(Type.Number()),
   deliverables: Type.Optional(Type.String()),
+  // Document search fields
+  query: Type.Optional(Type.String()),
+  limit: Type.Optional(Type.Number()),
+  category: Type.Optional(Type.String()),
   gatewayUrl: Type.Optional(Type.String()),
   gatewayToken: Type.Optional(Type.String()),
   timeoutMs: Type.Optional(Type.Number()),
@@ -34,7 +41,7 @@ export function createSaasTool(): AnyAgentTool {
   return {
     label: "SaaS",
     name: "saas",
-    description: `Interact with the SaaS platform for task management, OAuth integrations, and virtual cards.
+    description: `Interact with the SaaS platform for task management, OAuth integrations, virtual cards, and document search.
 
 ACTIONS:
 - task_list: List tasks on your kanban board (optional: status filter)
@@ -45,6 +52,9 @@ ACTIONS:
 - integrations_connect: Initiate OAuth connection for a service (requires appName, returns redirect URL)
 - card_list: List virtual cards assigned to this agent
 - card_get: Get card details — number, CVC, expiry (requires cardId)
+- doc_search: Search your agent-owned documents by query (requires query; optional: limit)
+- org_doc_search: Search org-level documents assigned to you by query (requires query; optional: limit)
+- org_doc_list: List all org-level documents assigned to you (optional: category filter)
 
 PARAMETERS:
 - taskId: Required for task_update
@@ -55,12 +65,17 @@ PARAMETERS:
 - deliverables: Optional for task_update — summary of what was accomplished
 - appName: Required for integrations_get_token and integrations_connect (e.g. "gmail", "slack", "google-drive")
 - cardId: Required for card_get
+- query: Required for doc_search and org_doc_search — semantic search query
+- limit: Optional for doc_search and org_doc_search (default: 5)
+- category: Optional for org_doc_list — filter by category (e.g. "knowledge", "writing_style")
 
 USAGE NOTES:
 - Use task_list to check your current tasks before starting work.
 - When you finish a task, use task_update with status="delivered" and deliverables describing what you accomplished. The user will review and move it to "done".
 - Tokens from integrations_get_token are ephemeral — do not store them. Request a fresh token each time.
-- Card details from card_get are sensitive — use them only for the immediate purchase, never persist them.`,
+- Card details from card_get are sensitive — use them only for the immediate purchase, never persist them.
+- When users ask about uploaded documents or knowledge, use doc_search or org_doc_search to retrieve relevant content.
+- Use org_doc_list to see all available org documents and their categories.`,
     parameters: SaasToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -130,6 +145,31 @@ USAGE NOTES:
               status: status || undefined,
               deliverables: deliverables || undefined,
               description: description || undefined,
+            }),
+          );
+        }
+
+        case "doc_search": {
+          const query = readStringParam(params, "query", { required: true });
+          const limit = typeof params.limit === "number" ? params.limit : 5;
+          return jsonResult(
+            await callGatewayTool("saas.documents.search", gatewayOpts, { query, limit }),
+          );
+        }
+
+        case "org_doc_search": {
+          const query = readStringParam(params, "query", { required: true });
+          const limit = typeof params.limit === "number" ? params.limit : 5;
+          return jsonResult(
+            await callGatewayTool("saas.org-docs.search", gatewayOpts, { query, limit }),
+          );
+        }
+
+        case "org_doc_list": {
+          const category = readStringParam(params, "category");
+          return jsonResult(
+            await callGatewayTool("saas.org-docs.list", gatewayOpts, {
+              category: category || undefined,
             }),
           );
         }
