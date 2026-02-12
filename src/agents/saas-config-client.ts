@@ -79,37 +79,61 @@ const gatewayToken = process.env.THINKFLEET_GATEWAY_TOKEN;
 
 let cachedConfig: SaasAgentConfig | null = null;
 
+const CONFIG_FETCH_MAX_RETRIES = 5;
+const CONFIG_FETCH_RETRY_DELAYS = [2_000, 5_000, 10_000, 20_000, 30_000];
+
 /**
  * Fetch agent config (name, persona, model settings) from the SaaS backend.
- * Returns null if not in SaaS mode or if the fetch fails.
+ * Retries with backoff if the SaaS service is not yet available (common during
+ * cluster startup when bots boot before the socket service is ready).
+ * Returns null if not in SaaS mode or if all retries fail.
  */
 export async function fetchAgentConfig(): Promise<SaasAgentConfig | null> {
   if (!isSaasMode()) return null;
   if (cachedConfig) return cachedConfig;
 
-  try {
-    const url = `${saasApiUrl}/api/internal/agent-config/${agentDbId}`;
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${gatewayToken}` },
-      signal: AbortSignal.timeout(10_000),
-    });
+  const url = `${saasApiUrl}/api/internal/agent-config/${agentDbId}`;
 
-    if (!response.ok) {
-      console.error(
-        `[saas-config] Failed to fetch agent config: ${response.status} ${response.statusText}`,
+  for (let attempt = 0; attempt <= CONFIG_FETCH_MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${gatewayToken}` },
+        signal: AbortSignal.timeout(10_000),
+      });
+
+      if (!response.ok) {
+        console.error(
+          `[saas-config] Failed to fetch agent config (attempt ${attempt + 1}): ${response.status} ${response.statusText}`,
+        );
+        if (attempt < CONFIG_FETCH_MAX_RETRIES) {
+          const delay = CONFIG_FETCH_RETRY_DELAYS[attempt] ?? 30_000;
+          console.log(`[saas-config] Retrying in ${delay / 1000}s...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+        return null;
+      }
+
+      cachedConfig = (await response.json()) as SaasAgentConfig;
+      if (attempt > 0) {
+        console.log(`[saas-config] Agent config loaded after ${attempt + 1} attempts`);
+      }
+      console.log(
+        `[saas-config] Agent config loaded: name="${cachedConfig.name}", persona="${cachedConfig.personaId ?? "none"}", reasoning=${cachedConfig.reasoningMode}`,
       );
-      return null;
+      return cachedConfig;
+    } catch (error) {
+      console.error(`[saas-config] Error fetching agent config (attempt ${attempt + 1}):`, error);
+      if (attempt < CONFIG_FETCH_MAX_RETRIES) {
+        const delay = CONFIG_FETCH_RETRY_DELAYS[attempt] ?? 30_000;
+        console.log(`[saas-config] Retrying in ${delay / 1000}s...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
     }
-
-    cachedConfig = (await response.json()) as SaasAgentConfig;
-    console.log(
-      `[saas-config] Agent config loaded: name="${cachedConfig.name}", persona="${cachedConfig.personaId ?? "none"}", reasoning=${cachedConfig.reasoningMode}`,
-    );
-    return cachedConfig;
-  } catch (error) {
-    console.error("[saas-config] Error fetching agent config:", error);
-    return null;
   }
+
+  console.error(`[saas-config] All ${CONFIG_FETCH_MAX_RETRIES + 1} config fetch attempts failed`);
+  return null;
 }
 
 /**
