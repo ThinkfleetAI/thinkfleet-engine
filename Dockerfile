@@ -89,6 +89,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends sudo \
 COPY scripts/dev-install.sh /usr/local/bin/dev-install
 RUN chmod +x /usr/local/bin/dev-install
 
+# Ensure workspace and config directories exist before switching to non-root user.
+# K8s volume mounts may shadow /home/node; pre-creating prevents ENOENT on startup.
+RUN mkdir -p /home/node/thinkfleet /home/node/.thinkfleet && \
+    chown -R node:node /home/node/thinkfleet /home/node/.thinkfleet
+
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges

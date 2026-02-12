@@ -523,9 +523,9 @@ export const chatHandlers: GatewayRequestHandlers = {
               metadata: p.metadata,
               kind: info.kind,
             });
-            if (info.kind === "final" && text) {
-              finalReplyParts.push(text);
-            }
+            // Don't push to finalReplyParts for SaaS channels — delivery is
+            // already handled by channel.outbound above. Pushing here would
+            // cause a duplicate chatFinal broadcast in the .then() handler.
             return;
           }
           if (info.kind !== "final") return;

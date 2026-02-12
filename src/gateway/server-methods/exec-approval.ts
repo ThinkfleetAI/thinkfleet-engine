@@ -1,6 +1,10 @@
 import type { ExecApprovalDecision } from "../../infra/exec-approvals.js";
 import type { ExecApprovalForwarder } from "../../infra/exec-approval-forwarder.js";
-import type { ExecApprovalManager } from "../exec-approval-manager.js";
+import type {
+  ExecApprovalManager,
+  GuardrailCategory,
+  RiskLevel,
+} from "../exec-approval-manager.js";
 import {
   ErrorCodes,
   errorShape,
@@ -40,9 +44,9 @@ export function createExecApprovalHandlers(
         resolvedPath?: string;
         sessionKey?: string;
         timeoutMs?: number;
-        category?: string;
+        category?: GuardrailCategory;
         description?: string;
-        riskLevel?: string;
+        riskLevel?: RiskLevel;
         targetApp?: string;
       };
       const timeoutMs = typeof p.timeoutMs === "number" ? p.timeoutMs : 120_000;

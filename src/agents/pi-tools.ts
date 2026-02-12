@@ -6,6 +6,7 @@ import {
   readTool,
 } from "@mariozechner/pi-coding-agent";
 import type { ThinkfleetConfig } from "../config/config.js";
+import { wrapToolsWithGuardrails } from "../security/tool-guardrails-wrap.js";
 import { isSubagentSessionKey } from "../routing/session-key.js";
 import { resolveGatewayMessageChannel } from "../utils/message-channel.js";
 import { createApplyPatchTool } from "./apply-patch.js";
@@ -419,8 +420,14 @@ export function createThinkfleetCodingTools(options?: {
     ? normalized.map((tool) => wrapToolWithAbortSignal(tool, options.abortSignal))
     : normalized;
 
+  // Apply ALLOW/ASK/DENY guardrails per tool based on config.
+  const withGuardrails = wrapToolsWithGuardrails(withAbort, {
+    config: options?.config,
+    sessionKey: options?.sessionKey,
+  });
+
   // NOTE: Keep canonical (lowercase) tool names here.
   // pi-ai's Anthropic OAuth transport remaps tool names to Claude Code-style names
   // on the wire and maps them back for tool dispatch.
-  return withAbort;
+  return withGuardrails;
 }

@@ -20,9 +20,12 @@ const ExecApprovalForwardingSchema = z
   .strict()
   .optional();
 
+import { ToolGuardrailsSchema } from "./zod-schema.guardrails.js";
+
 export const ApprovalsSchema = z
   .object({
     exec: ExecApprovalForwardingSchema,
+    tools: ToolGuardrailsSchema,
   })
   .strict()
   .optional();

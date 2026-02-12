@@ -51,3 +51,25 @@ export function emitChannelOutbound(payload: ChannelOutboundPayload): boolean {
   gatewayBroadcast("channel.outbound", payload);
   return true;
 }
+
+export type ToolAuditPayload = {
+  toolName: string;
+  action: "allow" | "ask" | "deny";
+  outcome: string;
+  matchedRule?: string;
+  source: "rule" | "default";
+  argsSummary?: string;
+  responseTimeMs?: number;
+  resolvedBy?: string;
+  sessionKey?: string;
+};
+
+/**
+ * Emit a `tool.audit` event via the gateway broadcaster.
+ * Used by tool guardrails to send audit entries to the SaaS audit log.
+ */
+export function emitToolAuditEvent(payload: ToolAuditPayload): boolean {
+  if (!gatewayBroadcast) return false;
+  gatewayBroadcast("tool.audit", payload, { dropIfSlow: true });
+  return true;
+}
