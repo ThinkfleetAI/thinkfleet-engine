@@ -165,6 +165,28 @@ export function createAgentEventHandler({
     error?: unknown,
   ) => {
     const text = chatRunState.buffers.get(clientRunId)?.trim() ?? "";
+
+    // Flush the final accumulated delta so the UI has the complete text before
+    // the "final" event arrives. Without this, the 150ms throttle can cause the
+    // last streaming update to be skipped, leaving the UI with a stale/incomplete sentence.
+    if (text) {
+      const deltaPayload = {
+        runId: clientRunId,
+        sessionKey,
+        seq,
+        state: "delta" as const,
+        message: {
+          role: "assistant",
+          content: [{ type: "text", text }],
+          timestamp: Date.now(),
+        },
+      };
+      if (!shouldSuppressHeartbeatBroadcast(clientRunId)) {
+        broadcast("chat", deltaPayload, { dropIfSlow: true });
+      }
+      nodeSendToSession(sessionKey, "chat", deltaPayload);
+    }
+
     chatRunState.buffers.delete(clientRunId);
     chatRunState.deltaSentAt.delete(clientRunId);
     if (jobState === "done") {

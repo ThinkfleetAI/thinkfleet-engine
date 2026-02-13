@@ -103,6 +103,22 @@ function buildMessagingSection(params: {
   ];
 }
 
+function buildKnowledgeSection(params: { isMinimal: boolean; availableTools: Set<string> }) {
+  if (params.isMinimal) return [];
+  if (!params.availableTools.has("saas")) return [];
+  return [
+    "## Knowledge Base & Documents",
+    "You may have access to organization documents and agent-owned documents uploaded by the user.",
+    "Check KNOWLEDGE.md (loaded in Project Context above) to see what documents are available.",
+    "When users ask about their uploaded files, documents, resumes, or any stored knowledge:",
+    '- Use saas(action="org_doc_search", query="...") to search org-level documents by topic',
+    '- Use saas(action="org_doc_list") to list all available org documents',
+    '- Use saas(action="doc_search", query="...") to search agent-owned documents',
+    "Always search documents first before telling the user you don't have access to their files.",
+    "",
+  ];
+}
+
 function buildTaskBoardSection(params: { isMinimal: boolean; availableTools: Set<string> }) {
   if (params.isMinimal) return [];
   if (!params.availableTools.has("saas")) return [];
@@ -477,6 +493,7 @@ export function buildAgentSystemPrompt(params: {
       messageToolHints: params.messageToolHints,
     }),
     ...buildVoiceSection({ isMinimal, ttsHint: params.ttsHint }),
+    ...buildKnowledgeSection({ isMinimal, availableTools }),
     ...buildTaskBoardSection({ isMinimal, availableTools }),
   ];
 

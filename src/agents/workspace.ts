@@ -29,6 +29,7 @@ export const DEFAULT_BOOTSTRAP_FILENAME = "BOOTSTRAP.md";
 export const DEFAULT_MEMORY_FILENAME = "MEMORY.md";
 export const DEFAULT_MEMORY_ALT_FILENAME = "memory.md";
 export const DEFAULT_EXPERTISE_FILENAME = "EXPERTISE.md";
+export const DEFAULT_KNOWLEDGE_FILENAME = "KNOWLEDGE.md";
 
 const TEMPLATE_DIR = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -67,7 +68,8 @@ export type WorkspaceBootstrapFileName =
   | typeof DEFAULT_BOOTSTRAP_FILENAME
   | typeof DEFAULT_MEMORY_FILENAME
   | typeof DEFAULT_MEMORY_ALT_FILENAME
-  | typeof DEFAULT_EXPERTISE_FILENAME;
+  | typeof DEFAULT_EXPERTISE_FILENAME
+  | typeof DEFAULT_KNOWLEDGE_FILENAME;
 
 export type WorkspaceBootstrapFile = {
   name: WorkspaceBootstrapFileName;
@@ -261,6 +263,10 @@ export async function loadWorkspaceBootstrapFiles(dir: string): Promise<Workspac
     {
       name: DEFAULT_EXPERTISE_FILENAME,
       filePath: path.join(resolvedDir, DEFAULT_EXPERTISE_FILENAME),
+    },
+    {
+      name: DEFAULT_KNOWLEDGE_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_KNOWLEDGE_FILENAME),
     },
   ];
 
