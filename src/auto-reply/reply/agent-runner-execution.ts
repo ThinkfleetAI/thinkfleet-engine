@@ -321,10 +321,10 @@ export async function runAgentTurnWithFallback(params: {
             // even when regular block streaming is disabled. The handler sends directly
             // via opts.onBlockReply when the pipeline isn't available.
             onBlockReply: params.opts?.onBlockReply
-              ? async (payload) => {
+              ? async (payload): Promise<boolean> => {
                   const { text, skip } = normalizeStreamingText(payload);
                   const hasPayloadMedia = (payload.mediaUrls?.length ?? 0) > 0;
-                  if (skip && !hasPayloadMedia) return;
+                  if (skip && !hasPayloadMedia) return false;
                   const currentMessageId =
                     params.sessionCtx.MessageSidFull ?? params.sessionCtx.MessageSid;
                   const taggedPayload = applyReplyTagsToPayload(
@@ -339,7 +339,7 @@ export async function runAgentTurnWithFallback(params: {
                     currentMessageId,
                   );
                   // Let through payloads with audioAsVoice flag even if empty (need to track it)
-                  if (!isRenderablePayload(taggedPayload) && !payload.audioAsVoice) return;
+                  if (!isRenderablePayload(taggedPayload) && !payload.audioAsVoice) return false;
                   const parsed = parseReplyDirectives(taggedPayload.text ?? "", {
                     currentMessageId,
                     silentToken: SILENT_REPLY_TOKEN,
@@ -354,8 +354,8 @@ export async function runAgentTurnWithFallback(params: {
                     !payload.audioAsVoice &&
                     !parsed.audioAsVoice
                   )
-                    return;
-                  if (parsed.isSilent && !hasRenderableMedia) return;
+                    return false;
+                  if (parsed.isSilent && !hasRenderableMedia) return false;
 
                   const blockPayload: ReplyPayload = params.applyReplyToMode({
                     ...taggedPayload,
@@ -382,6 +382,7 @@ export async function runAgentTurnWithFallback(params: {
                     await params.opts?.onBlockReply?.(blockPayload);
                   }
                   // When streaming is disabled entirely, blocks are accumulated in final text instead.
+                  return true;
                 }
               : undefined,
             onBlockReplyFlush:

@@ -69,7 +69,7 @@ export function createBlockReplyPipeline(params: {
   onBlockReply: (
     payload: ReplyPayload,
     options?: { abortSignal?: AbortSignal; timeoutMs?: number },
-  ) => Promise<void> | void;
+  ) => Promise<boolean | void> | boolean | void;
   timeoutMs: number;
   coalescing?: BlockStreamingCoalescing;
   buffer?: BlockReplyBuffer;
@@ -101,15 +101,19 @@ export function createBlockReplyPipeline(params: {
     sendChain = sendChain
       .then(async () => {
         if (aborted) return false;
-        await withTimeout(
-          onBlockReply(payload, {
-            abortSignal: abortController.signal,
-            timeoutMs,
-          }) ?? Promise.resolve(),
+        const result = await withTimeout(
+          Promise.resolve(
+            onBlockReply(payload, {
+              abortSignal: abortController.signal,
+              timeoutMs,
+            }),
+          ),
           timeoutMs,
           timeoutError,
         );
-        return true;
+        // Only count as sent when callback confirms delivery (returns true or void/undefined).
+        // Callbacks return false to signal that the payload was filtered/dropped.
+        return result !== false;
       })
       .then((didSend) => {
         if (!didSend) return;

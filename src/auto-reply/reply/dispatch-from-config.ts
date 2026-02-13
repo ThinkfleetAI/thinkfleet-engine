@@ -281,7 +281,7 @@ export async function dispatchReplyFromConfig(params: {
       {
         ...params.replyOptions,
         onBlockReply: (payload: ReplyPayload, context) => {
-          const run = async () => {
+          const run = async (): Promise<boolean> => {
             // Accumulate block text for TTS generation after streaming
             if (payload.text) {
               if (accumulatedBlockText.length > 0) {
@@ -300,8 +300,14 @@ export async function dispatchReplyFromConfig(params: {
             });
             if (shouldRouteToOriginating) {
               await sendPayloadAsync(ttsPayload, context?.abortSignal, false);
+              return true;
             } else {
-              dispatcher.sendBlockReply(ttsPayload);
+              const queued = dispatcher.sendBlockReply(ttsPayload);
+              if (queued) {
+                // Wait for actual delivery so the pipeline correctly knows if content was sent
+                await dispatcher.waitForIdle();
+              }
+              return queued;
             }
           };
           return run();
