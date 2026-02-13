@@ -317,9 +317,6 @@ export async function dispatchReplyFromConfig(params: {
     );
 
     const replies = replyResult ? (Array.isArray(replyResult) ? replyResult : [replyResult]) : [];
-    console.error(
-      `[reply-diag] dispatch: replies=${replies.length} shouldRouteToOriginating=${shouldRouteToOriginating} blockCount=${blockCount} firstReplyText=${(replies[0]?.text ?? "").slice(0, 80)}`,
-    );
 
     let queuedFinal = false;
     let routedFinalCount = 0;

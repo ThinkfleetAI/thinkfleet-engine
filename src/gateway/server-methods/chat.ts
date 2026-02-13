@@ -509,9 +509,6 @@ export const chatHandlers: GatewayRequestHandlers = {
           context.logGateway.warn(`webchat dispatch failed: ${formatForLog(err)}`);
         },
         deliver: async (payload, info) => {
-          console.error(
-            `[reply-diag] deliver called: kind=${info.kind} isSaasChannel=${isSaasChannel} text=${(payload.text ?? "").slice(0, 80)} mediaUrl=${payload.mediaUrl ?? "none"}`,
-          );
           // For SaaS-managed channels, emit channel.outbound so SaaS delivers via platform API
           if (isSaasChannel) {
             const text = payload.text?.trim() ?? "";
@@ -535,9 +532,6 @@ export const chatHandlers: GatewayRequestHandlers = {
           const text = payload.text?.trim() ?? "";
           if (!text) return;
           finalReplyParts.push(text);
-          console.error(
-            `[reply-diag] finalReplyParts pushed: count=${finalReplyParts.length} text=${text.slice(0, 80)}`,
-          );
         },
       });
 
@@ -563,9 +557,6 @@ export const chatHandlers: GatewayRequestHandlers = {
         },
       })
         .then(() => {
-          console.error(
-            `[reply-diag] .then() handler: agentRunStarted=${agentRunStarted} finalReplyParts=${finalReplyParts.length} isSaasChannel=${isSaasChannel}`,
-          );
           if (!agentRunStarted) {
             const combinedReply = finalReplyParts
               .map((part) => part.trim())

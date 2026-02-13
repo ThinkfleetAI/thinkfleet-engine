@@ -645,10 +645,6 @@ export async function runEmbeddedPiAgent(
           log.debug(
             `embedded run done: runId=${params.runId} sessionId=${params.sessionId} durationMs=${Date.now() - started} aborted=${aborted}`,
           );
-          // Diagnostic: trace reply payload pipeline
-          log.debug(
-            `[reply-diag] runId=${params.runId} assistantTexts=${attempt.assistantTexts.length} payloads=${payloads.length} lastAssistantStop=${attempt.lastAssistant?.stopReason ?? "none"} lastAssistantText=${(attempt.assistantTexts[0] ?? "").slice(0, 120)}`,
-          );
           if (lastProfileId) {
             await markAuthProfileGood({
               store: authStore,
