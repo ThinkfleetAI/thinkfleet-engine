@@ -386,6 +386,11 @@ export async function runReplyAgent(params: {
 
     const payloadArray = runResult.payloads ?? [];
 
+    // Diagnostic: trace payload pipeline
+    logVerbose(
+      `[reply-diag] payloadArray=${payloadArray.length} blockStreamingEnabled=${blockStreamingEnabled} pipelineDidStream=${blockReplyPipeline?.didStream() ?? "n/a"} pipelineAborted=${blockReplyPipeline?.isAborted() ?? "n/a"} pipelineHasBuffered=${blockReplyPipeline?.hasBuffered() ?? "n/a"}`,
+    );
+
     if (blockReplyPipeline) {
       await blockReplyPipeline.flush({ force: true });
       blockReplyPipeline.stop();
@@ -421,8 +426,10 @@ export async function runReplyAgent(params: {
     // Drain any late tool/block deliveries before deciding there's "nothing to send".
     // Otherwise, a late typing trigger (e.g. from a tool callback) can outlive the run and
     // keep the typing indicator stuck.
-    if (payloadArray.length === 0)
+    if (payloadArray.length === 0) {
+      logVerbose(`[reply-diag] payloadArray empty, returning undefined`);
       return finalizeWithFollowup(undefined, queueKey, runFollowupTurn);
+    }
 
     const payloadResult = buildReplyPayloads({
       payloads: payloadArray,
@@ -442,6 +449,10 @@ export async function runReplyAgent(params: {
     });
     const { replyPayloads } = payloadResult;
     didLogHeartbeatStrip = payloadResult.didLogHeartbeatStrip;
+
+    logVerbose(
+      `[reply-diag] buildReplyPayloads: input=${payloadArray.length} output=${replyPayloads.length} pipelineDidStream=${blockReplyPipeline?.didStream() ?? "n/a"} firstPayloadText=${(replyPayloads[0]?.text ?? "").slice(0, 80)}`,
+    );
 
     if (replyPayloads.length === 0)
       return finalizeWithFollowup(undefined, queueKey, runFollowupTurn);
