@@ -388,7 +388,7 @@ export async function runReplyAgent(params: {
     const payloadArray = runResult.payloads ?? [];
 
     // Diagnostic: trace payload pipeline
-    logVerbose(
+    console.error(
       `[reply-diag] payloadArray=${payloadArray.length} blockStreamingEnabled=${blockStreamingEnabled} pipelineDidStream=${blockReplyPipeline?.didStream() ?? "n/a"} pipelineAborted=${blockReplyPipeline?.isAborted() ?? "n/a"} pipelineHasBuffered=${blockReplyPipeline?.hasBuffered() ?? "n/a"}`,
     );
 
@@ -428,7 +428,7 @@ export async function runReplyAgent(params: {
     // Otherwise, a late typing trigger (e.g. from a tool callback) can outlive the run and
     // keep the typing indicator stuck.
     if (payloadArray.length === 0) {
-      logVerbose(`[reply-diag] payloadArray empty, returning undefined`);
+      console.error(`[reply-diag] payloadArray empty, returning undefined`);
       return finalizeWithFollowup(undefined, queueKey, runFollowupTurn);
     }
 
@@ -451,7 +451,7 @@ export async function runReplyAgent(params: {
     const { replyPayloads } = payloadResult;
     didLogHeartbeatStrip = payloadResult.didLogHeartbeatStrip;
 
-    logVerbose(
+    console.error(
       `[reply-diag] buildReplyPayloads: input=${payloadArray.length} output=${replyPayloads.length} pipelineDidStream=${blockReplyPipeline?.didStream() ?? "n/a"} firstPayloadText=${(replyPayloads[0]?.text ?? "").slice(0, 80)}`,
     );
 
