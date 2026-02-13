@@ -75,7 +75,7 @@ export type EmbeddedRunAttemptParams = {
     replyToId?: string;
     replyToTag?: boolean;
     replyToCurrent?: boolean;
-  }) => void | Promise<void>;
+  }) => boolean | void | Promise<boolean | void>;
   onBlockReplyFlush?: () => void | Promise<void>;
   blockReplyBreak?: "text_end" | "message_end";
   blockReplyChunking?: BlockReplyChunking;

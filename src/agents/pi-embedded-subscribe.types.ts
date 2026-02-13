@@ -22,7 +22,7 @@ export type SubscribeEmbeddedPiSessionParams = {
     replyToId?: string;
     replyToTag?: boolean;
     replyToCurrent?: boolean;
-  }) => void | Promise<void>;
+  }) => boolean | void | Promise<boolean | void>;
   /** Flush pending block replies (e.g., before tool execution to preserve message boundaries). */
   onBlockReplyFlush?: () => void | Promise<void>;
   blockReplyBreak?: "text_end" | "message_end";
