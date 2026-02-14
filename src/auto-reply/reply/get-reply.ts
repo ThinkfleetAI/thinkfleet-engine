@@ -13,6 +13,7 @@ import type { MsgContext } from "../templating.js";
 import { SILENT_REPLY_TOKEN } from "../tokens.js";
 import { applyMediaUnderstanding } from "../../media-understanding/apply.js";
 import { applyLinkUnderstanding } from "../../link-understanding/apply.js";
+import { extractAndStoreVisualMemories } from "../../memory/visual/index.js";
 import type { GetReplyOptions, ReplyPayload } from "../types.js";
 import { resolveDefaultModel } from "./directive-handling.js";
 import { resolveReplyDirectives } from "./get-reply-directives.js";
@@ -90,6 +91,19 @@ export async function getReplyFromConfig(
       agentDir,
       activeModel: { provider, model },
     });
+
+    // Fire-and-forget: extract visual memories from image descriptions
+    if (finalized.MediaUnderstanding?.some((o) => o.kind === "image.description")) {
+      void extractAndStoreVisualMemories({
+        outputs: finalized.MediaUnderstanding.filter((o) => o.kind === "image.description"),
+        senderId: finalized.SenderId,
+        senderName: finalized.SenderName,
+        messageText: finalized.Body,
+        cfg,
+        agentDir,
+      }).catch(() => {});
+    }
+
     await applyLinkUnderstanding({
       ctx: finalized,
       cfg,

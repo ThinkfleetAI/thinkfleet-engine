@@ -11,6 +11,7 @@ import type { ThinkfleetConfig } from "../../config/config.js";
 import { resolveSessionAgentId } from "../../agents/agent-scope.js";
 import { resolveMemorySearchConfig } from "../../agents/memory-search.js";
 import { getMemorySearchManager } from "../../memory/index.js";
+import { searchVisualMemories } from "../../memory/visual/index.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 
 const log = createSubsystemLogger("memory-proactive");
@@ -57,7 +58,24 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
       minScore,
     });
 
-    if (items.length === 0) return params.commandBody;
+    // Also search visual memories for this user
+    let visualParts: string[] = [];
+    try {
+      const visualItems = await searchVisualMemories({
+        query: trimmed,
+        senderId: params.senderId,
+        limit: 3,
+      });
+      for (const item of visualItems) {
+        if (item.score < 0.3) continue;
+        const label = item.entityName ? `${item.entityName} (${item.entityType})` : item.entityType;
+        visualParts.push(`- [visual: ${label}] ${item.description}`);
+      }
+    } catch {
+      // non-fatal — visual memory search is best-effort
+    }
+
+    if (items.length === 0 && visualParts.length === 0) return params.commandBody;
 
     // Format memory context
     const parts: string[] = [];
@@ -68,6 +86,13 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
       if (totalChars + line.length > MAX_CONTEXT_CHARS) break;
       parts.push(line);
       totalChars += line.length;
+    }
+
+    // Append visual memories
+    for (const vLine of visualParts) {
+      if (totalChars + vLine.length > MAX_CONTEXT_CHARS) break;
+      parts.push(vLine);
+      totalChars += vLine.length;
     }
 
     if (parts.length === 0) return params.commandBody;
