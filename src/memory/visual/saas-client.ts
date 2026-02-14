@@ -5,6 +5,7 @@
 
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 import type { StoreVisualMemoryParams, VisualMemoryResult } from "./types.js";
+import { getAccessToken } from "../../saas/oauth-token-client.js";
 
 const log = createSubsystemLogger("visual-memory-client");
 
@@ -13,7 +14,6 @@ const SAAS_BASE =
   process.env.THINKFLEET_PROXY_BASE_URL ||
   process.env.CLAWDBOT_PROXY_BASE_URL ||
   "";
-const GATEWAY_TOKEN = process.env.THINKFLEET_GATEWAY_TOKEN || "";
 const AGENT_DB_ID = process.env.THINKFLEET_AGENT_DB_ID || "";
 
 const BRIDGE_PATH = "/api/internal/bridge/visual-memory";
@@ -23,11 +23,12 @@ async function bridgeFetch(body: unknown): Promise<{ ok: boolean; data: unknown 
     throw new Error("SAAS_BASE not configured — cannot reach visual memory bridge");
   }
 
+  const accessToken = await getAccessToken();
   const res = await fetch(`${SAAS_BASE}${BRIDGE_PATH}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${GATEWAY_TOKEN}`,
+      Authorization: `Bearer ${accessToken}`,
       "X-Agent-Id": AGENT_DB_ID,
     },
     body: JSON.stringify(body),

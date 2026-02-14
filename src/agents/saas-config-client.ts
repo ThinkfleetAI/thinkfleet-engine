@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { isSaasMode } from "./saas-credential-client.js";
+import { getAccessToken } from "../saas/oauth-token-client.js";
 
 export interface ReasoningOverrides {
   thinkingLevel?: string;
@@ -75,7 +76,6 @@ export interface SaasAgentConfig {
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
 const agentDbId = process.env.THINKFLEET_AGENT_DB_ID;
-const gatewayToken = process.env.THINKFLEET_GATEWAY_TOKEN;
 
 let cachedConfig: SaasAgentConfig | null = null;
 
@@ -96,8 +96,9 @@ export async function fetchAgentConfig(): Promise<SaasAgentConfig | null> {
 
   for (let attempt = 0; attempt <= CONFIG_FETCH_MAX_RETRIES; attempt++) {
     try {
+      const accessToken = await getAccessToken();
       const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${gatewayToken}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
         signal: AbortSignal.timeout(10_000),
       });
 

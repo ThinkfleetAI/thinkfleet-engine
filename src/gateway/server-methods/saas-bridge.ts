@@ -16,13 +16,13 @@
 
 import { ErrorCodes, errorShape } from "../protocol/index.js";
 import type { GatewayRequestHandlers } from "./types.js";
+import { getAccessToken } from "../../saas/oauth-token-client.js";
 
 const SAAS_BASE =
   process.env.THINKFLEET_API_URL ||
   process.env.THINKFLEET_PROXY_BASE_URL ||
   process.env.CLAWDBOT_PROXY_BASE_URL ||
   "";
-const GATEWAY_TOKEN = process.env.THINKFLEET_GATEWAY_TOKEN || "";
 const AGENT_DB_ID = process.env.THINKFLEET_AGENT_DB_ID || "";
 
 async function saasFetch(
@@ -32,11 +32,12 @@ async function saasFetch(
   if (!SAAS_BASE) {
     return { ok: false, status: 0, data: { error: "SAAS_BASE not configured" } };
   }
+  const accessToken = await getAccessToken();
   const res = await fetch(`${SAAS_BASE}${path}`, {
     method: opts?.method ?? "GET",
     headers: {
       ...(opts?.body ? { "Content-Type": "application/json" } : {}),
-      Authorization: `Bearer ${GATEWAY_TOKEN}`,
+      Authorization: `Bearer ${accessToken}`,
       "X-Agent-Id": AGENT_DB_ID,
     },
     body: opts?.body ? JSON.stringify(opts.body) : undefined,

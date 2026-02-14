@@ -6,6 +6,7 @@
  */
 
 import { isSaasMode, type KeySource } from "./saas-credential-client.js";
+import { getAccessToken } from "../saas/oauth-token-client.js";
 import type { NormalizedUsage } from "./usage.js";
 
 const FLUSH_INTERVAL_MS = 5_000; // 5 seconds
@@ -38,7 +39,6 @@ let onBudgetExhausted: (() => void) | null = null;
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
 const agentDbId = process.env.THINKFLEET_AGENT_DB_ID;
-const gatewayToken = process.env.THINKFLEET_GATEWAY_TOKEN;
 
 /**
  * Report token usage from an LLM call.
@@ -105,11 +105,12 @@ async function flush(): Promise<void> {
 async function sendWithRetry(event: UsageEvent, attempt = 0): Promise<void> {
   try {
     const url = `${saasApiUrl}/api/internal/usage/report`;
+    const accessToken = await getAccessToken();
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${gatewayToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         agentDbId,

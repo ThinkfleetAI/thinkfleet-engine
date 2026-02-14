@@ -168,6 +168,8 @@ let lastFetchAt = 0;
 let _budgetExhausted = false;
 let _searchBudgetExhausted = false;
 
+import { getAccessToken } from "../saas/oauth-token-client.js";
+
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
 const agentDbId = process.env.THINKFLEET_AGENT_DB_ID;
 const gatewayToken = process.env.THINKFLEET_GATEWAY_TOKEN;
@@ -176,7 +178,7 @@ const gatewayToken = process.env.THINKFLEET_GATEWAY_TOKEN;
  * Returns true if running in SaaS mode (env vars are set).
  */
 export function isSaasMode(): boolean {
-  return !!(saasApiUrl && agentDbId && gatewayToken);
+  return !!(saasApiUrl && agentDbId && (gatewayToken || process.env.THINKFLEET_OAUTH_CLIENT_ID));
 }
 
 /**
@@ -198,9 +200,10 @@ export async function fetchCredentialFromSaas(
   if (!allCredentials || Date.now() - lastFetchAt >= CACHE_TTL_MS) {
     try {
       const url = `${saasApiUrl}/api/internal/credentials/${agentDbId}`;
+      const accessToken = await getAccessToken();
       const response = await fetch(url, {
         headers: {
-          Authorization: `Bearer ${gatewayToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         signal: AbortSignal.timeout(10_000),
       });
@@ -326,8 +329,9 @@ export async function injectSaasCredentialsToEnv(): Promise<() => void> {
 
   try {
     const url = `${saasApiUrl}/api/internal/credentials/${agentDbId}`;
+    const accessToken = await getAccessToken();
     const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${gatewayToken}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
       signal: AbortSignal.timeout(10_000),
     });
 

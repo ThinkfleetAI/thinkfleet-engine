@@ -10,6 +10,7 @@
  */
 
 import WebSocket from "ws";
+import { getAccessToken } from "../saas/oauth-token-client.js";
 
 interface ReverseGatewayConfig {
   /** SaaS API URL (e.g., https://your-saas.example.com) */
@@ -50,12 +51,15 @@ export class ReverseGatewayClient {
     return this.doConnect();
   }
 
-  private doConnect(): Promise<void> {
+  private async doConnect(): Promise<void> {
+    // Resolve the access token (OAuth JWT if configured, else legacy gateway token)
+    const token = (await getAccessToken()) || this.config.gatewayToken;
+
     return new Promise((resolve, reject) => {
       // Build the WebSocket URL
       const saasUrl = new URL(this.config.saasUrl);
       const wsProtocol = saasUrl.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${wsProtocol}//${saasUrl.host}/api/gateway/device?agentDbId=${encodeURIComponent(this.config.agentDbId)}&token=${encodeURIComponent(this.config.gatewayToken)}`;
+      const wsUrl = `${wsProtocol}//${saasUrl.host}/api/gateway/device?agentDbId=${encodeURIComponent(this.config.agentDbId)}&token=${encodeURIComponent(token)}`;
 
       console.log(`[reverse-gateway] Connecting to SaaS: ${saasUrl.host}`);
 
