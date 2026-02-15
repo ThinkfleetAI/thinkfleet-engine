@@ -1,10 +1,8 @@
 /**
- * Visual memory extraction: takes image descriptions (already produced by the
- * vision LLM) and extracts structured visual entities for long-term memory.
- *
- * This does NOT re-run the vision model. It takes the text description output
- * from applyMediaUnderstanding() and runs a lightweight text LLM call to
- * extract structured entities.
+ * Visual memory extraction: extracts structured visual entities for long-term
+ * memory from either:
+ *   1. Text descriptions (from applyMediaUnderstanding — channel images)
+ *   2. Raw base64 images (from web chat — single combined vision+extraction call)
  */
 
 import type { ThinkfleetConfig } from "../../config/config.js";
@@ -19,8 +17,9 @@ import { VISUAL_ENTITY_TYPES } from "./types.js";
 const log = createSubsystemLogger("visual-memory");
 
 /**
- * Extract visual entities from image descriptions and store them in SaaS.
- * This is called fire-and-forget — it never blocks the chat response.
+ * Extract visual entities from image descriptions (text) and store them.
+ * Used when applyMediaUnderstanding has already produced text descriptions
+ * (e.g. channel images from Telegram, WhatsApp, etc.).
  */
 export async function extractAndStoreVisualMemories(params: {
   outputs: MediaUnderstandingOutput[];
@@ -48,10 +47,9 @@ export async function extractAndStoreVisualMemories(params: {
   }
 
   log.info(
-    `visual extraction: ${imageDescriptions.length} image(s), senderId=${senderId}, messageText="${messageText?.slice(0, 60) ?? ""}"`,
+    `visual extraction (text): ${imageDescriptions.length} description(s), senderId=${senderId}`,
   );
 
-  // Build the extraction input: combine image descriptions with user text
   const parts: string[] = [];
   if (messageText?.trim()) {
     parts.push(`User's message: "${messageText.trim()}"`);
@@ -59,14 +57,86 @@ export async function extractAndStoreVisualMemories(params: {
   for (let i = 0; i < imageDescriptions.length; i++) {
     parts.push(`Image ${i + 1} description: ${imageDescriptions[i]}`);
   }
-  const extractionInput = parts.join("\n\n");
 
-  // Run lightweight text LLM call for entity extraction
+  await runExtractionAndStore({
+    extractionInput: parts.join("\n\n"),
+    senderId,
+    senderName: params.senderName,
+    messageText,
+    cfg,
+    agentDir,
+  });
+}
+
+/**
+ * Extract visual entities directly from raw base64 images and store them.
+ * Uses a single vision-capable LLM call to both describe the image and
+ * extract entities — no separate media understanding step needed.
+ *
+ * Used for web chat images that bypass applyMediaUnderstanding.
+ */
+export async function extractAndStoreFromRawImages(params: {
+  images: Array<{ data: string; mimeType: string }>;
+  senderId?: string;
+  senderName?: string;
+  messageText?: string;
+  cfg?: ThinkfleetConfig;
+  agentDir?: string;
+}): Promise<void> {
+  const { images, senderId, messageText, cfg, agentDir } = params;
+
+  if (!senderId) {
+    log.info("skipping visual extraction (raw): no senderId");
+    return;
+  }
+
+  if (images.length === 0) {
+    return;
+  }
+
+  log.info(
+    `visual extraction (raw): ${images.length} image(s), senderId=${senderId}, messageText="${messageText?.slice(0, 60) ?? ""}"`,
+  );
+
+  const parts: string[] = [];
+  if (messageText?.trim()) {
+    parts.push(`User's message: "${messageText.trim()}"`);
+  }
+  parts.push(
+    `${images.length} image(s) are attached. Analyze them visually and extract any identifiable entities.`,
+  );
+
+  await runExtractionAndStore({
+    extractionInput: parts.join("\n\n"),
+    images,
+    senderId,
+    senderName: params.senderName,
+    messageText,
+    cfg,
+    agentDir,
+  });
+}
+
+/**
+ * Shared extraction + store logic used by both text-description and raw-image paths.
+ */
+async function runExtractionAndStore(params: {
+  extractionInput: string;
+  images?: Array<{ data: string; mimeType: string }>;
+  senderId: string;
+  senderName?: string;
+  messageText?: string;
+  cfg?: ThinkfleetConfig;
+  agentDir?: string;
+}): Promise<void> {
+  const { extractionInput, images, senderId, messageText, cfg, agentDir } = params;
+
   let entities: VisualEntity[];
   try {
     const response = await callExtractionLLM({
       systemPrompt: VISUAL_MEMORY_EXTRACTION_PROMPT,
       userContent: extractionInput,
+      images,
       cfg,
       agentDir,
       llmConfig: { temperature: 0.1 },
@@ -88,7 +158,6 @@ export async function extractAndStoreVisualMemories(params: {
     return;
   }
 
-  // Validate and store each entity
   let stored = 0;
   for (const entity of entities) {
     if (!isValidEntityType(entity.entityType) || !entity.description) {

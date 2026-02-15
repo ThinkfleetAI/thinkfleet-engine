@@ -1,4 +1,4 @@
-export { extractAndStoreVisualMemories } from "./extractor.js";
+export { extractAndStoreVisualMemories, extractAndStoreFromRawImages } from "./extractor.js";
 export {
   searchVisualMemories,
   storeVisualMemory,

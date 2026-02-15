@@ -13,7 +13,10 @@ import type { MsgContext } from "../templating.js";
 import { SILENT_REPLY_TOKEN } from "../tokens.js";
 import { applyMediaUnderstanding } from "../../media-understanding/apply.js";
 import { applyLinkUnderstanding } from "../../link-understanding/apply.js";
-import { extractAndStoreVisualMemories } from "../../memory/visual/index.js";
+import {
+  extractAndStoreVisualMemories,
+  extractAndStoreFromRawImages,
+} from "../../memory/visual/index.js";
 import type { GetReplyOptions, ReplyPayload } from "../types.js";
 import { resolveDefaultModel } from "./directive-handling.js";
 import { resolveReplyDirectives } from "./get-reply-directives.js";
@@ -92,17 +95,33 @@ export async function getReplyFromConfig(
       activeModel: { provider, model },
     });
 
-    // Fire-and-forget: extract visual memories from image descriptions
-    if (finalized.MediaUnderstanding?.some((o) => o.kind === "image.description")) {
+    // Fire-and-forget: extract visual memories from images
+    const hasImageDescriptions = finalized.MediaUnderstanding?.some(
+      (o) => o.kind === "image.description",
+    );
+    if (hasImageDescriptions) {
+      // Channel images (Telegram, etc.): extract from text descriptions
       void extractAndStoreVisualMemories({
-        outputs: finalized.MediaUnderstanding.filter((o) => o.kind === "image.description"),
+        outputs: finalized.MediaUnderstanding!.filter((o) => o.kind === "image.description"),
         senderId: finalized.SenderId,
         senderName: finalized.SenderName,
         messageText: finalized.Body,
         cfg,
         agentDir,
       }).catch((err) => {
-        defaultRuntime.log(`[visual-memory] extraction top-level error: ${String(err)}`);
+        defaultRuntime.log(`[visual-memory] extraction error: ${String(err)}`);
+      });
+    } else if (opts?.images && opts.images.length > 0) {
+      // Web chat images: extract directly from raw images via vision LLM
+      void extractAndStoreFromRawImages({
+        images: opts.images.map((img) => ({ data: img.data, mimeType: img.mimeType })),
+        senderId: finalized.SenderId,
+        senderName: finalized.SenderName,
+        messageText: finalized.Body,
+        cfg,
+        agentDir,
+      }).catch((err) => {
+        defaultRuntime.log(`[visual-memory] raw image extraction error: ${String(err)}`);
       });
     }
 

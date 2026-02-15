@@ -6,7 +6,7 @@
  * for completions.
  */
 
-import { completeSimple, type TextContent } from "@mariozechner/pi-ai";
+import { completeSimple, type TextContent, type ImageContent } from "@mariozechner/pi-ai";
 
 import type { ThinkfleetConfig } from "../config/config.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
@@ -37,6 +37,8 @@ export type ExtractionLLMConfig = {
 export async function callExtractionLLM(params: {
   systemPrompt: string;
   userContent: string;
+  /** Optional images to include in the prompt (for vision-capable models). */
+  images?: Array<{ data: string; mimeType: string }>;
   cfg?: ThinkfleetConfig;
   agentDir?: string;
   llmConfig?: ExtractionLLMConfig;
@@ -60,13 +62,29 @@ export async function callExtractionLLM(params: {
   const timeout = setTimeout(() => controller.abort(), EXTRACTION_TIMEOUT_MS);
 
   try {
+    // Build multimodal content when images are provided, plain text otherwise
+    const textPrompt = `${params.systemPrompt}\n\n${params.userContent}`;
+    const content: string | (TextContent | ImageContent)[] =
+      params.images && params.images.length > 0
+        ? [
+            { type: "text" as const, text: textPrompt },
+            ...params.images.map(
+              (img): ImageContent => ({
+                type: "image" as const,
+                data: img.data,
+                mimeType: img.mimeType,
+              }),
+            ),
+          ]
+        : textPrompt;
+
     const res = await completeSimple(
       resolved.model,
       {
         messages: [
           {
             role: "user",
-            content: `${params.systemPrompt}\n\n${params.userContent}`,
+            content,
             timestamp: Date.now(),
           },
         ],
