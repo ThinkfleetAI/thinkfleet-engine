@@ -65,7 +65,7 @@ export function startExtractionWorker(params: {
       try {
         await processSessionFile(sessionFile, fileOffsets, manager, pipelineConfig);
       } catch (err) {
-        log.debug(`extraction worker error for ${sessionFile}: ${String(err)}`);
+        log.info(`extraction worker error for ${sessionFile}: ${String(err)}`);
       }
     }
     running = false;
@@ -90,7 +90,7 @@ export function startExtractionWorker(params: {
     }, debounceMs);
   });
 
-  log.debug("extraction worker started");
+  log.info("extraction worker started");
 
   return {
     stop: () => {
@@ -100,7 +100,7 @@ export function startExtractionWorker(params: {
         debounceTimer = null;
       }
       unsubscribe();
-      log.debug("extraction worker stopped");
+      log.info("extraction worker stopped");
     },
   };
 }
@@ -132,10 +132,17 @@ async function processSessionFile(
 
   // Extract conversation text from JSONL transcript format
   const conversationText = extractConversationText(newContent);
-  if (!conversationText) return;
+  if (!conversationText) {
+    log.info(`no conversation text extracted from ${newContent.length} bytes of new content`);
+    return;
+  }
 
   // Derive session key from file path
   const sessionKey = sessionFile.replace(/.*[/\\]/, "").replace(/\.\w+$/, "");
+
+  log.info(
+    `running extraction pipeline: sessionKey=${sessionKey}, textLength=${conversationText.length}`,
+  );
 
   await runExtractionPipeline({
     text: conversationText,
@@ -147,7 +154,12 @@ async function processSessionFile(
 
 /**
  * Parse JSONL transcript lines and extract human-readable conversation text.
- * Transcript lines are JSON objects with role and content fields.
+ *
+ * Session transcripts use a wrapped format:
+ *   { "type": "message", "message": { "role": "user", "content": [...] } }
+ *
+ * Also supports flat format for backwards compatibility:
+ *   { "role": "user", "content": "..." }
  */
 function extractConversationText(rawContent: string): string | null {
   const lines = rawContent.split("\n").filter((l) => l.trim().length > 0);
@@ -155,28 +167,34 @@ function extractConversationText(rawContent: string): string | null {
 
   for (const line of lines) {
     try {
-      const entry = JSON.parse(line) as {
-        role?: string;
-        content?: string | Array<{ type: string; text?: string }>;
-      };
+      const entry = JSON.parse(line) as Record<string, unknown>;
 
-      if (!entry.role || !entry.content) continue;
+      // Unwrap the SessionManager format: { type: "message", message: { role, content } }
+      const msg =
+        entry.type === "message" && entry.message && typeof entry.message === "object"
+          ? (entry.message as Record<string, unknown>)
+          : entry;
+
+      const role = msg.role as string | undefined;
+      const content = msg.content as string | Array<{ type: string; text?: string }> | undefined;
+
+      if (!role || !content) continue;
 
       // Skip system messages — they don't contain user-relevant memories
-      if (entry.role === "system") continue;
+      if (role === "system") continue;
 
       let text = "";
-      if (typeof entry.content === "string") {
-        text = entry.content;
-      } else if (Array.isArray(entry.content)) {
-        text = entry.content
+      if (typeof content === "string") {
+        text = content;
+      } else if (Array.isArray(content)) {
+        text = content
           .filter((block) => block.type === "text" && block.text)
           .map((block) => block.text!)
           .join("\n");
       }
 
       if (text.trim()) {
-        const label = entry.role === "user" ? "User" : "Assistant";
+        const label = role === "user" ? "User" : "Assistant";
         textParts.push(`${label}: ${text.trim()}`);
       }
     } catch {
