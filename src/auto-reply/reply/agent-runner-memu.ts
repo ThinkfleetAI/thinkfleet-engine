@@ -31,23 +31,36 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
 
   const searchConfig = resolveMemorySearchConfig(params.cfg, agentId);
   if (!searchConfig?.extraction?.enabled || !searchConfig.extraction.proactiveRetrieval) {
+    log.info(
+      `skipped: extraction.enabled=${searchConfig?.extraction?.enabled}, proactiveRetrieval=${searchConfig?.extraction?.proactiveRetrieval}`,
+    );
     return params.commandBody;
   }
 
   const trimmed = params.commandBody.trim();
 
   // Skip very short messages — not enough signal for meaningful retrieval
-  if (trimmed.length < 10) return params.commandBody;
+  if (trimmed.length < 10) {
+    log.info(`skipped: message too short (${trimmed.length} chars)`);
+    return params.commandBody;
+  }
 
   // Skip obvious commands
   if (trimmed.startsWith("/") || trimmed.startsWith("!")) return params.commandBody;
+
+  log.info(
+    `searching memories for senderId=${params.senderId}, query="${trimmed.slice(0, 60)}..."`,
+  );
 
   try {
     const { manager } = await getMemorySearchManager({
       cfg: params.cfg,
       agentId,
     });
-    if (!manager) return params.commandBody;
+    if (!manager) {
+      log.info("skipped: no memory search manager available");
+      return params.commandBody;
+    }
 
     const maxItems = searchConfig.extraction.maxProactiveItems;
     const minScore = searchConfig.extraction.minRelevanceScore;
@@ -57,6 +70,7 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
       maxResults: maxItems,
       minScore,
     });
+    log.info(`text memory search returned ${items.length} items`);
 
     // Also search visual memories for this user
     let visualParts: string[] = [];
@@ -66,16 +80,22 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
         senderId: params.senderId,
         limit: 3,
       });
+      log.info(
+        `visual memory search returned ${visualItems.length} items (senderId=${params.senderId})`,
+      );
       for (const item of visualItems) {
         if (item.score < 0.3) continue;
         const label = item.entityName ? `${item.entityName} (${item.entityType})` : item.entityType;
         visualParts.push(`- [visual: ${label}] ${item.description}`);
       }
-    } catch {
-      // non-fatal — visual memory search is best-effort
+    } catch (visualErr) {
+      log.info(`visual memory search failed: ${String(visualErr)}`);
     }
 
-    if (items.length === 0 && visualParts.length === 0) return params.commandBody;
+    if (items.length === 0 && visualParts.length === 0) {
+      log.info("no relevant memories found");
+      return params.commandBody;
+    }
 
     // Format memory context
     const parts: string[] = [];
@@ -105,7 +125,7 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
 
     return `${memoryContext}\n\n${params.commandBody}`;
   } catch (err) {
-    log.debug(`proactive retrieval failed: ${String(err)}`);
+    log.info(`proactive retrieval failed: ${String(err)}`);
     return params.commandBody;
   }
 }
