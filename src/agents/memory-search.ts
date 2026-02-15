@@ -299,7 +299,7 @@ function resolveExtractionConfig(
   defaults: MemorySearchConfigType["extraction"],
   overrides: MemorySearchConfigType["extraction"],
 ): ResolvedMemorySearchConfig["extraction"] {
-  const enabled = overrides?.enabled ?? defaults?.enabled ?? false;
+  const enabled = overrides?.enabled ?? defaults?.enabled ?? true;
   if (!enabled) return undefined;
   return {
     enabled: true,
