@@ -72,17 +72,14 @@ export async function runProactiveMemuRetrieveIfNeeded(params: {
     });
     log.info(`text memory search returned ${items.length} items`);
 
-    // Also search visual memories for this user
+    // Search visual memories across all senders (agent-wide, not per-sender)
     let visualParts: string[] = [];
     try {
       const visualItems = await searchVisualMemories({
         query: trimmed,
-        senderId: params.senderId,
         limit: 3,
       });
-      log.info(
-        `visual memory search returned ${visualItems.length} items (senderId=${params.senderId})`,
-      );
+      log.info(`visual memory search returned ${visualItems.length} items (agent-wide)`);
       for (const item of visualItems) {
         if (item.score < 0.3) continue;
         const label = item.entityName ? `${item.entityName} (${item.entityType})` : item.entityType;

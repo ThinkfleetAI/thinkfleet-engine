@@ -101,7 +101,9 @@ export async function getReplyFromConfig(
         messageText: finalized.Body,
         cfg,
         agentDir,
-      }).catch(() => {});
+      }).catch((err) => {
+        defaultRuntime.log(`[visual-memory] extraction top-level error: ${String(err)}`);
+      });
     }
 
     await applyLinkUnderstanding({

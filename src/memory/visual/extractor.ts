@@ -33,7 +33,7 @@ export async function extractAndStoreVisualMemories(params: {
   const { outputs, senderId, messageText, cfg, agentDir } = params;
 
   if (!senderId) {
-    log.debug("skipping visual extraction: no senderId");
+    log.info("skipping visual extraction: no senderId");
     return;
   }
 
@@ -43,8 +43,13 @@ export async function extractAndStoreVisualMemories(params: {
     .filter(Boolean);
 
   if (imageDescriptions.length === 0) {
+    log.info("skipping visual extraction: no image descriptions found");
     return;
   }
+
+  log.info(
+    `visual extraction: ${imageDescriptions.length} image(s), senderId=${senderId}, messageText="${messageText?.slice(0, 60) ?? ""}"`,
+  );
 
   // Build the extraction input: combine image descriptions with user text
   const parts: string[] = [];
@@ -69,17 +74,17 @@ export async function extractAndStoreVisualMemories(params: {
 
     const parsed = parseJsonResponse<VisualEntity[]>(response);
     if (!parsed || !Array.isArray(parsed)) {
-      log.debug("visual extraction: no entities parsed from response");
+      log.info("visual extraction: no entities parsed from LLM response");
       return;
     }
     entities = parsed;
   } catch (err) {
-    log.debug(`visual extraction LLM call failed: ${String(err)}`);
+    log.info(`visual extraction LLM call failed: ${String(err)}`);
     return;
   }
 
   if (entities.length === 0) {
-    log.debug("visual extraction: no entities found");
+    log.info("visual extraction: no entities found in LLM output");
     return;
   }
 
@@ -105,12 +110,12 @@ export async function extractAndStoreVisualMemories(params: {
       });
       stored++;
     } catch (err) {
-      log.debug(`visual memory store failed: ${String(err)}`);
+      log.info(`visual memory store failed: ${String(err)}`);
     }
   }
 
   if (stored > 0) {
-    log.debug(`visual memory: stored ${stored} entities for sender ${senderId}`);
+    log.info(`visual memory: stored ${stored} entities for sender ${senderId}`);
   }
 }
 
