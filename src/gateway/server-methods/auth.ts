@@ -1,5 +1,8 @@
 import { upsertAuthProfile } from "../../agents/auth-profiles/profiles.js";
-import { invalidateSaasCredentialCache } from "../../agents/saas-credential-client.js";
+import {
+  clearSaasCredentialCache,
+  invalidateSaasCredentialCache,
+} from "../../agents/saas-credential-client.js";
 import { ErrorCodes, errorShape } from "../protocol/index.js";
 import type { GatewayRequestHandlers } from "./types.js";
 
@@ -8,6 +11,16 @@ import type { GatewayRequestHandlers } from "./types.js";
  * Used by the SaaS backend to hot-push credentials to running containers.
  */
 export const authHandlers: GatewayRequestHandlers = {
+  /**
+   * Invalidate the entire credential cache so the next execution
+   * fetches fresh credentials from SaaS.  Called by the SaaS backend
+   * after credential saves, deletes, or rotations.
+   */
+  "credentials.invalidate": async ({ respond }) => {
+    clearSaasCredentialCache();
+    respond(true, { invalidated: true }, undefined);
+  },
+
   /**
    * Upsert an API key into the agent's auth-profiles.json.
    *
@@ -20,24 +33,15 @@ export const authHandlers: GatewayRequestHandlers = {
     const provider = (params as Record<string, unknown>)?.provider;
     const apiKey = (params as Record<string, unknown>)?.apiKey;
     const profileId =
-      ((params as Record<string, unknown>)?.profileId as string) ||
-      `${provider}-saas`;
+      ((params as Record<string, unknown>)?.profileId as string) || `${provider}-saas`;
 
     if (typeof provider !== "string" || !provider.trim()) {
-      respond(
-        false,
-        undefined,
-        errorShape(ErrorCodes.INVALID_REQUEST, "provider is required"),
-      );
+      respond(false, undefined, errorShape(ErrorCodes.INVALID_REQUEST, "provider is required"));
       return;
     }
 
     if (typeof apiKey !== "string" || !apiKey.trim()) {
-      respond(
-        false,
-        undefined,
-        errorShape(ErrorCodes.INVALID_REQUEST, "apiKey is required"),
-      );
+      respond(false, undefined, errorShape(ErrorCodes.INVALID_REQUEST, "apiKey is required"));
       return;
     }
 
