@@ -133,9 +133,31 @@
     "canvas:a2ui:bundle": "bash scripts/bundle-a2ui.sh",
     "check:loc": "node --import tsx scripts/check-ts-max-loc.ts --max 500"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "ai",
+    "agent",
+    "bot",
+    "chatbot",
+    "assistant",
+    "llm",
+    "openai",
+    "anthropic",
+    "whatsapp",
+    "telegram",
+    "discord",
+    "slack",
+    "self-hosted"
+  ],
+  "author": "ThinkfleetAI",
   "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://www.thinkfleet.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThinkfleetAI/thinkfleet-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ThinkfleetAI/thinkfleet-engine/issues"
+  },
   "engines": {
     "node": ">=22.12.0"
   },
