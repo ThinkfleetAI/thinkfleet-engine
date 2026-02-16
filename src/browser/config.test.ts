@@ -17,7 +17,7 @@ describe("browser config", () => {
     expect(profile?.cdpUrl).toBe("http://127.0.0.1:18792");
 
     const thinkfleet = resolveProfile(resolved, "thinkfleet");
-    expect(thinkfleet?.driver).toBe("clawd");
+    expect(thinkfleet?.driver).toBe("managed");
     expect(thinkfleet?.cdpPort).toBe(18800);
     expect(thinkfleet?.cdpUrl).toBe("http://127.0.0.1:18800");
     expect(resolved.remoteCdpTimeoutMs).toBe(1500);

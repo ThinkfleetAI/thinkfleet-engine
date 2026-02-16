@@ -125,8 +125,10 @@ describe("formatCliCommand", () => {
 
   it("trims whitespace from profile", () => {
     expect(
-      formatCliCommand("thinkfleet-engine doctor --fix", { THINKFLEET_PROFILE: "  jbclawd  " }),
-    ).toBe("thinkfleet-engine --profile jbclawd doctor --fix");
+      formatCliCommand("thinkfleet-engine doctor --fix", {
+        THINKFLEET_PROFILE: "  jbthinkfleet  ",
+      }),
+    ).toBe("thinkfleet-engine --profile jbthinkfleet doctor --fix");
   });
 
   it("handles command with no args after thinkfleet-engine", () => {

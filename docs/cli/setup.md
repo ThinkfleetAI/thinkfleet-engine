@@ -17,7 +17,7 @@ Related:
 
 ```bash
 thinkfleetbot setup
-thinkfleetbot setup --workspace ~/clawd
+thinkfleetbot setup --workspace ~/thinkfleet
 ```
 
 To run the wizard via setup:

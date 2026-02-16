@@ -2,7 +2,7 @@
 name: tmdb
 description: Search movies/TV, get cast, ratings, streaming info, and personalized recommendations via TMDb API.
 homepage: https://www.themoviedb.org/
-metadata: {"clawdis":{"emoji":"🎬","requires":{"bins":["uv"],"env":["TMDB_API_KEY"]},"primaryEnv":"TMDB_API_KEY"}}
+metadata: {"thinkfleetis":{"emoji":"🎬","requires":{"bins":["uv"],"env":["TMDB_API_KEY"]},"primaryEnv":"TMDB_API_KEY"}}
 ---
 
 # TMDb - The Movie Database

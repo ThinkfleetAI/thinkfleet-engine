@@ -1,5 +1,5 @@
 # Repository Guidelines
-- Repo: https://github.com/thinkfleetbot/thinkfleetbot
+- Repo: https://github.com/thinkfleetbot/thinkfleet-engine
 - GitHub issues/comments/PR comments: use literal multiline strings or `-F - <<'EOF'` (or $'...') for real newlines; never embed "\\n".
 
 ## SaaS Integration Architecture
@@ -8,8 +8,8 @@ This bot runs as a **stateless AI worker** managed by the Thinkfleet SaaS platfo
 
 ### SaaS Mode vs Standalone Mode
 
-**SaaS Mode** (K8s managed deployment):
-- Detected when all three env vars are set: `THINKFLEET_SAAS_API_URL`, `THINKFLEET_AGENT_DB_ID`, `THINKFLEET_GATEWAY_TOKEN`
+**SaaS Mode** (managed deployment):
+- Detected when OAuth env vars are set: `THINKFLEET_SAAS_API_URL`, `THINKFLEET_AGENT_DB_ID`, `THINKFLEET_OAUTH_CLIENT_ID`, `THINKFLEET_OAUTH_CLIENT_SECRET`
 - Credentials fetched via HTTP from SaaS backend (5-min in-memory cache, never persisted to disk)
 - Token budget enforcement (platform keys withheld if budget exhausted; BYOK keys bypass)
 - SaaS-managed channels emit `channel.outbound` events via gateway instead of sending directly
@@ -58,33 +58,6 @@ When `saasManaged: true` in channel config, the extension skips its own monitor/
 
 Key files: `src/agents/saas-credential-client.ts`, `src/agents/saas-config-client.ts`, `src/infra/outbound/saas-outbound.ts`
 
-### Kubernetes Operations (kubectl)
-
-You have kubectl access for debugging bot pods in production.
-
-**Bot pod debugging:**
-```bash
-# Find bot pods (each org gets its own namespace)
-kubectl get pods -n clawdbot-org-<orgId>
-
-# Check bot pod logs
-kubectl logs -n clawdbot-org-<orgNs> deployment/agent-<id> --tail=100
-
-# Check bot env vars
-kubectl exec -n clawdbot-org-<orgNs> <pod-name> -- env | grep THINKFLEET_
-
-# Restart a bot pod
-kubectl rollout restart deployment/agent-<id> -n clawdbot-org-<orgNs>
-
-# Patch an env var
-kubectl set env deployment/agent-<id> -n clawdbot-org-<orgNs> THINKFLEET_SAAS_API_URL=http://saas-socket.thinkfleet-saas.svc.cluster.local:3003
-
-# SaaS pods (for checking internal API health)
-kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
-```
-
-**Key point:** Bot container env vars are baked inline on the K8s deployment spec when the container is first created (by SaaS `container-manager.ts`). They are NOT from a configmap. The `restartContainer()` flow re-syncs env vars before restarting. CI/CD pushes only restart SaaS pods, not bot pods.
-
 ## Project Structure & Module Organization
 - Source code: `src/` (CLI wiring in `src/cli`, commands in `src/commands`, web provider in `src/provider-web.ts`, infra in `src/infra`, media pipeline in `src/media`).
 - Tests: colocated `*.test.ts`.
@@ -107,16 +80,6 @@ kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
 - When you touch docs, end the reply with the `https://docs.thinkfleet.dev/...` URLs you referenced.
 - README (GitHub): keep absolute docs URLs (`https://docs.thinkfleet.dev/...`) so links work on GitHub.
 - Docs content must be generic: no personal device names/hostnames/paths; use placeholders like `user@gateway-host` and “gateway host”.
-
-## exe.dev VM ops (general)
-- Access: stable path is `ssh exe.dev` then `ssh vm-name` (assume SSH key already set).
-- SSH flaky: use exe.dev web terminal or Shelley (web agent); keep a tmux session for long ops.
-- Update: `sudo npm i -g thinkfleetbot@latest` (global install needs root on `/usr/lib/node_modules`).
-- Config: use `thinkfleetbot config set ...`; ensure `gateway.mode=local` is set.
-- Discord: store raw token only (no `DISCORD_BOT_TOKEN=` prefix).
-- Restart: stop old gateway and run:
-  `pkill -9 -f thinkfleetbot-gateway || true; nohup thinkfleetbot gateway run --bind loopback --port 18789 --force > /tmp/thinkfleetbot-gateway.log 2>&1 &`
-- Verify: `thinkfleetbot channels status --probe`, `ss -ltnp | rg 18789`, `tail -n 120 /tmp/thinkfleetbot-gateway.log`.
 
 ## Build, Test, and Development Commands
 - Runtime baseline: Node **22+** (keep Node + Bun paths working).
@@ -192,7 +155,7 @@ kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
 ## Agent-Specific Notes
 - Vocabulary: "makeup" = "mac app".
 - Never edit `node_modules` (global/Homebrew/npm/git installs too). Updates overwrite. Skill notes go in `tools.md` or `AGENTS.md`.
-- Signal: "update fly" => `fly ssh console -a flawd-bot -C "bash -lc 'cd /data/clawd/thinkfleetbot && git pull --rebase origin main'"` then `fly machines restart e825232f34d058 -a flawd-bot`.
+- Signal: update the bot deployment by pulling and restarting the service.
 - When working on a GitHub Issue or PR, print the full URL at the end of the task.
 - When answering questions, respond with high-confidence answers only: verify in code; do not guess.
 - Never update the Carbon dependency.
@@ -237,10 +200,3 @@ kubectl logs -n thinkfleet-saas deployment/saas-socket --tail=50
 - For manual `thinkfleetbot message send` messages that include `!`, use the heredoc pattern noted below to avoid the Bash tool’s escaping.
 - Release guardrails: do not change version numbers without operator’s explicit consent; always ask permission before running any npm publish/release step.
 
-## NPM + 1Password (publish/verify)
-- Use the 1password skill; all `op` commands must run inside a fresh tmux session.
-- Sign in: `eval "$(op signin --account my.1password.com)"` (app unlocked + integration on).
-- OTP: `op read 'op://Private/Npmjs/one-time password?attribute=otp'`.
-- Publish: `npm publish --access public --otp="<otp>"` (run from the package dir).
-- Verify without local npmrc side effects: `npm view <pkg> version --userconfig "$(mktemp)"`.
-- Kill the tmux session after publish.

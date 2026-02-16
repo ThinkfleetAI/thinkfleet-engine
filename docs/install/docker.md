@@ -54,7 +54,7 @@ After it finishes:
 
 It writes config/workspace on the host:
 - `~/.thinkfleetbot/`
-- `~/clawd`
+- `~/thinkfleet`
 
 Running on a VPS? See [Hetzner (Docker VPS)](/platforms/hetzner).
 
@@ -437,7 +437,7 @@ Example:
 
 ## Troubleshooting
 
-- Image missing: build with [`scripts/sandbox-setup.sh`](https://github.com/thinkfleetbot/thinkfleetbot/blob/main/scripts/sandbox-setup.sh) or set `agents.defaults.sandbox.docker.image`.
+- Image missing: build with [`scripts/sandbox-setup.sh`](https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/scripts/sandbox-setup.sh) or set `agents.defaults.sandbox.docker.image`.
 - Container not running: it will auto-create per session on demand.
 - Permission errors in sandbox: set `docker.user` to a UID:GID that matches your
   mounted workspace ownership (or chown the workspace folder).

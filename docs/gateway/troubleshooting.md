@@ -325,8 +325,8 @@ thinkfleetbot logs --follow | grep "pairing request"
 Known issue: When you send an image with ONLY a mention (no other text), WhatsApp sometimes doesn't include the mention metadata.
 
 **Workaround:** Add some text with the mention:
-- ❌ `@clawd` + image
-- ✅ `@clawd check this` + image
+- ❌ `@thinkfleet` + image
+- ✅ `@thinkfleet check this` + image
 
 ### Session Not Resuming
 
@@ -580,7 +580,7 @@ tccutil reset All bot.molt.mac.debug
 ```
 
 **Fix 2: Force New Bundle ID**
-If resetting doesn't work, change the `BUNDLE_ID` in [`scripts/package-mac-app.sh`](https://github.com/thinkfleetbot/thinkfleetbot/blob/main/scripts/package-mac-app.sh) (e.g., add a `.test` suffix) and rebuild. This forces macOS to treat it as a new app.
+If resetting doesn't work, change the `BUNDLE_ID` in [`scripts/package-mac-app.sh`](https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/scripts/package-mac-app.sh) (e.g., add a `.test` suffix) and rebuild. This forces macOS to treat it as a new app.
 
 ### Gateway stuck on "Starting..."
 

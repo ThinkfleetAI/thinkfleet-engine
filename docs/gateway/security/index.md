@@ -572,7 +572,7 @@ Important: `tools.elevated` is the global baseline escape hatch that runs exec o
 Enabling browser control gives the model the ability to drive a real browser.
 If that browser profile already contains logged-in sessions, the model can
 access those accounts and data. Treat browser profiles as **sensitive state**:
-- Prefer a dedicated profile for the agent (the default `clawd` profile).
+- Prefer a dedicated profile for the agent (the default `managed` profile).
 - Avoid pointing the agent at your personal daily-driver profile.
 - Keep host browser control disabled for sandboxed agents unless you trust them.
 - Treat browser downloads as untrusted input; prefer an isolated downloads directory.
@@ -602,7 +602,7 @@ Common use cases:
     list: [
       {
         id: "personal",
-        workspace: "~/clawd-personal",
+        workspace: "~/thinkfleet-personal",
         sandbox: { mode: "off" }
       }
     ]
@@ -618,7 +618,7 @@ Common use cases:
     list: [
       {
         id: "family",
-        workspace: "~/clawd-family",
+        workspace: "~/thinkfleet-family",
         sandbox: {
           mode: "all",
           scope: "agent",
@@ -642,7 +642,7 @@ Common use cases:
     list: [
       {
         id: "public",
-        workspace: "~/clawd-public",
+        workspace: "~/thinkfleet-public",
         sandbox: {
           mode: "all",
           scope: "agent",

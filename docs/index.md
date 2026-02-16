@@ -8,7 +8,7 @@ read_when:
 > *"EXFOLIATE! EXFOLIATE!"* — A space lobster, probably
 
 <p align="center">
-  <img src="whatsapp-clawd.jpg" alt="ThinkFleetBot" width="420" />
+  <img src="whatsapp-thinkfleet.jpg" alt="ThinkFleetBot" width="420" />
 </p>
 
 <p align="center">
@@ -18,10 +18,10 @@ read_when:
 </p>
 
 <p align="center">
-  <a href="https://github.com/thinkfleetbot/thinkfleetbot">GitHub</a> ·
-  <a href="https://github.com/thinkfleetbot/thinkfleetbot/releases">Releases</a> ·
+  <a href="https://github.com/thinkfleetbot/thinkfleet-engine">GitHub</a> ·
+  <a href="https://github.com/thinkfleetbot/thinkfleet-engine/releases">Releases</a> ·
   <a href="/">Docs</a> ·
-  <a href="/start/clawd">ThinkFleetBot assistant setup</a>
+  <a href="/start/assistant">ThinkFleetBot assistant setup</a>
 </p>
 
 ThinkFleetBot bridges WhatsApp (via WhatsApp Web / Baileys), Telegram (Bot API / grammY), Discord (Bot API / channels.discord.js), and iMessage (imsg CLI) to coding agents like [Pi](https://github.com/badlogic/pi-mono). Plugins add Mattermost (Bot API + WebSocket) and more.
@@ -120,7 +120,7 @@ Switching between npm and git installs later is easy: install the other flavor a
 From source (development):
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleetbot.git
+git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
@@ -161,7 +161,7 @@ Example:
       groups: { "*": { requireMention: true } }
     }
   },
-  messages: { groupChat: { mentionPatterns: ["@clawd"] } }
+  messages: { groupChat: { mentionPatterns: ["@thinkfleet"] } }
 }
 ```
 
@@ -177,7 +177,7 @@ Example:
   - [Updating / rollback](/install/updating)
   - [Pairing (DM + nodes)](/start/pairing)
   - [Nix mode](/install/nix)
-  - [ThinkFleetBot assistant setup (ThinkFleet)](/start/clawd)
+  - [ThinkFleetBot assistant setup (ThinkFleet)](/start/assistant)
   - [Skills](/tools/skills)
   - [Skills config](/tools/skills-config)
   - [Workspace templates](/reference/templates/AGENTS)
@@ -224,7 +224,7 @@ Example:
 
 - **Peter Steinberger** ([@steipete](https://twitter.com/steipete)) — Creator, lobster whisperer
 - **Mario Zechner** ([@badlogicc](https://twitter.com/badlogicgames)) — Pi creator, security pen-tester
-- **Clawd** — The space lobster who demanded a better name
+- **Molty** — The space lobster who demanded a better name
 
 ## Core Contributors
 

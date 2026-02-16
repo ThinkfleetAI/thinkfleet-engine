@@ -5,10 +5,10 @@ import { describe, expect, it } from "vitest";
 import { detectLegacyWorkspaceDirs } from "./doctor-workspace.js";
 
 describe("detectLegacyWorkspaceDirs", () => {
-  it("ignores ~/clawd when it doesn't look like a workspace (e.g. install dir)", () => {
+  it("ignores ~/thinkfleet when it doesn't look like a workspace (e.g. install dir)", () => {
     const home = "/home/user";
     const workspaceDir = "/home/user/thinkfleet";
-    const candidate = path.join(home, "clawd");
+    const candidate = path.join(home, "managed");
 
     const detection = detectLegacyWorkspaceDirs({
       workspaceDir,
@@ -20,10 +20,10 @@ describe("detectLegacyWorkspaceDirs", () => {
     expect(detection.legacyDirs).toEqual([]);
   });
 
-  it("flags ~/clawd when it contains workspace markers", () => {
+  it("flags ~/thinkfleet when it contains workspace markers", () => {
     const home = "/home/user";
     const workspaceDir = "/home/user/thinkfleet";
-    const candidate = path.join(home, "clawd");
+    const candidate = path.join(home, "managed");
     const agentsPath = path.join(candidate, "AGENTS.md");
 
     const detection = detectLegacyWorkspaceDirs({

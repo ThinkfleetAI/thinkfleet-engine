@@ -30,9 +30,9 @@ Enable it in an agent allowlist:
 }
 ```
 
-## Using `clawd.invoke` (Lobster → ThinkFleetBot tools)
+## Using `thinkfleet.invoke` (Lobster → ThinkFleetBot tools)
 
-Some Lobster pipelines may include a `clawd.invoke` step to call back into ThinkFleetBot tools/plugins (for example: `gog` for Google Workspace, `gh` for GitHub, `message.send`, etc.).
+Some Lobster pipelines may include a `thinkfleet.invoke` step to call back into ThinkFleetBot tools/plugins (for example: `gog` for Google Workspace, `gh` for GitHub, `message.send`, etc.).
 
 For this to work, the ThinkFleetBot Gateway must expose the tool bridge endpoint and the target tool must be allowed by policy:
 
@@ -42,7 +42,7 @@ For this to work, the ThinkFleetBot Gateway must expose the tool bridge endpoint
 
 ### Allowlisting recommended
 
-To avoid letting workflows call arbitrary tools, set a tight allowlist on the agent that will be used by `clawd.invoke`.
+To avoid letting workflows call arbitrary tools, set a tight allowlist on the agent that will be used by `thinkfleet.invoke`.
 
 Example (allow only a small set of tools):
 

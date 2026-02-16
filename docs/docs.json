@@ -13,11 +13,11 @@
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/thinkfleetbot/thinkfleetbot"
+      "url": "https://github.com/thinkfleetbot/thinkfleet-engine"
     },
     {
       "name": "Releases",
-      "url": "https://github.com/thinkfleetbot/thinkfleetbot/releases"
+      "url": "https://github.com/thinkfleetbot/thinkfleet-engine/releases"
     }
   ],
   "redirects": [
@@ -350,8 +350,8 @@
       "destination": "/nodes/camera"
     },
     {
-      "source": "/clawd",
-      "destination": "/start/clawd"
+      "source": "/assistant",
+      "destination": "/start/assistant"
     },
     {
       "source": "/thinkfleet-hub",
@@ -824,7 +824,7 @@
           "start/wizard",
           "start/setup",
           "start/pairing",
-          "start/clawd",
+          "start/assistant",
           "start/showcase",
           "start/hubs",
           "start/onboarding",

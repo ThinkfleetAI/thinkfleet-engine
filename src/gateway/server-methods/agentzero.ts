@@ -19,7 +19,7 @@ const AZ_BASE = `http://${AZ_HOST}:${AZ_PORT}`;
 const SAAS_BASE =
   process.env.THINKFLEET_API_URL ||
   process.env.THINKFLEET_PROXY_BASE_URL ||
-  process.env.CLAWDBOT_PROXY_BASE_URL ||
+  process.env.THINKFLEET_PROXY_BASE_URL_LEGACY ||
   "";
 const GATEWAY_TOKEN = process.env.THINKFLEET_GATEWAY_TOKEN || "";
 const AGENT_DB_ID = process.env.THINKFLEET_AGENT_DB_ID || "";

@@ -59,7 +59,7 @@ version_content=$(extract_version_section "$VERSION" "$CHANGELOG_FILE")
 if [[ -z "$version_content" ]]; then
   echo "<h2>ThinkFleetBot $VERSION</h2>"
   echo "<p>Latest ThinkFleetBot update.</p>"
-  echo "<p><a href=\"https://github.com/thinkfleetbot/thinkfleetbot/blob/main/CHANGELOG.md\">View full changelog</a></p>"
+  echo "<p><a href=\"https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/CHANGELOG.md\">View full changelog</a></p>"
   exit 0
 fi
 
@@ -88,4 +88,4 @@ if [[ "$in_list" == true ]]; then
   echo "</ul>"
 fi
 
-echo "<p><a href=\"https://github.com/thinkfleetbot/thinkfleetbot/blob/main/CHANGELOG.md\">View full changelog</a></p>"
+echo "<p><a href=\"https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/CHANGELOG.md\">View full changelog</a></p>"

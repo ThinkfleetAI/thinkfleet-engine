@@ -50,7 +50,7 @@ Then connect:
 ssh <vm-name>.exe.xyz
 ```
 
-Tip: keep this VM **stateful**. ThinkFleetBot stores state under `~/.thinkfleetbot/` and `~/clawd/`.
+Tip: keep this VM **stateful**. ThinkFleetBot stores state under `~/.thinkfleetbot/` and `~/thinkfleet/`.
 
 ## 2) Install prerequisites (on the VM)
 

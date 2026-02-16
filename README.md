@@ -1,7 +1,7 @@
 # ThinkFleet Engine
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Sustainable%20Use-blue.svg?style=for-the-badge" alt="Sustainable Use License"></a>
 </p>
 
 **ThinkFleet Engine** is an open-source AI agent runtime with a plugin SDK. It connects to 15+ messaging channels (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat, and more), supports 340+ skills, and runs on your own devices — self-hosted and fully under your control.

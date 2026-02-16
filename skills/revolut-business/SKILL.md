@@ -22,7 +22,7 @@ Walks you through everything: key generation, Revolut certificate upload, OAuth 
 ### Manual Setup
 - Python 3.10+, `pip install PyJWT cryptography`
 - Revolut Business account with API certificate
-- See [README](https://github.com/christianhaberl/revolut-openclaw-skill) for detailed step-by-step guide
+- See [README](https://github.com/christianhaberl/revolut-thinkfleet-skill) for detailed step-by-step guide
 
 ### Credentials
 Stored in `~/.thinkfleet/revolut/`:

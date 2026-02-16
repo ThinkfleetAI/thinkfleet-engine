@@ -404,10 +404,14 @@ describe("doctor command", () => {
     note.mockClear();
     const homedirSpy = vi.spyOn(os, "homedir").mockReturnValue("/Users/steipete");
     const realExists = fs.existsSync;
-    const legacyPath = path.join("/Users/steipete", "clawd");
+    const legacyPath = path.join("/Users/steipete", "managed");
     const legacyAgentsPath = path.join(legacyPath, "AGENTS.md");
     const existsSpy = vi.spyOn(fs, "existsSync").mockImplementation((value) => {
-      if (value === "/Users/steipete/clawd" || value === legacyPath || value === legacyAgentsPath)
+      if (
+        value === "/Users/steipete/thinkfleet" ||
+        value === legacyPath ||
+        value === legacyAgentsPath
+      )
         return true;
       return realExists(value as never);
     });
@@ -424,7 +428,7 @@ describe("doctor command", () => {
     expect(
       note.mock.calls.some(
         ([message, title]) =>
-          title === "Extra workspace" && typeof message === "string" && message.includes("clawd"),
+          title === "Extra workspace" && typeof message === "string" && message.includes("managed"),
       ),
     ).toBe(true);
 

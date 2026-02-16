@@ -23,7 +23,7 @@ nav:
   - title: "Home"
     url: "/"
   - title: "ThinkFleetBot Assistant"
-    url: "/start/clawd/"
+    url: "/start/assistant/"
   - title: "Gateway"
     url: "/gateway/"
   - title: "Remote"

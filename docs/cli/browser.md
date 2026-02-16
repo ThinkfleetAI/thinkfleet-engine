@@ -26,15 +26,15 @@ Related:
 
 ```bash
 thinkfleetbot browser --browser-profile chrome tabs
-thinkfleetbot browser --browser-profile clawd start
-thinkfleetbot browser --browser-profile clawd open https://example.com
-thinkfleetbot browser --browser-profile clawd snapshot
+thinkfleetbot browser --browser-profile managed start
+thinkfleetbot browser --browser-profile managed open https://example.com
+thinkfleetbot browser --browser-profile managed snapshot
 ```
 
 ## Profiles
 
 Profiles are named browser routing configs. In practice:
-- `clawd`: launches/attaches to a dedicated ThinkFleetBot-managed Chrome instance (isolated user data dir).
+- `managed`: launches/attaches to a dedicated ThinkFleetBot-managed Chrome instance (isolated user data dir).
 - `chrome`: controls your existing Chrome tab(s) via the Chrome extension relay.
 
 ```bash

@@ -25,7 +25,7 @@ description: Deploy ThinkFleetBot on Fly.io
 
 ```bash
 # Clone the repo
-git clone https://github.com/thinkfleetbot/thinkfleetbot.git
+git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
 cd thinkfleetbot
 
 # Create a new Fly app (pick your own name)

@@ -27,7 +27,7 @@ find_bankr() {
   echo "ERROR: bankr.sh not found." >&2
   echo "" >&2
   echo "This skill requires a transaction signer. Options:" >&2
-  echo "1. Install the bankr skill from https://github.com/BankrBot/openclaw-skills" >&2
+  echo "1. Install the bankr skill from https://github.com/BankrBot/thinkfleet-skills" >&2
   echo "2. Modify find_bankr() in this script to use your own wallet/signer" >&2
   echo "" >&2
   echo "The script needs to submit: {to, data, value, chainId} transactions" >&2

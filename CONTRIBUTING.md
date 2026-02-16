@@ -3,9 +3,9 @@
 Welcome aboard!
 
 ## Quick Links
-- **GitHub:** https://github.com/thinkfleetbot/thinkfleetbot
+- **GitHub:** https://github.com/thinkfleetbot/thinkfleet-engine
 - **Discord:** https://discord.gg/qkhbAGHRBT
-- **X/Twitter:** [@steipete](https://x.com/steipete) / [@thinkfleetbot](https://x.com/thinkfleetbot)
+- **X/Twitter:** [@thinkfleetbot](https://x.com/thinkfleetbot)
 
 ## Maintainers
 
@@ -20,7 +20,7 @@ Welcome aboard!
 
 ## How to Contribute
 1. **Bugs & small fixes** → Open a PR!
-2. **New features / architecture** → Start a [GitHub Discussion](https://github.com/thinkfleetbot/thinkfleetbot/discussions) or ask in Discord first
+2. **New features / architecture** → Start a [GitHub Discussion](https://github.com/thinkfleetbot/thinkfleet-engine/discussions) or ask in Discord first
 3. **Questions** → Discord #setup-help
 
 ## Before You PR
@@ -49,4 +49,12 @@ We are currently prioritizing:
 - **Skills**: Expanding the library of bundled skills and improving the Skill Creation developer experience.
 - **Performance**: Optimizing token usage and compaction logic.
 
-Check the [GitHub Issues](https://github.com/thinkfleetbot/thinkfleetbot/issues) for "good first issue" labels!
+Check the [GitHub Issues](https://github.com/thinkfleetbot/thinkfleet-engine/issues) for "good first issue" labels!
+
+## Developer Certificate of Origin (DCO)
+
+By contributing to this project, you certify that your contribution was created in whole or in part by you and you have the right to submit it under the project's license (Sustainable Use License). All contributions are subject to the same license as the project.
+
+## License Note
+
+This project uses the [Sustainable Use License](LICENSE). By submitting a pull request, you agree that your contributions will be licensed under the same terms. Files matching the `.ee.` pattern are covered by the [Enterprise License](LICENSE_EE.md).

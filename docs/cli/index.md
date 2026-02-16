@@ -279,7 +279,7 @@ Highlights:
 Initialize config + workspace.
 
 Options:
-- `--workspace <dir>`: agent workspace path (default `~/clawd`).
+- `--workspace <dir>`: agent workspace path (default `~/thinkfleet`).
 - `--wizard`: run the onboarding wizard.
 - `--non-interactive`: run wizard without prompts.
 - `--mode <local|remote>`: wizard mode.

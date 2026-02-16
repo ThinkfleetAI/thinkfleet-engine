@@ -71,3 +71,12 @@ USER.md
 
 # local tooling
 .serena/
+
+# Security - prevent accidental secret commits
+*.pem
+*.key
+credentials.json
+token.json
+.cursorrules
+.agent/
+OPERATIONS.md

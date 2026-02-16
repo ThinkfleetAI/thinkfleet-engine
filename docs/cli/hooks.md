@@ -232,7 +232,7 @@ Saves session context to memory when you issue `/new`.
 thinkfleetbot hooks enable session-memory
 ```
 
-**Output:** `~/clawd/memory/YYYY-MM-DD-slug.md`
+**Output:** `~/thinkfleet/memory/YYYY-MM-DD-slug.md`
 
 **See:** [session-memory documentation](/hooks#session-memory)
 

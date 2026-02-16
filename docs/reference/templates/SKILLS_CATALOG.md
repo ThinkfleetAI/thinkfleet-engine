@@ -171,7 +171,7 @@
 - **fal-api** — Generate images, videos, and audio via fal.ai API (FLUX, SD…
 - **krea-api** — Generate images via Krea.ai API (Flux, Imagen, Ideogram, Se…
 - **⚡ n8n** — Manage n8n workflows — list, execute, activate/deactivate, …
-- **n8n-automation** — Manage n8n workflows from OpenClaw via the n8n REST API. Us…
+- **n8n-automation** — Manage n8n workflows from ThinkFleet via the n8n REST API. Us…
 - **web-scraping** — Web scraping and data extraction from websites
 - **🪝 webhook-trigger** — Send HTTP requests to webhooks and APIs using curl. Support…
 
@@ -230,7 +230,7 @@
 - **excel** — Read, write, edit, and format Excel files (.xlsx). Create s…
 - **excel-online** — Read and write Excel files via Microsoft Graph API. Manage …
 - **📘 facebook** — Query Facebook — pages, posts, insights, and comments via t…
-- **feishu-bridge** — Connect a Feishu (Lark) bot to Clawdbot via WebSocket long-…
+- **feishu-bridge** — Connect a Feishu (Lark) bot to ThinkFleet Engine via WebSocket long-…
 - **figma** — Professional Figma design analysis and asset export. Use fo…
 - **🔥 firebase** — Manage Firebase — Firestore documents, Realtime Database, a…
 - **fitbit-analytics** — Fitbit health and fitness data integration. Fetch steps, he…

@@ -11,7 +11,7 @@ This guide migrates a ThinkFleetBot Gateway from one machine to another **withou
 The migration is simple conceptually:
 
 - Copy the **state directory** (`$THINKFLEETBOT_STATE_DIR`, default: `~/.thinkfleetbot/`) — this includes config, auth, sessions, and channel state.
-- Copy your **workspace** (`~/clawd/` by default) — this includes your agent files (memory, prompts, etc.).
+- Copy your **workspace** (`~/thinkfleet/` by default) — this includes your agent files (memory, prompts, etc.).
 
 But there are common footguns around **profiles**, **permissions**, and **partial copies**.
 
@@ -40,7 +40,7 @@ Look for mentions of `THINKFLEETBOT_STATE_DIR` / profile in the output. If you r
 
 Common defaults:
 
-- `~/clawd/` (recommended workspace)
+- `~/thinkfleet/` (recommended workspace)
 - a custom folder you created
 
 Your workspace is where files like `MEMORY.md`, `USER.md`, and `memory/*.md` live.
@@ -80,7 +80,7 @@ thinkfleetbot gateway stop
 cd ~
 tar -czf thinkfleetbot-state.tgz .thinkfleetbot
 
-tar -czf clawd-workspace.tgz clawd
+tar -czf thinkfleet-workspace.tgz thinkfleet
 ```
 
 If you have multiple profiles/state dirs (e.g. `~/.thinkfleetbot-main`, `~/.thinkfleetbot-work`), archive each.
@@ -98,7 +98,7 @@ At this stage, it’s OK if onboarding creates a fresh `~/.thinkfleetbot/` — y
 Copy **both**:
 
 - `$THINKFLEETBOT_STATE_DIR` (default `~/.thinkfleetbot/`)
-- your workspace (default `~/clawd/`)
+- your workspace (default `~/thinkfleet/`)
 
 Common approaches:
 

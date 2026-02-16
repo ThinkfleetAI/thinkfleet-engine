@@ -67,7 +67,7 @@ Only the owner number (from `channels.whatsapp.allowFrom`, or the bot’s own E.
 
 ## Testing / verification
 - Manual smoke:
-  - Send an `@clawd` ping in the group and confirm a reply that references the sender name.
+  - Send an `@thinkfleet` ping in the group and confirm a reply that references the sender name.
   - Send a second ping and verify the history block is included then cleared on the next turn.
 - Check gateway logs (run with `--verbose`) to see `inbound web message` entries showing `from: <groupJid>` and the `[from: …]` suffix.
 

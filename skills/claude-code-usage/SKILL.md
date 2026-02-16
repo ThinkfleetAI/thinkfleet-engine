@@ -185,7 +185,7 @@ Or add via ThinkFleetBot directly:
 ```bash
 # Check every 30 minutes
 thinkfleetbot cron add --cron "*/30 * * * *" \
-  --message "cd /Users/ali/clawd/skills/claude-code-usage && ./scripts/monitor-usage.sh" \
+  --message "cd /Users/ali/thinkfleet/skills/claude-code-usage && ./scripts/monitor-usage.sh" \
   --name "Claude Code Usage Monitor" \
   --session isolated --deliver --channel telegram
 ```

@@ -168,7 +168,7 @@ describe("buildSlackSlashCommandMatcher", () => {
   it("does not match similar names", () => {
     const matcher = buildSlackSlashCommandMatcher("thinkfleet");
 
-    expect(matcher.test("/clawd-bot")).toBe(false);
+    expect(matcher.test("/thinkfleet-bot")).toBe(false);
     expect(matcher.test("thinkfleet-bot")).toBe(false);
   });
 });

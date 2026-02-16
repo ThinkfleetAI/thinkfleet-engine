@@ -18,7 +18,7 @@ Use these hubs to discover every page, including deep dives and reference docs t
 - [Help](/help)
 - [Configuration](/gateway/configuration)
 - [Configuration examples](/gateway/configuration-examples)
-- [ThinkFleetBot assistant (ThinkFleet)](/start/clawd)
+- [ThinkFleetBot assistant (ThinkFleet)](/start/assistant)
 - [Showcase](/start/showcase)
 - [Lore](/start/lore)
 

@@ -133,7 +133,7 @@ Refer to this when you need specific voice details or advanced features.
 To use the bundled scripts:
 
 ```bash
-cd /home/user/clawd/skills/public/tts-skill/scripts
+cd /home/user/thinkfleet/skills/public/tts-skill/scripts
 npm install
 ```
 
@@ -153,7 +153,7 @@ This installs:
 ### Basic Test
 Run the test script to verify TTS functionality:
 ```bash
-cd /home/user/clawd/skills/public/edge-tts/scripts
+cd /home/user/thinkfleet/skills/public/edge-tts/scripts
 npm test
 ```
 This generates a test audio file and verifies the TTS service is working.
@@ -171,7 +171,7 @@ tts("This is a test of the TTS functionality.")
 ### Configuration Test
 Verify configuration persistence:
 ```bash
-cd /home/user/clawd/skills/public/edge-tts/scripts
+cd /home/user/thinkfleet/skills/public/edge-tts/scripts
 node config-manager.js --get
 node config-manager.js --set-voice en-US-GuyNeural
 node config-manager.js --get

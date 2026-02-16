@@ -21,7 +21,7 @@ import { getAccessToken } from "../../saas/oauth-token-client.js";
 const SAAS_BASE =
   process.env.THINKFLEET_API_URL ||
   process.env.THINKFLEET_PROXY_BASE_URL ||
-  process.env.CLAWDBOT_PROXY_BASE_URL ||
+  process.env.THINKFLEET_PROXY_BASE_URL_LEGACY ||
   "";
 const AGENT_DB_ID = process.env.THINKFLEET_AGENT_DB_ID || "";
 

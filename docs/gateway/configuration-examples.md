@@ -14,7 +14,7 @@ Examples below are aligned with the current config schema. For the exhaustive re
 ### Absolute minimum
 ```json5
 {
-  agent: { workspace: "~/clawd" },
+  agent: { workspace: "~/thinkfleet" },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } }
 }
 ```
@@ -30,7 +30,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
     emoji: "🦞"
   },
   agent: {
-    workspace: "~/clawd",
+    workspace: "~/thinkfleet",
     model: { primary: "anthropic/claude-sonnet-4-5" }
   },
   channels: {
@@ -102,7 +102,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
   // Routing + queue
   routing: {
     groupChat: {
-      mentionPatterns: ["@clawd", "thinkfleetbot"],
+      mentionPatterns: ["@thinkfleet", "thinkfleetbot"],
       historyLimit: 50
     },
     queue: {
@@ -190,7 +190,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
       dm: { enabled: true, allowFrom: ["steipete"] },
       guilds: {
         "123456789012345678": {
-          slug: "friends-of-clawd",
+          slug: "friends-of-thinkfleet",
           requireMention: false,
           channels: {
             general: { allow: true },
@@ -210,7 +210,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
         enabled: true,
-        name: "clawd",
+        name: "thinkfleet",
         sessionPrefix: "slack:slash",
         ephemeral: true
       }
@@ -220,7 +220,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
   // Agent runtime
   agents: {
     defaults: {
-      workspace: "~/clawd",
+      workspace: "~/thinkfleet",
       userTimezone: "America/Chicago",
       model: {
         primary: "anthropic/claude-sonnet-4-5",
@@ -425,7 +425,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
 ### Multi-platform setup
 ```json5
 {
-  agent: { workspace: "~/clawd" },
+  agent: { workspace: "~/thinkfleet" },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -462,7 +462,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
     }
   },
   agent: {
-    workspace: "~/clawd",
+    workspace: "~/thinkfleet",
     model: {
       primary: "anthropic/claude-sonnet-4-5",
       fallbacks: ["anthropic/claude-opus-4-5"]
@@ -500,7 +500,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
     }
   },
   agent: {
-    workspace: "~/clawd",
+    workspace: "~/thinkfleet",
     model: {
       primary: "anthropic/claude-opus-4-5",
       fallbacks: ["minimax/MiniMax-M2.1"]
@@ -517,7 +517,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
     theme: "professional assistant"
   },
   agent: {
-    workspace: "~/work-clawd",
+    workspace: "~/thinkfleet-work",
     elevated: { enabled: false }
   },
   channels: {
@@ -537,7 +537,7 @@ Save to `~/.thinkfleetbot/thinkfleetbot.json` and you can DM the bot from that n
 ```json5
 {
   agent: {
-    workspace: "~/clawd",
+    workspace: "~/thinkfleet",
     model: { primary: "lmstudio/minimax-m2.1-gs32" }
   },
   models: {

@@ -66,7 +66,7 @@ export function detectLegacyWorkspaceDirs(params: {
   const exists = params.exists ?? fs.existsSync;
   const home = homedir();
   const activeWorkspace = path.resolve(params.workspaceDir);
-  const candidates = [path.join(home, "clawd")];
+  const candidates = [path.join(home, "managed")];
   const legacyDirs = candidates
     .filter((candidate) => {
       if (!exists(candidate)) return false;

@@ -11,7 +11,7 @@ transcribe audio files using openai's gpt-4o-mini-transcribe model.
 
 when receiving voice memos (especially via whatsapp), just run:
 ```bash
-uv run /Users/darin/clawd/skills/voice-transcribe/transcribe <audio-file>
+uv run /Users/darin/thinkfleet/skills/voice-transcribe/transcribe <audio-file>
 ```
 then respond based on the transcribed content.
 
@@ -35,7 +35,7 @@ transcribe /tmp/memo.ogg | pbcopy
 
 ## setup
 
-1. add your openai api key to `/Users/darin/clawd/skills/voice-transcribe/.env`:
+1. add your openai api key to `/Users/darin/thinkfleet/skills/voice-transcribe/.env`:
    ```
    OPENAI_API_KEY=sk-...
    ```
@@ -44,7 +44,7 @@ transcribe /tmp/memo.ogg | pbcopy
 
 add words to `vocab.txt` (one per line) to help the model recognize names/jargon:
 ```
-Clawdis
+ThinkFleetis
 ThinkFleet
 ```
 

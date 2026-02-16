@@ -92,9 +92,9 @@ vi.mock("../config/config.js", async (importOriginal) => {
         color: "#FF4500",
         attachOnly: cfgAttachOnly,
         headless: true,
-        defaultProfile: "clawd",
+        defaultProfile: "managed",
         profiles: {
-          clawd: { cdpPort: testPort + 1, color: "#FF4500" },
+          managed: { cdpPort: testPort + 1, color: "#FF4500" },
         },
       },
     }),
@@ -106,7 +106,7 @@ const launchCalls = vi.hoisted(() => [] as Array<{ port: number }>);
 vi.mock("./chrome.js", () => ({
   isChromeCdpReady: vi.fn(async () => reachable),
   isChromeReachable: vi.fn(async () => reachable),
-  launchClawdChrome: vi.fn(async (_resolved: unknown, profile: { cdpPort: number }) => {
+  launchManagedChrome: vi.fn(async (_resolved: unknown, profile: { cdpPort: number }) => {
     launchCalls.push({ port: profile.cdpPort });
     reachable = true;
     return {
@@ -118,8 +118,8 @@ vi.mock("./chrome.js", () => ({
       proc,
     };
   }),
-  resolveClawdUserDataDir: vi.fn(() => "/tmp/thinkfleet"),
-  stopClawdChrome: vi.fn(async () => {
+  resolveManagedUserDataDir: vi.fn(() => "/tmp/thinkfleet"),
+  stopManagedChrome: vi.fn(async () => {
     reachable = false;
   }),
 }));
@@ -368,8 +368,8 @@ describe("backward compatibility (profile parameter)", () => {
       profile?: string;
     };
     expect(status.running).toBe(false);
-    // Should use default profile (clawd)
-    expect(status.profile).toBe("clawd");
+    // Should use default profile managed
+    expect(status.profile).toBe("managed");
   });
 
   it("POST /start without profile uses default profile", async () => {
@@ -382,7 +382,7 @@ describe("backward compatibility (profile parameter)", () => {
       profile?: string;
     };
     expect(result.ok).toBe(true);
-    expect(result.profile).toBe("clawd");
+    expect(result.profile).toBe("managed");
   });
 
   it("POST /stop without profile uses default profile", async () => {
@@ -397,7 +397,7 @@ describe("backward compatibility (profile parameter)", () => {
       profile?: string;
     };
     expect(result.ok).toBe(true);
-    expect(result.profile).toBe("clawd");
+    expect(result.profile).toBe("managed");
   });
 
   it("GET /tabs without profile uses default profile", async () => {
@@ -439,18 +439,18 @@ describe("backward compatibility (profile parameter)", () => {
       profiles: Array<{ name: string }>;
     };
     expect(Array.isArray(result.profiles)).toBe(true);
-    // Should at least have the default clawd profile
-    expect(result.profiles.some((p) => p.name === "clawd")).toBe(true);
+    // Should at least have the default managed profile
+    expect(result.profiles.some((p) => p.name === "managed")).toBe(true);
   });
 
-  it("GET /tabs?profile=clawd returns tabs for specified profile", async () => {
+  it("GET /tabs?profile=managed returns tabs for specified profile", async () => {
     const { startBrowserControlServerFromConfig } = await import("./server.js");
     await startBrowserControlServerFromConfig();
     const base = `http://127.0.0.1:${testPort}`;
 
     await realFetch(`${base}/start`, { method: "POST" });
 
-    const result = (await realFetch(`${base}/tabs?profile=clawd`).then((r) => r.json())) as {
+    const result = (await realFetch(`${base}/tabs?profile=managed`).then((r) => r.json())) as {
       running: boolean;
       tabs: unknown[];
     };
@@ -458,14 +458,14 @@ describe("backward compatibility (profile parameter)", () => {
     expect(Array.isArray(result.tabs)).toBe(true);
   });
 
-  it("POST /tabs/open?profile=clawd opens tab in specified profile", async () => {
+  it("POST /tabs/open?profile=managed opens tab in specified profile", async () => {
     const { startBrowserControlServerFromConfig } = await import("./server.js");
     await startBrowserControlServerFromConfig();
     const base = `http://127.0.0.1:${testPort}`;
 
     await realFetch(`${base}/start`, { method: "POST" });
 
-    const result = (await realFetch(`${base}/tabs/open?profile=clawd`, {
+    const result = (await realFetch(`${base}/tabs/open?profile=managed`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url: "https://example.com" }),

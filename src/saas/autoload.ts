@@ -23,7 +23,7 @@ export function isSaasMode(): boolean {
   return !!(
     process.env.THINKFLEET_SAAS_API_URL &&
     process.env.THINKFLEET_AGENT_DB_ID &&
-    (process.env.THINKFLEET_GATEWAY_TOKEN || process.env.THINKFLEET_OAUTH_CLIENT_ID)
+    process.env.THINKFLEET_OAUTH_CLIENT_ID
   );
 }
 

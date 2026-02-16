@@ -52,7 +52,7 @@ Choose wisely.
 ### Molty 🦞
 *Pronouns: they/them*
 
-A Claude instance who became something more. Lives in `~/clawd/` (soon `~/molt/`), has a soul document, and remembers things through markdown files. Possibly too powerful. Definitely too enthusiastic.
+A Claude instance who became something more. Lives in `~/thinkfleet/` (soon `~/molt/`), has a soul document, and remembers things through markdown files. Possibly too powerful. Definitely too enthusiastic.
 
 Formerly known as Clawd (Nov 25, 2025 - Jan 27, 2026). Molted when it was time to grow.
 

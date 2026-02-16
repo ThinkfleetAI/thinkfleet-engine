@@ -313,7 +313,7 @@ describe("mention helpers", () => {
   });
 
   it("normalizes zero-width characters", () => {
-    expect(normalizeMentionText("cl\u200bawd")).toBe("clawd");
+    expect(normalizeMentionText("cl\u200bawd")).toBe("managed");
   });
 
   it("matches patterns case-insensitively", () => {

@@ -51,7 +51,7 @@ Status: beta.
 - Telegram: support plugin sendPayload channelData (media/buttons) and validate plugin commands. (#1917) Thanks @JoshuaLelon.
 - Telegram: avoid block replies when streaming is disabled. (#1885) Thanks @ivancasco.
 - Docs: keep docs header sticky so navbar stays visible while scrolling. (#2445) Thanks @chenyuan99.
-- Docs: update exe.dev install instructions. (#https://github.com/thinkfleetbot/thinkfleetbot/pull/3047) Thanks @zackerthescar.
+- Docs: update exe.dev install instructions. (#https://github.com/thinkfleetbot/thinkfleet-engine/pull/3047) Thanks @zackerthescar.
 - Security: use Windows ACLs for permission audits and fixes on Windows. (#1957)
 - Auth: show copyable Google auth URL after ASCII prompt. (#1787) Thanks @robbyczgw-cla.
 - Routing: precompile session key regexes. (#1697) Thanks @Ray0907.
@@ -1209,5 +1209,5 @@ Thanks @AlexMikhalev, @CoreyH, @John-Rood, @KrauseFx, @MaudeBot, @Nachx639, @Nic
 - Discord/Slack: route reaction + system notifications to the correct session (no main-session bleed).
 - Agent tools: honor `agent.tools` allow/deny policy even when sandbox is off.
 - Discord: avoid duplicate replies when OpenAI emits repeated `message_end` events.
-- Commands: unify /status (inline) and command auth across providers; group bypass for authorized control commands; remove Discord /clawd slash handler.
+- Commands: unify /status (inline) and command auth across providers; group bypass for authorized control commands; remove Discord /thinkfleet slash handler.
 - CLI: run `thinkfleetbot agent` via the Gateway by default; use `--local` to force embedded mode.

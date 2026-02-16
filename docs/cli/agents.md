@@ -16,16 +16,16 @@ Related:
 
 ```bash
 thinkfleetbot agents list
-thinkfleetbot agents add work --workspace ~/clawd-work
-thinkfleetbot agents set-identity --workspace ~/clawd --from-identity
-thinkfleetbot agents set-identity --agent main --avatar avatars/clawd.png
+thinkfleetbot agents add work --workspace ~/thinkfleet-work
+thinkfleetbot agents set-identity --workspace ~/thinkfleet --from-identity
+thinkfleetbot agents set-identity --agent main --avatar avatars/thinkfleet.png
 thinkfleetbot agents delete work
 ```
 
 ## Identity files
 
 Each agent workspace can include an `IDENTITY.md` at the workspace root:
-- Example path: `~/clawd/IDENTITY.md`
+- Example path: `~/thinkfleet/IDENTITY.md`
 - `set-identity --from-identity` reads from the workspace root (or an explicit `--identity-file`)
 
 Avatar paths resolve relative to the workspace root.
@@ -41,13 +41,13 @@ Avatar paths resolve relative to the workspace root.
 Load from `IDENTITY.md`:
 
 ```bash
-thinkfleetbot agents set-identity --workspace ~/clawd --from-identity
+thinkfleetbot agents set-identity --workspace ~/thinkfleet --from-identity
 ```
 
 Override fields explicitly:
 
 ```bash
-thinkfleetbot agents set-identity --agent main --name "ThinkFleet" --emoji "🦞" --avatar avatars/clawd.png
+thinkfleetbot agents set-identity --agent main --name "ThinkFleet" --emoji "🦞" --avatar avatars/thinkfleet.png
 ```
 
 Config sample:
@@ -62,7 +62,7 @@ Config sample:
           name: "ThinkFleet",
           theme: "space lobster",
           emoji: "🦞",
-          avatar: "avatars/clawd.png"
+          avatar: "avatars/thinkfleet.png"
         }
       }
     ]

@@ -14,12 +14,15 @@ import {
   resolveBrowserExecutableForPlatform,
 } from "./chrome.executables.js";
 import {
-  decorateClawdProfile,
+  decorateManagedProfile,
   ensureProfileCleanExit,
   isProfileDecorated,
 } from "./chrome.profile-decoration.js";
 import type { ResolvedBrowserConfig, ResolvedBrowserProfile } from "./config.js";
-import { DEFAULT_CLAWD_BROWSER_COLOR, DEFAULT_CLAWD_BROWSER_PROFILE_NAME } from "./constants.js";
+import {
+  DEFAULT_MANAGED_BROWSER_COLOR,
+  DEFAULT_MANAGED_BROWSER_PROFILE_NAME,
+} from "./constants.js";
 
 const log = createSubsystemLogger("browser").child("chrome");
 
@@ -31,7 +34,7 @@ export {
   resolveBrowserExecutableForPlatform,
 } from "./chrome.executables.js";
 export {
-  decorateClawdProfile,
+  decorateManagedProfile,
   ensureProfileCleanExit,
   isProfileDecorated,
 } from "./chrome.profile-decoration.js";
@@ -57,7 +60,7 @@ function resolveBrowserExecutable(resolved: ResolvedBrowserConfig): BrowserExecu
   return resolveBrowserExecutableForPlatform(resolved, process.platform);
 }
 
-export function resolveClawdUserDataDir(profileName = DEFAULT_CLAWD_BROWSER_PROFILE_NAME) {
+export function resolveManagedUserDataDir(profileName = DEFAULT_MANAGED_BROWSER_PROFILE_NAME) {
   return path.join(CONFIG_DIR, "browser", profileName, "user-data");
 }
 
@@ -150,7 +153,7 @@ export async function isChromeCdpReady(
   return await canOpenWebSocket(wsUrl, handshakeTimeoutMs);
 }
 
-export async function launchClawdChrome(
+export async function launchManagedChrome(
   resolved: ResolvedBrowserConfig,
   profile: ResolvedBrowserProfile,
 ): Promise<RunningChrome> {
@@ -166,13 +169,13 @@ export async function launchClawdChrome(
     );
   }
 
-  const userDataDir = resolveClawdUserDataDir(profile.name);
+  const userDataDir = resolveManagedUserDataDir(profile.name);
   fs.mkdirSync(userDataDir, { recursive: true });
 
   const needsDecorate = !isProfileDecorated(
     userDataDir,
     profile.name,
-    (profile.color ?? DEFAULT_CLAWD_BROWSER_COLOR).toUpperCase(),
+    (profile.color ?? DEFAULT_MANAGED_BROWSER_COLOR).toUpperCase(),
   );
 
   // First launch to create preference files if missing, then decorate and relaunch.
@@ -246,7 +249,7 @@ export async function launchClawdChrome(
 
   if (needsDecorate) {
     try {
-      decorateClawdProfile(userDataDir, {
+      decorateManagedProfile(userDataDir, {
         name: profile.name,
         color: profile.color,
       });
@@ -296,7 +299,7 @@ export async function launchClawdChrome(
   };
 }
 
-export async function stopClawdChrome(running: RunningChrome, timeoutMs = 2500) {
+export async function stopManagedChrome(running: RunningChrome, timeoutMs = 2500) {
   const proc = running.proc;
   if (proc.killed) return;
   try {

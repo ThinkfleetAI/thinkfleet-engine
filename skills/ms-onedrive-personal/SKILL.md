@@ -42,7 +42,7 @@ Create an app registration (recommended):
 ### 2) Run setup
 On the machine running ThinkFleet:
 ```bash
-cd /root/clawd/skills/ms-onedrive-personal-graph
+cd /root/thinkfleet/skills/ms-onedrive-personal-graph
 ./scripts/onedrive-setup.sh
 ```
 

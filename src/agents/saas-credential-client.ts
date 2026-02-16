@@ -172,13 +172,11 @@ import { getAccessToken } from "../saas/oauth-token-client.js";
 
 const saasApiUrl = process.env.THINKFLEET_SAAS_API_URL;
 const agentDbId = process.env.THINKFLEET_AGENT_DB_ID;
-const gatewayToken = process.env.THINKFLEET_GATEWAY_TOKEN;
-
 /**
- * Returns true if running in SaaS mode (env vars are set).
+ * Returns true if running in SaaS mode (OAuth env vars are set).
  */
 export function isSaasMode(): boolean {
-  return !!(saasApiUrl && agentDbId && (gatewayToken || process.env.THINKFLEET_OAUTH_CLIENT_ID));
+  return !!(saasApiUrl && agentDbId && process.env.THINKFLEET_OAUTH_CLIENT_ID);
 }
 
 /**

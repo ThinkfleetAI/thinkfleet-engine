@@ -32,7 +32,7 @@ run on host, set an explicit per-agent override:
   "routing": {
     "agents": {
       "main": {
-        "workspace": "~/clawd",
+        "workspace": "~/thinkfleet",
         "sandbox": { "mode": "off" }
       }
     }
@@ -166,7 +166,7 @@ Pairing doc: [Pairing](/start/pairing)
 If you’re hacking on ThinkFleetBot itself, run from source:
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleetbot.git
+git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run

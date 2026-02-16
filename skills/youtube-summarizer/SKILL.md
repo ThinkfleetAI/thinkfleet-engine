@@ -20,11 +20,11 @@ Activate this skill when:
 ## Dependencies
 
 **Required:** MCP YouTube Transcript server must be installed at:
-`/root/clawd/mcp-server-youtube-transcript`
+`/root/thinkfleet/mcp-server-youtube-transcript`
 
 If not present, install it:
 ```bash
-cd /root/clawd
+cd /root/thinkfleet
 git clone https://github.com/kimtaeyoon83/mcp-server-youtube-transcript.git
 cd mcp-server-youtube-transcript
 npm install && npm run build
@@ -42,7 +42,7 @@ Extract video ID from these patterns:
 ### 2. Fetch Transcript
 Run this command to get the transcript:
 ```bash
-cd /root/clawd/mcp-server-youtube-transcript && node --input-type=module -e "
+cd /root/thinkfleet/mcp-server-youtube-transcript && node --input-type=module -e "
 import { getSubtitles } from './dist/youtube-fetcher.js';
 const result = await getSubtitles({ videoID: 'VIDEO_ID', lang: 'en' });
 console.log(JSON.stringify(result, null, 2));
@@ -99,7 +99,7 @@ Aim for:
 
 Save the complete transcript to a timestamped file:
 ```
-/root/clawd/transcripts/YYYY-MM-DD_VIDEO_ID.txt
+/root/thinkfleet/transcripts/YYYY-MM-DD_VIDEO_ID.txt
 ```
 
 Include in the file:
@@ -112,7 +112,7 @@ Include in the file:
 **If channel is Telegram:**
 ```bash
 message --action send --channel telegram --target CHAT_ID \
-  --filePath /root/clawd/transcripts/YYYY-MM-DD_VIDEO_ID.txt \
+  --filePath /root/thinkfleet/transcripts/YYYY-MM-DD_VIDEO_ID.txt \
   --caption "📄 YouTube Transcript: [title]"
 ```
 

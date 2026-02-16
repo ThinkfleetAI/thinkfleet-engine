@@ -13,8 +13,9 @@ services:
         value: /data/.thinkfleetbot
       - key: THINKFLEETBOT_WORKSPACE_DIR
         value: /data/workspace
+      # Gateway auth token (set your own secure value)
       - key: THINKFLEETBOT_GATEWAY_TOKEN
-        generateValue: true
+        sync: false
     disk:
       name: thinkfleetbot-data
       mountPath: /data

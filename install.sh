@@ -278,7 +278,7 @@ if [[ "$INSTALL_MODE" == "local" ]]; then
     echo -e "     ${CYAN}$CLI_CMD connect --saas-url <url> --agent-id <id> --token <token>${NC}"
     echo ""
     echo "  This sets THINKFLEET_SAAS_API_URL, THINKFLEET_AGENT_DB_ID,"
-    echo "  and THINKFLEET_GATEWAY_TOKEN in your local config."
+    echo "  and THINKFLEET_OAUTH_CLIENT_ID in your local config."
     echo ""
   fi
 

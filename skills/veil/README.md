@@ -1,7 +1,7 @@
 # Veil skill (draft)
 
 This is a draft skill folder intended for submission to:
-https://github.com/BankrBot/openclaw-skills
+https://github.com/BankrBot/thinkfleet-skills
 
 It wraps the local `veildotcash-sdk` checkout and optionally uses Bankr Agent API to sign & submit the unsigned deposit/register transactions.
 

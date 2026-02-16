@@ -34,7 +34,7 @@ npm install -g thinkfleetbot@latest
 From source (development):
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleetbot.git
+git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
@@ -50,7 +50,7 @@ You want this:
 Your Phone (personal)          Second Phone (assistant)
 ┌─────────────────┐           ┌─────────────────┐
 │  Your WhatsApp  │  ──────▶  │  Assistant WA   │
-│  +1-555-YOU     │  message  │  +1-555-CLAWD   │
+│  +1-555-YOU     │  message  │  +1-555-FLEET   │
 └─────────────────┘           └────────┬────────┘
                                        │ linked via QR
                                        ▼
@@ -93,7 +93,7 @@ When onboarding finishes, we auto-open the dashboard with your gateway token and
 
 ThinkFleet reads operating instructions and "memory" from its workspace directory.
 
-By default, ThinkFleetBot uses `~/clawd` as the agent workspace, and will create it (plus starter `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`) automatically on setup/first agent run. `BOOTSTRAP.md` is only created when the workspace is brand new (it should not come back after you delete it).
+By default, ThinkFleetBot uses `~/thinkfleet` as the agent workspace, and will create it (plus starter `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`) automatically on setup/first agent run. `BOOTSTRAP.md` is only created when the workspace is brand new (it should not come back after you delete it).
 
 Tip: treat this folder like ThinkFleet's "memory" and make it a git repo (ideally private) so your `AGENTS.md` + memory files are backed up. If git is installed, brand-new workspaces are auto-initialized.
 
@@ -109,7 +109,7 @@ Optional: choose a different workspace with `agents.defaults.workspace` (support
 ```json5
 {
   agent: {
-    workspace: "~/clawd"
+    workspace: "~/thinkfleet"
   }
 }
 ```
@@ -138,7 +138,7 @@ Example:
   logging: { level: "info" },
   agent: {
     model: "anthropic/claude-opus-4-5",
-    workspace: "~/clawd",
+    workspace: "~/thinkfleet",
     thinkingDefault: "high",
     timeoutSeconds: 1800,
     // Start with 0; enable later.
@@ -154,7 +154,7 @@ Example:
   },
   routing: {
     groupChat: {
-      mentionPatterns: ["@clawd", "clawd"]
+      mentionPatterns: ["@thinkfleet", "managed"]
     }
   },
   session: {

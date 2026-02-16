@@ -21,7 +21,7 @@ Pricing varies by machine type and region; pick the smallest VM that fits your w
 - Create a Compute Engine VM
 - Install Docker (isolated app runtime)
 - Start the ThinkFleetBot Gateway in Docker
-- Persist `~/.thinkfleetbot` + `~/clawd` on the host (survives restarts/rebuilds)
+- Persist `~/.thinkfleetbot` + `~/thinkfleet` on the host (survives restarts/rebuilds)
 - Access the Control UI from your laptop via an SSH tunnel
 
 The Gateway can be accessed via:
@@ -188,7 +188,7 @@ docker compose version
 ## 6) Clone the ThinkFleetBot repository
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleetbot.git
+git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
 cd thinkfleetbot
 ```
 
@@ -203,7 +203,7 @@ All long-lived state must live on the host.
 
 ```bash
 mkdir -p ~/.thinkfleetbot
-mkdir -p ~/clawd
+mkdir -p ~/thinkfleet
 ```
 
 ---
@@ -219,7 +219,7 @@ THINKFLEETBOT_GATEWAY_BIND=lan
 THINKFLEETBOT_GATEWAY_PORT=18789
 
 THINKFLEETBOT_CONFIG_DIR=/home/$USER/.thinkfleetbot
-THINKFLEETBOT_WORKSPACE_DIR=/home/$USER/clawd
+THINKFLEETBOT_WORKSPACE_DIR=/home/$USER/thinkfleet
 
 GOG_KEYRING_PASSWORD=change-me-now
 XDG_CONFIG_HOME=/home/node/.thinkfleetbot
@@ -259,7 +259,7 @@ services:
       - PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
       - ${THINKFLEETBOT_CONFIG_DIR}:/home/node/.thinkfleetbot
-      - ${THINKFLEETBOT_WORKSPACE_DIR}:/home/node/clawd
+      - ${THINKFLEETBOT_WORKSPACE_DIR}:/home/node/thinkfleet
     ports:
       # Recommended: keep the Gateway loopback-only on the VM; access via SSH tunnel.
       # To expose it publicly, remove the `127.0.0.1:` prefix and firewall accordingly.
@@ -408,7 +408,7 @@ All long-lived state must survive restarts, rebuilds, and reboots.
 | Gateway config | `/home/node/.thinkfleetbot/` | Host volume mount | Includes `thinkfleetbot.json`, tokens |
 | Model auth profiles | `/home/node/.thinkfleetbot/` | Host volume mount | OAuth tokens, API keys |
 | Skill configs | `/home/node/.thinkfleetbot/skills/` | Host volume mount | Skill-level state |
-| Agent workspace | `/home/node/clawd/` | Host volume mount | Code and agent artifacts |
+| Agent workspace | `/home/node/thinkfleet/` | Host volume mount | Code and agent artifacts |
 | WhatsApp session | `/home/node/.thinkfleetbot/` | Host volume mount | Preserves QR login |
 | Gmail keyring | `/home/node/.thinkfleetbot/` | Host volume + password | Requires `GOG_KEYRING_PASSWORD` |
 | External binaries | `/usr/local/bin/` | Docker image | Must be baked at build time |

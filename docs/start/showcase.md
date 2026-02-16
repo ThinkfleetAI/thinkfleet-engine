@@ -9,7 +9,7 @@ summary: "Community-built projects and integrations powered by ThinkFleetBot"
 Real projects from the community. See what people are building with ThinkFleetBot.
 
 <Info>
-**Want to be featured?** Share your project in [#showcase on Discord](https://discord.gg/clawd) or [tag @thinkfleetbot on X](https://x.com/thinkfleetbot).
+**Want to be featured?** Share your project in [#showcase on Discord](https://discord.gg/thinkfleet) or [tag @thinkfleetbot on X](https://x.com/thinkfleetbot).
 </Info>
 
 ## 🎥 ThinkFleetBot in Action
@@ -405,7 +405,7 @@ Have something to share? We'd love to feature it!
 
 <Steps>
   <Step title="Share It">
-    Post in [#showcase on Discord](https://discord.gg/clawd) or [tweet @thinkfleetbot](https://x.com/thinkfleetbot)
+    Post in [#showcase on Discord](https://discord.gg/thinkfleet) or [tweet @thinkfleetbot](https://x.com/thinkfleetbot)
   </Step>
   <Step title="Include Details">
     Tell us what it does, link to the repo/demo, share a screenshot if you have one

@@ -308,7 +308,7 @@ These run `pnpm test:live` inside the repo Docker image, mounting your local con
 Useful env vars:
 
 - `THINKFLEETBOT_CONFIG_DIR=...` (default: `~/.thinkfleetbot`) mounted to `/home/node/.thinkfleetbot`
-- `THINKFLEETBOT_WORKSPACE_DIR=...` (default: `~/clawd`) mounted to `/home/node/clawd`
+- `THINKFLEETBOT_WORKSPACE_DIR=...` (default: `~/thinkfleet`) mounted to `/home/node/thinkfleet`
 - `THINKFLEETBOT_PROFILE_FILE=...` (default: `~/.profile`) mounted to `/home/node/.profile` and sourced before running tests
 - `THINKFLEETBOT_LIVE_GATEWAY_MODELS=...` / `THINKFLEETBOT_LIVE_MODELS=...` to narrow the run
 - `THINKFLEETBOT_LIVE_REQUIRE_PROFILE_KEYS=1` to ensure creds come from the profile store (not env)

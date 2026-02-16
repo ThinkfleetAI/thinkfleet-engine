@@ -8,9 +8,9 @@ A skill is a directory containing a `SKILL.md` file (which provides instructions
 ## Step-by-Step: Your First Skill
 
 ### 1. Create the Directory
-Skills live in your workspace, usually `~/clawd/skills/`. Create a new folder for your skill:
+Skills live in your workspace, usually `~/thinkfleet/skills/`. Create a new folder for your skill:
 ```bash
-mkdir -p ~/clawd/skills/hello-world
+mkdir -p ~/thinkfleet/skills/hello-world
 ```
 
 ### 2. Define the `SKILL.md`

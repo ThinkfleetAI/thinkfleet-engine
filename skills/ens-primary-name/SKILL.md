@@ -19,7 +19,7 @@ This skill requires a way to sign and submit transactions. It looks for the **ba
 
 **If you don't have bankr installed:**
 
-1. Install from: https://github.com/BankrBot/openclaw-skills (bankr skill)
+1. Install from: https://github.com/BankrBot/thinkfleet-skills (bankr skill)
 2. Or modify the scripts to use your own transaction submission method
 
 The scripts call bankr.sh with a prompt like:
@@ -135,4 +135,4 @@ send_tx() {
 - ENS Docs: https://docs.ens.domains/web/reverse
 - ENS App: https://app.ens.domains
 - Primary Names UI: https://primary.ens.domains
-- Bankr Skill: https://github.com/BankrBot/openclaw-skills
+- Bankr Skill: https://github.com/BankrBot/thinkfleet-skills

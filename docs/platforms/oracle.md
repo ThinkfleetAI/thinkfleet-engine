@@ -273,11 +273,11 @@ Most npm packages work fine. For binaries, look for `linux-arm64` or `aarch64` r
 
 All state lives in:
 - `~/.thinkfleetbot/` — config, credentials, session data
-- `~/clawd/` — workspace (SOUL.md, memory, artifacts)
+- `~/thinkfleet/` — workspace (SOUL.md, memory, artifacts)
 
 Back up periodically:
 ```bash
-tar -czvf thinkfleetbot-backup.tar.gz ~/.thinkfleetbot ~/clawd
+tar -czvf thinkfleetbot-backup.tar.gz ~/.thinkfleetbot ~/thinkfleet
 ```
 
 ---

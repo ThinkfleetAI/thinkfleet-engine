@@ -8,7 +8,6 @@
  * 1. On first API call, exchanges client_id + client_secret for a JWT
  * 2. Caches the JWT in-memory (never persisted to disk)
  * 3. Proactively refreshes 2 minutes before expiry
- * 4. Falls back to legacy THINKFLEET_GATEWAY_TOKEN if OAuth is not configured
  */
 
 const REFRESH_BUFFER_MS = 2 * 60 * 1000; // Refresh 2 min before expiry
@@ -22,8 +21,6 @@ const oauthTokenUrl =
   (process.env.THINKFLEET_SAAS_API_URL
     ? `${process.env.THINKFLEET_SAAS_API_URL}/api/internal/oauth/token`
     : "");
-const legacyGatewayToken = process.env.THINKFLEET_GATEWAY_TOKEN;
-
 // ─── Token Cache ────────────────────────────────────────────────────────
 
 let cachedToken: {
@@ -45,13 +42,12 @@ export function isOAuthConfigured(): boolean {
 /**
  * Get a valid access token for SaaS API calls.
  *
- * If OAuth is configured, returns a short-lived JWT (refreshed automatically).
- * Otherwise falls back to the legacy static gateway token.
+ * Returns a short-lived JWT (refreshed automatically).
+ * Requires OAuth to be configured via THINKFLEET_OAUTH_CLIENT_ID and THINKFLEET_OAUTH_CLIENT_SECRET.
  */
 export async function getAccessToken(): Promise<string> {
-  // Fall back to legacy token if OAuth is not configured
   if (!isOAuthConfigured()) {
-    return legacyGatewayToken ?? "";
+    return "";
   }
 
   // Return cached token if still valid (with buffer)
@@ -103,12 +99,6 @@ async function fetchAccessToken(): Promise<string> {
     if (!response.ok) {
       const errorBody = await response.text().catch(() => "");
       console.error(`[oauth] Token exchange failed: ${response.status} ${errorBody}`);
-
-      // On auth failure, fall back to legacy token if available
-      if (legacyGatewayToken) {
-        console.warn("[oauth] Falling back to legacy gateway token");
-        return legacyGatewayToken;
-      }
       throw new Error(`OAuth token exchange failed: ${response.status}`);
     }
 
@@ -130,12 +120,6 @@ async function fetchAccessToken(): Promise<string> {
   } catch (err) {
     if ((err as Error).name === "AbortError") {
       console.error("[oauth] Token exchange timed out");
-    }
-
-    // Fall back to legacy token on any error
-    if (legacyGatewayToken) {
-      console.warn("[oauth] Falling back to legacy gateway token after error");
-      return legacyGatewayToken;
     }
     throw err;
   } finally {

@@ -37,7 +37,7 @@ WHOOP_CLIENT_SECRET=...
 4) Authorize once (get refresh token):
 
 ```bash
-node /home/claw/clawd/skills/whoop/bin/whoop-auth --redirect-uri https://localhost:3000/callback
+node /home/node/thinkfleet/skills/whoop/bin/whoop-auth --redirect-uri https://localhost:3000/callback
 ```
 
 - Open the printed URL on your phone/browser
@@ -51,7 +51,7 @@ This writes `WHOOP_REFRESH_TOKEN=...` into `~/.thinkfleet/.env`.
 Run:
 
 ```bash
-node /home/claw/clawd/skills/whoop/bin/whoop-morning
+node /home/node/thinkfleet/skills/whoop/bin/whoop-morning
 ```
 
 Then send the output back to the user.
@@ -59,7 +59,7 @@ Then send the output back to the user.
 ## Automation (daily)
 
 Recommended: schedule with Gateway cron (daily morning).
-- Command: `node /home/claw/clawd/skills/whoop/bin/whoop-morning`
+- Command: `node /home/node/thinkfleet/skills/whoop/bin/whoop-morning`
 - Bot should send the output as a message.
 
 ## Notes

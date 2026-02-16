@@ -33,36 +33,36 @@ Get these from your printer: Settings → LAN Only Mode (access code) and Settin
 
 ### Status
 ```bash
-run ~/clawd/skills/bambu-local/bambu status
+run ~/thinkfleet/skills/bambu-local/bambu status
 ```
 
 ### Light
 ```bash
-run ~/clawd/skills/bambu-local/bambu light on
-run ~/clawd/skills/bambu-local/bambu light off
+run ~/thinkfleet/skills/bambu-local/bambu light on
+run ~/thinkfleet/skills/bambu-local/bambu light off
 ```
 
 ### Print Control
 ```bash
-run ~/clawd/skills/bambu-local/bambu print pause
-run ~/clawd/skills/bambu-local/bambu print resume
-run ~/clawd/skills/bambu-local/bambu print stop
+run ~/thinkfleet/skills/bambu-local/bambu print pause
+run ~/thinkfleet/skills/bambu-local/bambu print resume
+run ~/thinkfleet/skills/bambu-local/bambu print stop
 ```
 
 ### Speed (1=Silent, 2=Standard, 3=Sport, 4=Ludicrous)
 ```bash
-run ~/clawd/skills/bambu-local/bambu speed 2
+run ~/thinkfleet/skills/bambu-local/bambu speed 2
 ```
 
 ### Temperature
 ```bash
-run ~/clawd/skills/bambu-local/bambu temp --bed 60
-run ~/clawd/skills/bambu-local/bambu temp --nozzle 200
+run ~/thinkfleet/skills/bambu-local/bambu temp --bed 60
+run ~/thinkfleet/skills/bambu-local/bambu temp --nozzle 200
 ```
 
 ### G-code
 ```bash
-run ~/clawd/skills/bambu-local/bambu gcode "G28"
+run ~/thinkfleet/skills/bambu-local/bambu gcode "G28"
 ```
 
 ## Supported Printers

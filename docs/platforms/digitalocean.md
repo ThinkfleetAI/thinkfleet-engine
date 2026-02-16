@@ -181,11 +181,11 @@ htop
 
 All state lives in:
 - `~/.thinkfleetbot/` — config, credentials, session data
-- `~/clawd/` — workspace (SOUL.md, memory, etc.)
+- `~/thinkfleet/` — workspace (SOUL.md, memory, etc.)
 
 These survive reboots. Back them up periodically:
 ```bash
-tar -czvf thinkfleetbot-backup.tar.gz ~/.thinkfleetbot ~/clawd
+tar -czvf thinkfleetbot-backup.tar.gz ~/.thinkfleetbot ~/thinkfleet
 ```
 
 ---

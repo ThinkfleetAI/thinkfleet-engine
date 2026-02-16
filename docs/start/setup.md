@@ -10,7 +10,7 @@ read_when:
 Last updated: 2026-01-01
 
 ## TL;DR
-- **Tailoring lives outside the repo:** `~/clawd` (workspace) + `~/.thinkfleetbot/thinkfleetbot.json` (config).
+- **Tailoring lives outside the repo:** `~/thinkfleet` (workspace) + `~/.thinkfleetbot/thinkfleetbot.json` (config).
 - **Stable workflow:** install the macOS app; let it run the bundled Gateway.
 - **Bleeding edge workflow:** run the Gateway yourself via `pnpm gateway:watch`, then let the macOS app attach in Local mode.
 
@@ -24,7 +24,7 @@ Last updated: 2026-01-01
 If you want “100% tailored to me” *and* easy updates, keep your customization in:
 
 - **Config:** `~/.thinkfleetbot/thinkfleetbot.json` (JSON/JSON5-ish)
-- **Workspace:** `~/clawd` (skills, prompts, memories; make it a private git repo)
+- **Workspace:** `~/thinkfleet` (skills, prompts, memories; make it a private git repo)
 
 Bootstrap once:
 
@@ -119,7 +119,7 @@ More detail: [Security](/gateway/security#credential-storage-map).
 
 ## Updating (without wrecking your setup)
 
-- Keep `~/clawd` and `~/.thinkfleetbot/` as “your stuff”; don’t put personal prompts/config into the `thinkfleetbot` repo.
+- Keep `~/thinkfleet` and `~/.thinkfleetbot/` as “your stuff”; don’t put personal prompts/config into the `thinkfleetbot` repo.
 - Updating source: `git pull` + `pnpm install` (when lockfile changed) + keep using `pnpm gateway:watch`.
 
 ## Linux (systemd user service)
@@ -140,5 +140,5 @@ user service (no lingering needed). See [Gateway runbook](/gateway) for the syst
 - [Gateway runbook](/gateway) (flags, supervision, ports)
 - [Gateway configuration](/gateway/configuration) (config schema + examples)
 - [Discord](/channels/discord) and [Telegram](/channels/telegram) (reply tags + replyToMode settings)
-- [ThinkFleetBot assistant setup](/start/clawd)
+- [ThinkFleetBot assistant setup](/start/assistant)
 - [macOS app](/platforms/macos) (gateway lifecycle)

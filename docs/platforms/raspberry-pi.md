@@ -116,7 +116,7 @@ curl -fsSL https://thinkfleet.dev/install.sh | bash
 ### Option B: Hackable Install (For tinkering)
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleetbot.git
+git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
 cd thinkfleetbot
 npm install
 npm run build

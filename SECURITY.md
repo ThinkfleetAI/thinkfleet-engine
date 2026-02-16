@@ -4,7 +4,7 @@ If you believe you've found a security issue in ThinkFleet Engine, please report
 
 ## Reporting
 
-- Email: `steipete@gmail.com`
+- Email: `security@thinkfleet.dev`
 - What to include: reproduction steps, impact assessment, and (if possible) a minimal PoC.
 
 ## Operational Guidance

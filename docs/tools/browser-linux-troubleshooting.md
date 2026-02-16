@@ -9,7 +9,7 @@ read_when: "Browser control fails on Linux, especially with snap Chromium"
 
 ThinkFleetBot's browser control server fails to launch Chrome/Brave/Edge/Chromium with the error:
 ```
-{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"clawd\"."}
+{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"managed\"."}
 ```
 
 ### Root Cause
@@ -67,19 +67,19 @@ If you must use snap Chromium, configure ThinkFleetBot to attach to a manually-s
 ```bash
 chromium-browser --headless --no-sandbox --disable-gpu \
   --remote-debugging-port=18800 \
-  --user-data-dir=$HOME/.thinkfleetbot/browser/clawd/user-data \
+  --user-data-dir=$HOME/.thinkfleetbot/browser/managed/user-data \
   about:blank &
 ```
 
 3. Optionally create a systemd user service to auto-start Chrome:
 ```ini
-# ~/.config/systemd/user/clawd-browser.service
+# ~/.config/systemd/user/thinkfleet-browser.service
 [Unit]
 Description=ThinkFleet Browser (Chrome CDP)
 After=network.target
 
 [Service]
-ExecStart=/snap/bin/chromium --headless --no-sandbox --disable-gpu --remote-debugging-port=18800 --user-data-dir=%h/.thinkfleetbot/browser/clawd/user-data about:blank
+ExecStart=/snap/bin/chromium --headless --no-sandbox --disable-gpu --remote-debugging-port=18800 --user-data-dir=%h/.thinkfleetbot/browser/managed/user-data about:blank
 Restart=on-failure
 RestartSec=5
 
@@ -87,7 +87,7 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Enable with: `systemctl --user enable --now clawd-browser.service`
+Enable with: `systemctl --user enable --now thinkfleet-browser.service`
 
 ### Verifying the Browser Works
 
@@ -119,11 +119,11 @@ You’re using the `chrome` profile (extension relay). It expects the ThinkFleet
 browser extension to be attached to a live tab.
 
 Fix options:
-1. **Use the managed browser:** `thinkfleetbot browser start --browser-profile clawd`
-   (or set `browser.defaultProfile: "clawd"`).
+1. **Use the managed browser:** `thinkfleetbot browser start --browser-profile managed`
+   (or set `browser.defaultProfile: "managed"`).
 2. **Use the extension relay:** install the extension, open a tab, and click the
    ThinkFleetBot extension icon to attach it.
 
 Notes:
 - The `chrome` profile uses your **system default Chromium browser** when possible.
-- Local `clawd` profiles auto-assign `cdpPort`/`cdpUrl`; only set those for remote CDP.
+- Local `managed` profiles auto-assign `cdpPort`/`cdpUrl`; only set those for remote CDP.
