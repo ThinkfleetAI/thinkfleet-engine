@@ -108,6 +108,8 @@ import type {
 import type { PresenceEntrySchema, SnapshotSchema, StateVersionSchema } from "./snapshot.js";
 import type {
   WizardCancelParamsSchema,
+  WizardNeedsSetupParamsSchema,
+  WizardNeedsSetupResultSchema,
   WizardNextParamsSchema,
   WizardNextResultSchema,
   WizardStartParamsSchema,
@@ -115,6 +117,10 @@ import type {
   WizardStatusParamsSchema,
   WizardStatusResultSchema,
   WizardStepSchema,
+  WizardTestApiKeyParamsSchema,
+  WizardTestApiKeyResultSchema,
+  WizardTestSaasConnectionParamsSchema,
+  WizardTestSaasConnectionResultSchema,
 } from "./wizard.js";
 
 export type ConnectParams = Static<typeof ConnectParamsSchema>;
@@ -165,6 +171,12 @@ export type WizardStep = Static<typeof WizardStepSchema>;
 export type WizardNextResult = Static<typeof WizardNextResultSchema>;
 export type WizardStartResult = Static<typeof WizardStartResultSchema>;
 export type WizardStatusResult = Static<typeof WizardStatusResultSchema>;
+export type WizardNeedsSetupParams = Static<typeof WizardNeedsSetupParamsSchema>;
+export type WizardNeedsSetupResult = Static<typeof WizardNeedsSetupResultSchema>;
+export type WizardTestApiKeyParams = Static<typeof WizardTestApiKeyParamsSchema>;
+export type WizardTestApiKeyResult = Static<typeof WizardTestApiKeyResultSchema>;
+export type WizardTestSaasConnectionParams = Static<typeof WizardTestSaasConnectionParamsSchema>;
+export type WizardTestSaasConnectionResult = Static<typeof WizardTestSaasConnectionResultSchema>;
 export type TalkModeParams = Static<typeof TalkModeParamsSchema>;
 export type ChannelsStatusParams = Static<typeof ChannelsStatusParamsSchema>;
 export type ChannelsStatusResult = Static<typeof ChannelsStatusResultSchema>;

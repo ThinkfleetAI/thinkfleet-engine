@@ -115,6 +115,8 @@ import {
 import { PresenceEntrySchema, SnapshotSchema, StateVersionSchema } from "./snapshot.js";
 import {
   WizardCancelParamsSchema,
+  WizardNeedsSetupParamsSchema,
+  WizardNeedsSetupResultSchema,
   WizardNextParamsSchema,
   WizardNextResultSchema,
   WizardStartParamsSchema,
@@ -122,6 +124,10 @@ import {
   WizardStatusParamsSchema,
   WizardStatusResultSchema,
   WizardStepSchema,
+  WizardTestApiKeyParamsSchema,
+  WizardTestApiKeyResultSchema,
+  WizardTestSaasConnectionParamsSchema,
+  WizardTestSaasConnectionResultSchema,
 } from "./wizard.js";
 
 export const ProtocolSchemas: Record<string, TSchema> = {
@@ -176,6 +182,12 @@ export const ProtocolSchemas: Record<string, TSchema> = {
   WizardNextResult: WizardNextResultSchema,
   WizardStartResult: WizardStartResultSchema,
   WizardStatusResult: WizardStatusResultSchema,
+  WizardNeedsSetupParams: WizardNeedsSetupParamsSchema,
+  WizardNeedsSetupResult: WizardNeedsSetupResultSchema,
+  WizardTestApiKeyParams: WizardTestApiKeyParamsSchema,
+  WizardTestApiKeyResult: WizardTestApiKeyResultSchema,
+  WizardTestSaasConnectionParams: WizardTestSaasConnectionParamsSchema,
+  WizardTestSaasConnectionResult: WizardTestSaasConnectionResultSchema,
   TalkModeParams: TalkModeParamsSchema,
   ChannelsStatusParams: ChannelsStatusParamsSchema,
   ChannelsStatusResult: ChannelsStatusResultSchema,

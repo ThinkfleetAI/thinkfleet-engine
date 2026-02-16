@@ -173,37 +173,37 @@ docker build \
   "$ROOT_DIR"
 
 echo ""
-echo "==> Onboarding (interactive)"
-echo "When prompted:"
-echo "  - Gateway bind: lan"
-echo "  - Gateway auth: token"
-echo "  - Gateway token: $THINKFLEETBOT_GATEWAY_TOKEN"
-echo "  - Tailscale exposure: Off"
-echo "  - Install Gateway daemon: No"
-echo ""
-docker compose "${COMPOSE_ARGS[@]}" run --rm thinkfleetbot-cli onboard --no-install-daemon
-
-echo ""
-echo "==> Provider setup (optional)"
-echo "WhatsApp (QR):"
-echo "  ${COMPOSE_HINT} run --rm thinkfleetbot-cli providers login"
-echo "Telegram (bot token):"
-echo "  ${COMPOSE_HINT} run --rm thinkfleetbot-cli providers add --provider telegram --token <token>"
-echo "Discord (bot token):"
-echo "  ${COMPOSE_HINT} run --rm thinkfleetbot-cli providers add --provider discord --token <token>"
-echo "Docs: https://docs.thinkfleet.dev/providers"
-
-echo ""
 echo "==> Starting gateway"
 docker compose "${COMPOSE_ARGS[@]}" up -d thinkfleetbot-gateway
 
+PORT="${THINKFLEETBOT_GATEWAY_PORT}"
+echo "==> Waiting for gateway to be ready..."
+for i in $(seq 1 30); do
+  if curl -sf "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+SETUP_URL="http://127.0.0.1:${PORT}/setup?token=${THINKFLEETBOT_GATEWAY_TOKEN}"
+
 echo ""
 echo "Gateway running with host port mapping."
-echo "Access from tailnet devices via the host's tailnet IP."
 echo "Config: $THINKFLEETBOT_CONFIG_DIR"
 echo "Workspace: $THINKFLEETBOT_WORKSPACE_DIR"
 echo "Token: $THINKFLEETBOT_GATEWAY_TOKEN"
 echo ""
+echo "==> Open the setup wizard to complete configuration:"
+echo "  $SETUP_URL"
+echo ""
+
+# Try to open the browser automatically
+if command -v open >/dev/null 2>&1; then
+  open "$SETUP_URL" 2>/dev/null || true
+elif command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "$SETUP_URL" 2>/dev/null || true
+fi
+
 echo "Commands:"
 echo "  ${COMPOSE_HINT} logs -f thinkfleetbot-gateway"
 echo "  ${COMPOSE_HINT} exec thinkfleetbot-gateway node dist/index.js health --token \"$THINKFLEETBOT_GATEWAY_TOKEN\""

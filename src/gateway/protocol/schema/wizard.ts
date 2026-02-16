@@ -119,3 +119,49 @@ export const WizardStatusResultSchema = Type.Object(
   },
   { additionalProperties: false },
 );
+
+export const WizardNeedsSetupParamsSchema = Type.Object({}, { additionalProperties: false });
+
+export const WizardNeedsSetupResultSchema = Type.Object(
+  {
+    needsSetup: Type.Boolean(),
+    hasConfig: Type.Boolean(),
+    hasModels: Type.Boolean(),
+    version: Type.String(),
+  },
+  { additionalProperties: false },
+);
+
+export const WizardTestApiKeyParamsSchema = Type.Object(
+  {
+    provider: NonEmptyString,
+    apiKey: NonEmptyString,
+  },
+  { additionalProperties: false },
+);
+
+export const WizardTestApiKeyResultSchema = Type.Object(
+  {
+    ok: Type.Boolean(),
+    error: Type.Optional(Type.String()),
+  },
+  { additionalProperties: false },
+);
+
+export const WizardTestSaasConnectionParamsSchema = Type.Object(
+  {
+    apiUrl: NonEmptyString,
+    agentDbId: NonEmptyString,
+    gatewayToken: Type.Optional(Type.String()),
+  },
+  { additionalProperties: false },
+);
+
+export const WizardTestSaasConnectionResultSchema = Type.Object(
+  {
+    ok: Type.Boolean(),
+    error: Type.Optional(Type.String()),
+    orgName: Type.Optional(Type.String()),
+  },
+  { additionalProperties: false },
+);

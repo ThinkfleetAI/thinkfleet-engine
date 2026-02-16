@@ -2,6 +2,7 @@ import { loadChatHistory } from "./controllers/chat";
 import { loadDevices } from "./controllers/devices";
 import { loadNodes } from "./controllers/nodes";
 import { loadAgents } from "./controllers/agents";
+import { checkNeedsSetup } from "./controllers/wizard";
 import type { GatewayEventFrame, GatewayHelloOk } from "./gateway";
 import { GatewayBrowserClient } from "./gateway";
 import type { EventLogEntry } from "./app-events";
@@ -52,6 +53,8 @@ type GatewayHost = {
   chatRunId: string | null;
   execApprovalQueue: ExecApprovalRequest[];
   execApprovalError: string | null;
+  setupWizardVersion: string;
+  setTab: (tab: Tab) => void;
 };
 
 type SessionDefaultsSnapshot = {
@@ -138,6 +141,15 @@ export function connectGateway(host: GatewayHost) {
       void loadNodes(host as unknown as ThinkFleetBotApp, { quiet: true });
       void loadDevices(host as unknown as ThinkFleetBotApp, { quiet: true });
       void refreshActiveTab(host as unknown as Parameters<typeof refreshActiveTab>[0]);
+      // Auto-detect if setup is needed and redirect to wizard
+      if (host.tab === "setup" || host.tab === "chat") {
+        void checkNeedsSetup(host.client!).then((result) => {
+          host.setupWizardVersion = result.version;
+          if (result.needsSetup && host.tab !== "setup") {
+            host.setTab("setup");
+          }
+        }).catch(() => { /* ignore — wizard.needsSetup is optional */ });
+      }
     },
     onClose: ({ code, reason }) => {
       host.connected = false;

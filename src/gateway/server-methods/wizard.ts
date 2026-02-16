@@ -1,14 +1,21 @@
+import { existsSync } from "node:fs";
 import { randomUUID } from "node:crypto";
+import { resolveConfigPathCandidate } from "../../config/paths.js";
+import { loadConfig } from "../../config/io.js";
 import { defaultRuntime } from "../../runtime.js";
+import { VERSION } from "../../version.js";
 import { WizardSession } from "../../wizard/session.js";
 import {
   ErrorCodes,
   errorShape,
   formatValidationErrors,
   validateWizardCancelParams,
+  validateWizardNeedsSetupParams,
   validateWizardNextParams,
   validateWizardStartParams,
   validateWizardStatusParams,
+  validateWizardTestApiKeyParams,
+  validateWizardTestSaasConnectionParams,
 } from "../protocol/index.js";
 import { formatForLog } from "../ws-log.js";
 import type { GatewayRequestHandlers } from "./types.js";
@@ -135,5 +142,148 @@ export const wizardHandlers: GatewayRequestHandlers = {
       context.wizardSessions.delete(sessionId);
     }
     respond(true, status, undefined);
+  },
+  "wizard.needsSetup": async ({ params, respond }) => {
+    if (!validateWizardNeedsSetupParams(params)) {
+      respond(
+        false,
+        undefined,
+        errorShape(
+          ErrorCodes.INVALID_REQUEST,
+          `invalid wizard.needsSetup params: ${formatValidationErrors(validateWizardNeedsSetupParams.errors)}`,
+        ),
+      );
+      return;
+    }
+    try {
+      const configPath = resolveConfigPathCandidate();
+      const hasConfig = existsSync(configPath);
+      let hasModels = false;
+      if (hasConfig) {
+        const cfg = loadConfig();
+        const models = cfg.models;
+        hasModels = !!(models && typeof models === "object" && Object.keys(models).length > 0);
+      }
+      respond(
+        true,
+        { needsSetup: !hasConfig || !hasModels, hasConfig, hasModels, version: VERSION },
+        undefined,
+      );
+    } catch (err) {
+      respond(false, undefined, errorShape(ErrorCodes.UNAVAILABLE, formatForLog(err)));
+    }
+  },
+  "wizard.testApiKey": async ({ params, respond }) => {
+    if (!validateWizardTestApiKeyParams(params)) {
+      respond(
+        false,
+        undefined,
+        errorShape(
+          ErrorCodes.INVALID_REQUEST,
+          `invalid wizard.testApiKey params: ${formatValidationErrors(validateWizardTestApiKeyParams.errors)}`,
+        ),
+      );
+      return;
+    }
+    const provider = params.provider as string;
+    const apiKey = params.apiKey as string;
+    try {
+      const endpoints: Record<string, { url: string; headers: Record<string, string> }> = {
+        openai: {
+          url: "https://api.openai.com/v1/models",
+          headers: { Authorization: `Bearer ${apiKey}` },
+        },
+        anthropic: {
+          url: "https://api.anthropic.com/v1/models",
+          headers: {
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01",
+          },
+        },
+        google: {
+          url: `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`,
+          headers: {},
+        },
+        groq: {
+          url: "https://api.groq.com/openai/v1/models",
+          headers: { Authorization: `Bearer ${apiKey}` },
+        },
+        mistral: {
+          url: "https://api.mistral.ai/v1/models",
+          headers: { Authorization: `Bearer ${apiKey}` },
+        },
+        xai: {
+          url: "https://api.x.ai/v1/models",
+          headers: { Authorization: `Bearer ${apiKey}` },
+        },
+        deepseek: {
+          url: "https://api.deepseek.com/v1/models",
+          headers: { Authorization: `Bearer ${apiKey}` },
+        },
+      };
+      const ep = endpoints[provider.toLowerCase()];
+      if (!ep) {
+        respond(true, { ok: false, error: `Unknown provider: ${provider}` }, undefined);
+        return;
+      }
+      const res = await fetch(ep.url, {
+        method: "GET",
+        headers: ep.headers,
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (res.ok) {
+        respond(true, { ok: true }, undefined);
+      } else {
+        const body = await res.text().catch(() => "");
+        respond(
+          true,
+          { ok: false, error: `API returned ${res.status}: ${body.slice(0, 200)}` },
+          undefined,
+        );
+      }
+    } catch (err) {
+      respond(true, { ok: false, error: formatForLog(err) }, undefined);
+    }
+  },
+  "wizard.testSaasConnection": async ({ params, respond }) => {
+    if (!validateWizardTestSaasConnectionParams(params)) {
+      respond(
+        false,
+        undefined,
+        errorShape(
+          ErrorCodes.INVALID_REQUEST,
+          `invalid wizard.testSaasConnection params: ${formatValidationErrors(validateWizardTestSaasConnectionParams.errors)}`,
+        ),
+      );
+      return;
+    }
+    const apiUrl = (params.apiUrl as string).replace(/\/+$/, "");
+    const agentDbId = params.agentDbId as string;
+    const gatewayToken = (params.gatewayToken as string | undefined) || "";
+    try {
+      const url = `${apiUrl}/api/internal/health?agentDbId=${encodeURIComponent(agentDbId)}`;
+      const headers: Record<string, string> = {};
+      if (gatewayToken) {
+        headers["Authorization"] = `Bearer ${gatewayToken}`;
+      }
+      const res = await fetch(url, {
+        method: "GET",
+        headers,
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { orgName?: string };
+        respond(true, { ok: true, orgName: data.orgName }, undefined);
+      } else {
+        const body = await res.text().catch(() => "");
+        respond(
+          true,
+          { ok: false, error: `SaaS returned ${res.status}: ${body.slice(0, 200)}` },
+          undefined,
+        );
+      }
+    } catch (err) {
+      respond(true, { ok: false, error: formatForLog(err) }, undefined);
+    }
   },
 };

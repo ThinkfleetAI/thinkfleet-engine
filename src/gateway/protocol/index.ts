@@ -175,6 +175,8 @@ import {
   WebLoginWaitParamsSchema,
   type WizardCancelParams,
   WizardCancelParamsSchema,
+  type WizardNeedsSetupParams,
+  WizardNeedsSetupParamsSchema,
   type WizardNextParams,
   WizardNextParamsSchema,
   type WizardNextResult,
@@ -189,6 +191,13 @@ import {
   WizardStatusResultSchema,
   type WizardStep,
   WizardStepSchema,
+  type WizardTestApiKeyParams,
+  WizardTestApiKeyParamsSchema,
+  type WizardTestApiKeyResult,
+  type WizardTestSaasConnectionParams,
+  WizardTestSaasConnectionParamsSchema,
+  type WizardTestSaasConnectionResult,
+  type WizardNeedsSetupResult,
 } from "./schema.js";
 
 const ajv = new (AjvPkg as unknown as new (opts?: object) => import("ajv").default)({
@@ -256,6 +265,15 @@ export const validateWizardStartParams = ajv.compile<WizardStartParams>(WizardSt
 export const validateWizardNextParams = ajv.compile<WizardNextParams>(WizardNextParamsSchema);
 export const validateWizardCancelParams = ajv.compile<WizardCancelParams>(WizardCancelParamsSchema);
 export const validateWizardStatusParams = ajv.compile<WizardStatusParams>(WizardStatusParamsSchema);
+export const validateWizardNeedsSetupParams = ajv.compile<WizardNeedsSetupParams>(
+  WizardNeedsSetupParamsSchema,
+);
+export const validateWizardTestApiKeyParams = ajv.compile<WizardTestApiKeyParams>(
+  WizardTestApiKeyParamsSchema,
+);
+export const validateWizardTestSaasConnectionParams = ajv.compile<WizardTestSaasConnectionParams>(
+  WizardTestSaasConnectionParamsSchema,
+);
 export const validateTalkModeParams = ajv.compile<TalkModeParams>(TalkModeParamsSchema);
 export const validateChannelsStatusParams = ajv.compile<ChannelsStatusParams>(
   ChannelsStatusParamsSchema,
@@ -400,6 +418,9 @@ export {
   WizardNextResultSchema,
   WizardStartResultSchema,
   WizardStatusResultSchema,
+  WizardNeedsSetupParamsSchema,
+  WizardTestApiKeyParamsSchema,
+  WizardTestSaasConnectionParamsSchema,
   ChannelsStatusParamsSchema,
   ChannelsStatusResultSchema,
   ChannelsLogoutParamsSchema,
@@ -473,6 +494,12 @@ export type {
   WizardNextResult,
   WizardStartResult,
   WizardStatusResult,
+  WizardNeedsSetupParams,
+  WizardNeedsSetupResult,
+  WizardTestApiKeyParams,
+  WizardTestApiKeyResult,
+  WizardTestSaasConnectionParams,
+  WizardTestSaasConnectionResult,
   TalkModeParams,
   ChannelsStatusParams,
   ChannelsStatusResult,

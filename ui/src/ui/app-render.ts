@@ -43,6 +43,8 @@ import { renderOverview } from "./views/overview";
 import { renderSessions } from "./views/sessions";
 import { renderExecApprovalPrompt } from "./views/exec-approval";
 import { renderGatewayUrlConfirmation } from "./views/gateway-url-confirmation";
+import { renderSetupWizard } from "./views/setup-wizard";
+import { testApiKey, testSaasConnection, startWizard, wizardNext } from "./controllers/wizard";
 import {
   approveDevicePairing,
   loadDevices,
@@ -101,7 +103,144 @@ function resolveAssistantAvatarUrl(state: AppViewState): string | undefined {
   return identity?.avatarUrl;
 }
 
+async function handleWizardFinish(state: AppViewState) {
+  if (!state.client) return;
+  state.setupWizardLoading = true;
+  state.setupWizardError = null;
+  try {
+    const res = await startWizard(state.client, "local");
+    const sessionId = res.sessionId;
+    state.setupWizardSessionId = sessionId;
+
+    if (state.setupWizardMode === "standalone" && state.setupWizardProvider && state.setupWizardApiKey) {
+      // Walk through wizard steps, answering with provider and API key
+      let step = res.step as { id?: string; type?: string } | undefined;
+      const maxSteps = 20;
+      for (let i = 0; i < maxSteps && step && !res.done; i++) {
+        const stepId = step?.id ?? "";
+        let value: unknown;
+        if (stepId.includes("provider") || stepId.includes("model") || step?.type === "select") {
+          value = state.setupWizardProvider;
+        } else if (stepId.includes("key") || stepId.includes("apiKey") || step?.type === "text") {
+          value = state.setupWizardApiKey;
+        } else if (step?.type === "confirm") {
+          value = true;
+        } else if (step?.type === "note") {
+          // Acknowledge notes
+          value = undefined;
+        } else {
+          value = undefined;
+        }
+        const next = await wizardNext(state.client, sessionId, value !== undefined ? { stepId, value } : undefined);
+        if (next.done) break;
+        step = next.step as { id?: string; type?: string } | undefined;
+      }
+    }
+
+    // Redirect to chat after setup
+    state.setupWizardLoading = false;
+    state.setTab("chat");
+  } catch (err) {
+    state.setupWizardError = String(err);
+    state.setupWizardLoading = false;
+  }
+}
+
 export function renderApp(state: AppViewState) {
+  // Full-screen setup wizard (no sidebar/topbar)
+  if (state.tab === "setup") {
+    return renderSetupWizard({
+      step: state.setupWizardStep,
+      mode: state.setupWizardMode,
+      loading: state.setupWizardLoading,
+      version: state.setupWizardVersion,
+      provider: state.setupWizardProvider,
+      apiKey: state.setupWizardApiKey,
+      apiKeyValid: state.setupWizardApiKeyValid,
+      apiKeyTesting: state.setupWizardApiKeyTesting,
+      saasApiUrl: state.setupWizardSaasApiUrl,
+      saasAgentDbId: state.setupWizardSaasAgentDbId,
+      saasGatewayToken: state.setupWizardSaasGatewayToken,
+      saasValid: state.setupWizardSaasValid,
+      saasTesting: state.setupWizardSaasTesting,
+      saasOrgName: state.setupWizardSaasOrgName,
+      error: state.setupWizardError,
+      onSetStep: (step) => {
+        state.setupWizardStep = step;
+        state.setupWizardError = null;
+      },
+      onSetMode: (mode) => {
+        state.setupWizardMode = mode;
+      },
+      onSetProvider: (provider) => {
+        state.setupWizardProvider = provider;
+        state.setupWizardApiKey = "";
+        state.setupWizardApiKeyValid = null;
+        state.setupWizardError = null;
+      },
+      onSetApiKey: (key) => {
+        state.setupWizardApiKey = key;
+        state.setupWizardApiKeyValid = null;
+        state.setupWizardError = null;
+      },
+      onTestApiKey: async () => {
+        if (!state.client || !state.setupWizardProvider || !state.setupWizardApiKey) return;
+        state.setupWizardApiKeyTesting = true;
+        state.setupWizardApiKeyValid = null;
+        state.setupWizardError = null;
+        try {
+          const result = await testApiKey(state.client, state.setupWizardProvider, state.setupWizardApiKey);
+          state.setupWizardApiKeyValid = result.ok;
+          if (!result.ok) state.setupWizardError = result.error ?? "Invalid API key";
+        } catch (err) {
+          state.setupWizardApiKeyValid = false;
+          state.setupWizardError = String(err);
+        } finally {
+          state.setupWizardApiKeyTesting = false;
+        }
+      },
+      onSetSaasApiUrl: (url) => {
+        state.setupWizardSaasApiUrl = url;
+        state.setupWizardSaasValid = null;
+        state.setupWizardError = null;
+      },
+      onSetSaasAgentDbId: (id) => {
+        state.setupWizardSaasAgentDbId = id;
+        state.setupWizardSaasValid = null;
+        state.setupWizardError = null;
+      },
+      onSetSaasGatewayToken: (token) => {
+        state.setupWizardSaasGatewayToken = token;
+        state.setupWizardSaasValid = null;
+        state.setupWizardError = null;
+      },
+      onTestSaasConnection: async () => {
+        if (!state.client || !state.setupWizardSaasApiUrl || !state.setupWizardSaasAgentDbId) return;
+        state.setupWizardSaasTesting = true;
+        state.setupWizardSaasValid = null;
+        state.setupWizardError = null;
+        try {
+          const result = await testSaasConnection(
+            state.client,
+            state.setupWizardSaasApiUrl,
+            state.setupWizardSaasAgentDbId,
+            state.setupWizardSaasGatewayToken || undefined,
+          );
+          state.setupWizardSaasValid = result.ok;
+          state.setupWizardSaasOrgName = result.orgName ?? "";
+          if (!result.ok) state.setupWizardError = result.error ?? "Connection failed";
+        } catch (err) {
+          state.setupWizardSaasValid = false;
+          state.setupWizardError = String(err);
+        } finally {
+          state.setupWizardSaasTesting = false;
+        }
+      },
+      onFinish: () => void handleWizardFinish(state),
+      onSkip: () => state.setTab("chat"),
+    });
+  }
+
   const presenceCount = state.presenceEntries.length;
   const sessionsCount = state.sessionsResult?.count ?? null;
   const cronNext = state.cronStatus?.nextWakeAtMs ?? null;

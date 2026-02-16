@@ -21,7 +21,8 @@ export type Tab =
   | "chat"
   | "config"
   | "debug"
-  | "logs";
+  | "logs"
+  | "setup";
 
 const TAB_PATHS: Record<Tab, string> = {
   overview: "/overview",
@@ -35,6 +36,7 @@ const TAB_PATHS: Record<Tab, string> = {
   config: "/config",
   debug: "/debug",
   logs: "/logs",
+  setup: "/setup",
 };
 
 const PATH_TO_TAB = new Map(
@@ -124,6 +126,8 @@ export function iconForTab(tab: Tab): IconName {
       return "bug";
     case "logs":
       return "scrollText";
+    case "setup":
+      return "settings";
     default:
       return "folder";
   }
@@ -153,6 +157,8 @@ export function titleForTab(tab: Tab) {
       return "Debug";
     case "logs":
       return "Logs";
+    case "setup":
+      return "Setup";
     default:
       return "Control";
   }
