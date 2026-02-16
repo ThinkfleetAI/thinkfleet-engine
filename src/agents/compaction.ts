@@ -343,3 +343,150 @@ export function pruneHistoryForContextShare(params: {
 export function resolveContextWindowTokens(model?: ExtensionContext["model"]): number {
   return Math.max(1, Math.floor(model?.contextWindow ?? DEFAULT_CONTEXT_TOKENS));
 }
+
+// ---------------------------------------------------------------------------
+// Tool output pruning — clears old tool result content from stale turns
+// to free context space without requiring an LLM summarization call.
+// ---------------------------------------------------------------------------
+
+const PRUNE_PRESERVE_TURNS = 3; // Keep the most recent N user turns fully intact
+const PRUNE_PRESERVE_TOKENS = 40_000; // Keep at least this many tokens of tool output
+const PRUNE_MIN_SAVINGS = 20_000; // Only prune if we'd save at least this many tokens
+const PRUNED_PLACEHOLDER = "[Tool output cleared to save context space]";
+
+/**
+ * Estimate the token cost of a single content block.
+ */
+function estimateBlockTokens(block: unknown): number {
+  if (!block || typeof block !== "object") return 0;
+  const rec = block as Record<string, unknown>;
+  if (rec.type === "text" && typeof rec.text === "string") return Math.ceil(rec.text.length / 4);
+  if (rec.type === "tool_result" && typeof rec.content === "string")
+    return Math.ceil(rec.content.length / 4);
+  // toolResult role messages store content at the top level
+  if (typeof rec.content === "string") return Math.ceil(rec.content.length / 4);
+  return 0;
+}
+
+/**
+ * Check if a content block is a tool result that can be pruned.
+ */
+function isToolResultBlock(block: unknown): boolean {
+  if (!block || typeof block !== "object") return false;
+  const rec = block as Record<string, unknown>;
+  return rec.type === "tool_result" && typeof rec.content === "string";
+}
+
+/**
+ * Prune old tool result outputs from conversation history to free context space.
+ *
+ * Walks backwards through messages, preserving the most recent `PRUNE_PRESERVE_TURNS`
+ * user turns fully intact. For older messages, accumulates tool result token counts
+ * and once we've seen `PRUNE_PRESERVE_TOKENS` worth of results, starts replacing
+ * older tool outputs with a short placeholder.
+ *
+ * Returns a shallow-mutated copy of the messages array (original is not modified).
+ */
+export function pruneOldToolOutputs(messages: AgentMessage[]): {
+  messages: AgentMessage[];
+  prunedTokens: number;
+  prunedCount: number;
+} {
+  if (messages.length === 0) return { messages, prunedTokens: 0, prunedCount: 0 };
+
+  // Find the cutoff index: everything before the last N user turns is eligible for pruning
+  let userTurnsSeen = 0;
+  let cutoffIndex = messages.length; // Start assuming nothing is pruneable
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const msg = messages[i] as { role?: string };
+    if (msg.role === "user") {
+      userTurnsSeen++;
+      if (userTurnsSeen >= PRUNE_PRESERVE_TURNS) {
+        cutoffIndex = i;
+        break;
+      }
+    }
+  }
+
+  if (cutoffIndex <= 0) return { messages, prunedTokens: 0, prunedCount: 0 };
+
+  // First pass: walk backwards through pruneable messages, tally tool result tokens
+  let totalToolTokens = 0;
+  type PruneCandidate = { msgIdx: number; blockIdx: number; tokens: number };
+  const candidates: PruneCandidate[] = [];
+
+  for (let i = cutoffIndex - 1; i >= 0; i--) {
+    const msg = messages[i] as { role?: string; content?: unknown };
+
+    // Handle role: "toolResult" messages (content is at top level)
+    if (msg.role === "toolResult" && typeof msg.content === "string") {
+      const tokens = Math.ceil(msg.content.length / 4);
+      totalToolTokens += tokens;
+      candidates.push({ msgIdx: i, blockIdx: -1, tokens });
+      continue;
+    }
+
+    // Handle array content blocks with type: "tool_result"
+    if (Array.isArray(msg.content)) {
+      for (let j = msg.content.length - 1; j >= 0; j--) {
+        if (isToolResultBlock(msg.content[j])) {
+          const tokens = estimateBlockTokens(msg.content[j]);
+          totalToolTokens += tokens;
+          candidates.push({ msgIdx: i, blockIdx: j, tokens });
+        }
+      }
+    }
+  }
+
+  // Decide how much to prune
+  const potentialSavings = totalToolTokens - PRUNE_PRESERVE_TOKENS;
+  if (potentialSavings < PRUNE_MIN_SAVINGS) {
+    return { messages, prunedTokens: 0, prunedCount: 0 };
+  }
+
+  // Second pass: prune oldest tool results first (candidates are in reverse order,
+  // so the oldest are at the end — we prune from the end of the candidates array)
+  let prunedTokens = 0;
+  let prunedCount = 0;
+  const toPrune = new Set<string>(); // "msgIdx:blockIdx"
+
+  // Candidates are ordered newest-first (we walked backwards). Prune from the oldest end.
+  for (let i = candidates.length - 1; i >= 0; i--) {
+    if (prunedTokens >= potentialSavings) break;
+    const c = candidates[i];
+    // Keep at least PRUNE_PRESERVE_TOKENS of tool output
+    const remainingAfterPrune = totalToolTokens - prunedTokens - c.tokens;
+    if (remainingAfterPrune < PRUNE_PRESERVE_TOKENS) continue;
+    toPrune.add(`${c.msgIdx}:${c.blockIdx}`);
+    prunedTokens += c.tokens;
+    prunedCount++;
+  }
+
+  if (prunedCount === 0) return { messages, prunedTokens: 0, prunedCount: 0 };
+
+  // Apply pruning — create a shallow copy with modified messages
+  const result = [...messages];
+  for (const key of toPrune) {
+    const [msgIdxStr, blockIdxStr] = key.split(":");
+    const msgIdx = Number(msgIdxStr);
+    const blockIdx = Number(blockIdxStr);
+
+    if (blockIdx === -1) {
+      // Prune a role: "toolResult" message — replace content
+      result[msgIdx] = { ...result[msgIdx], content: PRUNED_PLACEHOLDER } as AgentMessage;
+    } else {
+      // Prune a tool_result block within an array content message
+      const msg = result[msgIdx] as { content?: unknown[] };
+      if (Array.isArray(msg.content)) {
+        const newContent = [...msg.content];
+        newContent[blockIdx] = {
+          ...(newContent[blockIdx] as object),
+          content: PRUNED_PLACEHOLDER,
+        };
+        result[msgIdx] = { ...result[msgIdx], content: newContent } as AgentMessage;
+      }
+    }
+  }
+
+  return { messages: result, prunedTokens, prunedCount };
+}

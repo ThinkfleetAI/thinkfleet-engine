@@ -36,6 +36,7 @@ import {
   validateGeminiTurns,
 } from "../../pi-embedded-helpers.js";
 import { subscribeEmbeddedPiSession } from "../../pi-embedded-subscribe.js";
+import { pruneOldToolOutputs } from "../../compaction.js";
 import {
   ensurePiCompactionReserveTokens,
   resolveCompactionReserveTokensFloor,
@@ -591,9 +592,18 @@ export async function runEmbeddedAttempt(
           policy: transcriptPolicy,
         });
         cacheTrace?.recordStage("session:sanitized", { messages: prior });
+
+        // Prune old tool result outputs to free context space before validation.
+        const { messages: pruned, prunedTokens, prunedCount } = pruneOldToolOutputs(prior);
+        if (prunedCount > 0) {
+          log.info(
+            `[tool-prune] Cleared ${prunedCount} old tool outputs (~${prunedTokens} tokens)`,
+          );
+        }
+
         const validatedGemini = transcriptPolicy.validateGeminiTurns
-          ? validateGeminiTurns(prior)
-          : prior;
+          ? validateGeminiTurns(pruned)
+          : pruned;
         const validated = transcriptPolicy.validateAnthropicTurns
           ? validateAnthropicTurns(validatedGemini)
           : validatedGemini;

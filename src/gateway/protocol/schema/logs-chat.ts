@@ -83,6 +83,8 @@ export const ChatEventSchema = Type.Object(
       Type.Literal("aborted"),
       Type.Literal("error"),
     ]),
+    /** When true, delta message.content[0].text contains only the NEW text since last delta (append, don't replace). */
+    incremental: Type.Optional(Type.Boolean()),
     message: Type.Optional(Type.Unknown()),
     errorMessage: Type.Optional(Type.String()),
     usage: Type.Optional(Type.Unknown()),

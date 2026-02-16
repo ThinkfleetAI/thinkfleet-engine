@@ -82,6 +82,8 @@ export type ChatRunState = {
   registry: ChatRunRegistry;
   buffers: Map<string, string>;
   deltaSentAt: Map<string, number>;
+  /** Tracks how many characters of the buffer have already been sent as deltas. */
+  deltaSentLength: Map<string, number>;
   abortedRuns: Map<string, number>;
   clear: () => void;
 };
@@ -90,12 +92,14 @@ export function createChatRunState(): ChatRunState {
   const registry = createChatRunRegistry();
   const buffers = new Map<string, string>();
   const deltaSentAt = new Map<string, number>();
+  const deltaSentLength = new Map<string, number>();
   const abortedRuns = new Map<string, number>();
 
   const clear = () => {
     registry.clear();
     buffers.clear();
     deltaSentAt.clear();
+    deltaSentLength.clear();
     abortedRuns.clear();
   };
 
@@ -103,6 +107,7 @@ export function createChatRunState(): ChatRunState {
     registry,
     buffers,
     deltaSentAt,
+    deltaSentLength,
     abortedRuns,
     clear,
   };
@@ -137,16 +142,25 @@ export function createAgentEventHandler({
     chatRunState.buffers.set(clientRunId, text);
     const now = Date.now();
     const last = chatRunState.deltaSentAt.get(clientRunId) ?? 0;
-    if (now - last < 150) return;
+    if (now - last < 50) return;
     chatRunState.deltaSentAt.set(clientRunId, now);
+
+    // Send only the NEW text since our last emission (incremental delta).
+    // This cuts bandwidth ~50% vs re-sending the full accumulated buffer.
+    const sentSoFar = chatRunState.deltaSentLength.get(clientRunId) ?? 0;
+    const delta = text.slice(sentSoFar);
+    if (!delta) return;
+    chatRunState.deltaSentLength.set(clientRunId, text.length);
+
     const payload = {
       runId: clientRunId,
       sessionKey,
       seq,
       state: "delta" as const,
+      incremental: true,
       message: {
         role: "assistant",
-        content: [{ type: "text", text }],
+        content: [{ type: "text", text: delta }],
         timestamp: now,
       },
     };
@@ -166,29 +180,34 @@ export function createAgentEventHandler({
   ) => {
     const text = chatRunState.buffers.get(clientRunId)?.trim() ?? "";
 
-    // Flush the final accumulated delta so the UI has the complete text before
-    // the "final" event arrives. Without this, the 150ms throttle can cause the
-    // last streaming update to be skipped, leaving the UI with a stale/incomplete sentence.
+    // Flush any remaining unsent delta so the UI has the complete text before
+    // the "final" event arrives.
     if (text) {
-      const deltaPayload = {
-        runId: clientRunId,
-        sessionKey,
-        seq,
-        state: "delta" as const,
-        message: {
-          role: "assistant",
-          content: [{ type: "text", text }],
-          timestamp: Date.now(),
-        },
-      };
-      if (!shouldSuppressHeartbeatBroadcast(clientRunId)) {
-        broadcast("chat", deltaPayload, { dropIfSlow: true });
+      const sentSoFar = chatRunState.deltaSentLength.get(clientRunId) ?? 0;
+      const remainingDelta = text.slice(sentSoFar);
+      if (remainingDelta) {
+        const deltaPayload = {
+          runId: clientRunId,
+          sessionKey,
+          seq,
+          state: "delta" as const,
+          incremental: true,
+          message: {
+            role: "assistant",
+            content: [{ type: "text", text: remainingDelta }],
+            timestamp: Date.now(),
+          },
+        };
+        if (!shouldSuppressHeartbeatBroadcast(clientRunId)) {
+          broadcast("chat", deltaPayload, { dropIfSlow: true });
+        }
+        nodeSendToSession(sessionKey, "chat", deltaPayload);
       }
-      nodeSendToSession(sessionKey, "chat", deltaPayload);
     }
 
     chatRunState.buffers.delete(clientRunId);
     chatRunState.deltaSentAt.delete(clientRunId);
+    chatRunState.deltaSentLength.delete(clientRunId);
     if (jobState === "done") {
       const payload = {
         runId: clientRunId,
@@ -301,6 +320,7 @@ export function createAgentEventHandler({
         chatRunState.abortedRuns.delete(evt.runId);
         chatRunState.buffers.delete(clientRunId);
         chatRunState.deltaSentAt.delete(clientRunId);
+        chatRunState.deltaSentLength.delete(clientRunId);
         if (chatLink) {
           chatRunState.registry.remove(evt.runId, clientRunId, sessionKey);
         }
