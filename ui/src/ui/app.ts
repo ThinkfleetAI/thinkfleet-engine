@@ -119,7 +119,8 @@ export class ThinkFleetBotApp extends LitElement {
   @state() setupWizardApiKeyTesting = false;
   @state() setupWizardSaasApiUrl = "";
   @state() setupWizardSaasAgentDbId = "";
-  @state() setupWizardSaasGatewayToken = "";
+  @state() setupWizardSaasOAuthClientId = "";
+  @state() setupWizardSaasOAuthClientSecret = "";
   @state() setupWizardSaasValid: boolean | null = null;
   @state() setupWizardSaasTesting = false;
   @state() setupWizardSaasOrgName = "";

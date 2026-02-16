@@ -53,7 +53,8 @@ export type AppViewState = {
   setupWizardApiKeyTesting: boolean;
   setupWizardSaasApiUrl: string;
   setupWizardSaasAgentDbId: string;
-  setupWizardSaasGatewayToken: string;
+  setupWizardSaasOAuthClientId: string;
+  setupWizardSaasOAuthClientSecret: string;
   setupWizardSaasValid: boolean | null;
   setupWizardSaasTesting: boolean;
   setupWizardSaasOrgName: string;

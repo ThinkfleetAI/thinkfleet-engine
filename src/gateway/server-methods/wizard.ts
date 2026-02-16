@@ -259,16 +259,41 @@ export const wizardHandlers: GatewayRequestHandlers = {
     }
     const apiUrl = (params.apiUrl as string).replace(/\/+$/, "");
     const agentDbId = params.agentDbId as string;
-    const gatewayToken = (params.gatewayToken as string | undefined) || "";
+    const oauthClientId = params.oauthClientId as string;
+    const oauthClientSecret = params.oauthClientSecret as string;
     try {
-      const url = `${apiUrl}/api/internal/health?agentDbId=${encodeURIComponent(agentDbId)}`;
-      const headers: Record<string, string> = {};
-      if (gatewayToken) {
-        headers["Authorization"] = `Bearer ${gatewayToken}`;
+      // Step 1: Exchange OAuth credentials for an access token
+      const tokenUrl = `${apiUrl}/api/internal/oauth/token`;
+      const tokenRes = await fetch(tokenUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "client_credentials",
+          client_id: oauthClientId,
+          client_secret: oauthClientSecret,
+        }).toString(),
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!tokenRes.ok) {
+        const body = await tokenRes.text().catch(() => "");
+        respond(
+          true,
+          {
+            ok: false,
+            error: `OAuth token exchange failed (${tokenRes.status}): ${body.slice(0, 200)}`,
+          },
+          undefined,
+        );
+        return;
       }
-      const res = await fetch(url, {
+      const tokenData = (await tokenRes.json()) as { access_token?: string };
+      const accessToken = tokenData.access_token ?? "";
+
+      // Step 2: Verify SaaS reachability with the access token
+      const healthUrl = `${apiUrl}/api/internal/health?agentDbId=${encodeURIComponent(agentDbId)}`;
+      const res = await fetch(healthUrl, {
         method: "GET",
-        headers,
+        headers: { Authorization: `Bearer ${accessToken}` },
         signal: AbortSignal.timeout(10_000),
       });
       if (res.ok) {

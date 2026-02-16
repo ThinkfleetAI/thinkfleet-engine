@@ -39,11 +39,12 @@ export async function testSaasConnection(
   client: GatewayBrowserClient,
   apiUrl: string,
   agentDbId: string,
-  gatewayToken?: string,
+  oauthClientId: string,
+  oauthClientSecret: string,
 ): Promise<TestSaasConnectionResult> {
   return client.request<TestSaasConnectionResult>(
     "wizard.testSaasConnection",
-    { apiUrl, agentDbId, gatewayToken },
+    { apiUrl, agentDbId, oauthClientId, oauthClientSecret },
   );
 }
 

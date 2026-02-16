@@ -152,7 +152,8 @@ export const WizardTestSaasConnectionParamsSchema = Type.Object(
   {
     apiUrl: NonEmptyString,
     agentDbId: NonEmptyString,
-    gatewayToken: Type.Optional(Type.String()),
+    oauthClientId: NonEmptyString,
+    oauthClientSecret: NonEmptyString,
   },
   { additionalProperties: false },
 );

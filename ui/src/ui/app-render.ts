@@ -160,7 +160,8 @@ export function renderApp(state: AppViewState) {
       apiKeyTesting: state.setupWizardApiKeyTesting,
       saasApiUrl: state.setupWizardSaasApiUrl,
       saasAgentDbId: state.setupWizardSaasAgentDbId,
-      saasGatewayToken: state.setupWizardSaasGatewayToken,
+      saasOAuthClientId: state.setupWizardSaasOAuthClientId,
+      saasOAuthClientSecret: state.setupWizardSaasOAuthClientSecret,
       saasValid: state.setupWizardSaasValid,
       saasTesting: state.setupWizardSaasTesting,
       saasOrgName: state.setupWizardSaasOrgName,
@@ -209,13 +210,18 @@ export function renderApp(state: AppViewState) {
         state.setupWizardSaasValid = null;
         state.setupWizardError = null;
       },
-      onSetSaasGatewayToken: (token) => {
-        state.setupWizardSaasGatewayToken = token;
+      onSetSaasOAuthClientId: (id) => {
+        state.setupWizardSaasOAuthClientId = id;
+        state.setupWizardSaasValid = null;
+        state.setupWizardError = null;
+      },
+      onSetSaasOAuthClientSecret: (secret) => {
+        state.setupWizardSaasOAuthClientSecret = secret;
         state.setupWizardSaasValid = null;
         state.setupWizardError = null;
       },
       onTestSaasConnection: async () => {
-        if (!state.client || !state.setupWizardSaasApiUrl || !state.setupWizardSaasAgentDbId) return;
+        if (!state.client || !state.setupWizardSaasApiUrl || !state.setupWizardSaasAgentDbId || !state.setupWizardSaasOAuthClientId || !state.setupWizardSaasOAuthClientSecret) return;
         state.setupWizardSaasTesting = true;
         state.setupWizardSaasValid = null;
         state.setupWizardError = null;
@@ -224,7 +230,8 @@ export function renderApp(state: AppViewState) {
             state.client,
             state.setupWizardSaasApiUrl,
             state.setupWizardSaasAgentDbId,
-            state.setupWizardSaasGatewayToken || undefined,
+            state.setupWizardSaasOAuthClientId,
+            state.setupWizardSaasOAuthClientSecret,
           );
           state.setupWizardSaasValid = result.ok;
           state.setupWizardSaasOrgName = result.orgName ?? "";

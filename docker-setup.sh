@@ -179,7 +179,8 @@ docker compose "${COMPOSE_ARGS[@]}" up -d thinkfleetbot-gateway
 PORT="${THINKFLEETBOT_GATEWAY_PORT}"
 echo "==> Waiting for gateway to be ready..."
 for i in $(seq 1 30); do
-  if curl -sf "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then
+  if curl -sf -H "Authorization: Bearer ${THINKFLEETBOT_GATEWAY_TOKEN}" "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then
+    echo "Gateway is ready."
     break
   fi
   sleep 1
