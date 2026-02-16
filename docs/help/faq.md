@@ -269,8 +269,8 @@ Tip: ask the agent to **plan and supervise** the fix (step-by-step), then execut
 necessary commands. That keeps changes small and easier to audit.
 
 If you discover a real bug or fix, please file a GitHub issue or send a PR:
-https://github.com/thinkfleetbot/thinkfleet-engine/issues
-https://github.com/thinkfleetbot/thinkfleet-engine/pulls
+https://github.com/ThinkfleetAI/thinkfleet-engine/issues
+https://github.com/ThinkfleetAI/thinkfleet-engine/pulls
 
 Start with these commands (share outputs when asking for help):
 
@@ -305,7 +305,7 @@ The wizard can also build UI assets automatically. After onboarding, you typical
 From source (contributors/dev):
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
+git clone https://github.com/ThinkfleetAI/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm build
@@ -408,7 +408,7 @@ Related: [Migrating](/install/migrating), [Where things live on disk](/help/faq#
 ### Where do I see whats new in the latest version
 
 Check the GitHub changelog:  
-https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/CHANGELOG.md
+https://github.com/ThinkfleetAI/thinkfleet-engine/blob/main/CHANGELOG.md
 
 Newest entries are at the top. If the top section is marked **Unreleased**, the next dated
 section is the latest shipped version. Entries are grouped by **Highlights**, **Changes**, and
@@ -422,7 +422,7 @@ detail: [Troubleshooting](/help/troubleshooting#docsthinkfleetbot-shows-an-ssl-e
 Please help us unblock it by reporting here: https://spa.xfinity.com/check_url_status.
 
 If you still can't reach the site, the docs are mirrored on GitHub:
-https://github.com/thinkfleetbot/thinkfleet-engine/tree/main/docs
+https://github.com/ThinkfleetAI/thinkfleet-engine/tree/main/docs
 
 ### Whats the difference between stable and beta
 
@@ -435,7 +435,7 @@ that same version to `latest`**. That’s why beta and stable can point at the
 **same version**.
 
 See what changed:  
-https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/CHANGELOG.md
+https://github.com/ThinkfleetAI/thinkfleet-engine/blob/main/CHANGELOG.md
 
 ### How do I install the beta version and whats the difference between beta and dev
 
@@ -484,7 +484,7 @@ That gives you a local repo you can edit, then update via git.
 
 If you prefer a clean clone manually, use:
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
+git clone https://github.com/ThinkfleetAI/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm build
@@ -802,7 +802,7 @@ This **does not delete your data** - it only changes the ThinkFleetBot code inst
 From npm → git:
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
+git clone https://github.com/ThinkfleetAI/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm build
@@ -2723,4 +2723,4 @@ You can add options like `debounce:2s cap:25 drop:summarize` for followup modes.
 
 ---
 
-Still stuck? Ask in [Discord](https://discord.com/invite/thinkfleet) or open a [GitHub discussion](https://github.com/thinkfleetbot/thinkfleet-engine/discussions).
+Still stuck? Ask in [Discord](https://discord.com/invite/thinkfleet) or open a [GitHub discussion](https://github.com/ThinkfleetAI/thinkfleet-engine/discussions).

@@ -8,7 +8,7 @@ read_when:
 
 # Ansible Installation
 
-The recommended way to deploy ThinkFleetBot to production servers is via **[thinkfleetbot-ansible](https://github.com/thinkfleetbot/thinkfleet-engine-ansible)** — an automated installer with security-first architecture.
+The recommended way to deploy ThinkFleetBot to production servers is via **[thinkfleetbot-ansible](https://github.com/ThinkfleetAI/thinkfleet-engine-ansible)** — an automated installer with security-first architecture.
 
 ## Quick Start
 
@@ -18,7 +18,7 @@ One-command install:
 curl -fsSL https://raw.githubusercontent.com/thinkfleetbot/thinkfleetbot-ansible/main/install.sh | bash
 ```
 
-> **📦 Full guide: [github.com/thinkfleetbot/thinkfleet-engine-ansible](https://github.com/thinkfleetbot/thinkfleet-engine-ansible)**
+> **📦 Full guide: [github.com/ThinkfleetAI/thinkfleet-engine-ansible](https://github.com/ThinkfleetAI/thinkfleet-engine-ansible)**
 >
 > The thinkfleetbot-ansible repo is the source of truth for Ansible deployment. This page is a quick overview.
 
@@ -117,7 +117,7 @@ If you prefer manual control over the automation:
 sudo apt update && sudo apt install -y ansible git
 
 # 2. Clone repository
-git clone https://github.com/thinkfleetbot/thinkfleet-engine-ansible.git
+git clone https://github.com/ThinkfleetAI/thinkfleet-engine-ansible.git
 cd thinkfleetbot-ansible
 
 # 3. Install Ansible collections
@@ -193,13 +193,13 @@ thinkfleetbot channels login
 ## Advanced Configuration
 
 For detailed security architecture and troubleshooting:
-- [Security Architecture](https://github.com/thinkfleetbot/thinkfleet-engine-ansible/blob/main/docs/security.md)
-- [Technical Details](https://github.com/thinkfleetbot/thinkfleet-engine-ansible/blob/main/docs/architecture.md)
-- [Troubleshooting Guide](https://github.com/thinkfleetbot/thinkfleet-engine-ansible/blob/main/docs/troubleshooting.md)
+- [Security Architecture](https://github.com/ThinkfleetAI/thinkfleet-engine-ansible/blob/main/docs/security.md)
+- [Technical Details](https://github.com/ThinkfleetAI/thinkfleet-engine-ansible/blob/main/docs/architecture.md)
+- [Troubleshooting Guide](https://github.com/ThinkfleetAI/thinkfleet-engine-ansible/blob/main/docs/troubleshooting.md)
 
 ## Related
 
-- [thinkfleetbot-ansible](https://github.com/thinkfleetbot/thinkfleet-engine-ansible) — full deployment guide
+- [thinkfleetbot-ansible](https://github.com/ThinkfleetAI/thinkfleet-engine-ansible) — full deployment guide
 - [Docker](/install/docker) — containerized gateway setup
 - [Sandboxing](/gateway/sandboxing) — agent sandbox configuration
 - [Multi-Agent Sandbox & Tools](/multi-agent-sandbox-tools) — per-agent isolation

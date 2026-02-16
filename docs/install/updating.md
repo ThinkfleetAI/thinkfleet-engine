@@ -125,7 +125,7 @@ thinkfleetbot health
 ```
 
 Notes:
-- `pnpm build` matters when you run the packaged `thinkfleetbot` binary ([`thinkfleetbot.mjs`](https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/thinkfleetbot.mjs)) or use Node to run `dist/`.
+- `pnpm build` matters when you run the packaged `thinkfleetbot` binary ([`thinkfleetbot.mjs`](https://github.com/ThinkfleetAI/thinkfleet-engine/blob/main/thinkfleetbot.mjs)) or use Node to run `dist/`.
 - If you run from a repo checkout without a global install, use `pnpm thinkfleetbot ...` for CLI commands.
 - If you run directly from TypeScript (`pnpm thinkfleetbot ...`), a rebuild is usually unnecessary, but **config migrations still apply** → run doctor.
 - Switching between global and git installs is easy: install the other flavor, then run `thinkfleetbot doctor` so the gateway service entrypoint is rewritten to the current install.

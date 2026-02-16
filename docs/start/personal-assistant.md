@@ -34,7 +34,7 @@ npm install -g thinkfleetbot@latest
 From source (development):
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
+git clone https://github.com/ThinkfleetAI/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run

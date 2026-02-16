@@ -13,11 +13,11 @@
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/thinkfleetbot/thinkfleet-engine"
+      "url": "https://github.com/ThinkfleetAI/thinkfleet-engine"
     },
     {
       "name": "Releases",
-      "url": "https://github.com/thinkfleetbot/thinkfleet-engine/releases"
+      "url": "https://github.com/ThinkfleetAI/thinkfleet-engine/releases"
     }
   ],
   "redirects": [

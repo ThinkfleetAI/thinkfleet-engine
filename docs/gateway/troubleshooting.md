@@ -580,7 +580,7 @@ tccutil reset All ai.thinkfleet.mac.debug
 ```
 
 **Fix 2: Force New Bundle ID**
-If resetting doesn't work, change the `BUNDLE_ID` in [`scripts/package-mac-app.sh`](https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/scripts/package-mac-app.sh) (e.g., add a `.test` suffix) and rebuild. This forces macOS to treat it as a new app.
+If resetting doesn't work, change the `BUNDLE_ID` in [`scripts/package-mac-app.sh`](https://github.com/ThinkfleetAI/thinkfleet-engine/blob/main/scripts/package-mac-app.sh) (e.g., add a `.test` suffix) and rebuild. This forces macOS to treat it as a new app.
 
 ### Gateway stuck on "Starting..."
 

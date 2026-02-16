@@ -188,7 +188,7 @@ docker compose version
 ## 6) Clone the ThinkFleetBot repository
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
+git clone https://github.com/ThinkfleetAI/thinkfleet-engine.git
 cd thinkfleetbot
 ```
 

@@ -18,8 +18,8 @@ read_when:
 </p>
 
 <p align="center">
-  <a href="https://github.com/thinkfleetbot/thinkfleet-engine">GitHub</a> ·
-  <a href="https://github.com/thinkfleetbot/thinkfleet-engine/releases">Releases</a> ·
+  <a href="https://github.com/ThinkfleetAI/thinkfleet-engine">GitHub</a> ·
+  <a href="https://github.com/ThinkfleetAI/thinkfleet-engine/releases">Releases</a> ·
   <a href="/">Docs</a> ·
   <a href="/start/assistant">ThinkFleetBot assistant setup</a>
 </p>
@@ -120,7 +120,7 @@ Switching between npm and git installs later is easy: install the other flavor a
 From source (development):
 
 ```bash
-git clone https://github.com/thinkfleetbot/thinkfleet-engine.git
+git clone https://github.com/ThinkfleetAI/thinkfleet-engine.git
 cd thinkfleetbot
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run

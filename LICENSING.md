@@ -37,4 +37,4 @@ Third-party dependencies retain their original licenses.
 ## Questions?
 
 - Enterprise licensing: enterprise@thinkfleet.com
-- General questions: https://github.com/thinkfleetbot/thinkfleet-engine/discussions
+- General questions: https://github.com/ThinkfleetAI/thinkfleet-engine/discussions

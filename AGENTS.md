@@ -1,5 +1,5 @@
 # Repository Guidelines
-- Repo: https://github.com/thinkfleetbot/thinkfleet-engine
+- Repo: https://github.com/ThinkfleetAI/thinkfleet-engine
 - GitHub issues/comments/PR comments: use literal multiline strings or `-F - <<'EOF'` (or $'...') for real newlines; never embed "\\n".
 
 ## SaaS Integration Architecture

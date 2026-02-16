@@ -3,7 +3,7 @@
 Welcome aboard!
 
 ## Quick Links
-- **GitHub:** https://github.com/thinkfleetbot/thinkfleet-engine
+- **GitHub:** https://github.com/ThinkfleetAI/thinkfleet-engine
 - **Discord:** https://discord.gg/qkhbAGHRBT
 - **X/Twitter:** [@thinkfleetbot](https://x.com/thinkfleetbot)
 
@@ -20,7 +20,7 @@ Welcome aboard!
 
 ## How to Contribute
 1. **Bugs & small fixes** → Open a PR!
-2. **New features / architecture** → Start a [GitHub Discussion](https://github.com/thinkfleetbot/thinkfleet-engine/discussions) or ask in Discord first
+2. **New features / architecture** → Start a [GitHub Discussion](https://github.com/ThinkfleetAI/thinkfleet-engine/discussions) or ask in Discord first
 3. **Questions** → Discord #setup-help
 
 ## Before You PR
@@ -49,7 +49,7 @@ We are currently prioritizing:
 - **Skills**: Expanding the library of bundled skills and improving the Skill Creation developer experience.
 - **Performance**: Optimizing token usage and compaction logic.
 
-Check the [GitHub Issues](https://github.com/thinkfleetbot/thinkfleet-engine/issues) for "good first issue" labels!
+Check the [GitHub Issues](https://github.com/ThinkfleetAI/thinkfleet-engine/issues) for "good first issue" labels!
 
 ## Developer Certificate of Origin (DCO)
 
