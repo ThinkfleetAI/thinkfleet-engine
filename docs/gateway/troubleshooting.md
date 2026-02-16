@@ -576,7 +576,7 @@ If the app disappears or shows "Abort trap 6" when you click "Allow" on a privac
 
 **Fix 1: Reset TCC Cache**
 ```bash
-tccutil reset All bot.molt.mac.debug
+tccutil reset All ai.thinkfleet.mac.debug
 ```
 
 **Fix 2: Force New Bundle ID**
@@ -591,7 +591,7 @@ If the gateway is supervised by launchd, killing the PID will just respawn it. S
 ```bash
 thinkfleetbot gateway status
 thinkfleetbot gateway stop
-# Or: launchctl bootout gui/$UID/bot.molt.gateway (replace with bot.molt.<profile>; legacy com.thinkfleetbot.* still works)
+# Or: launchctl bootout gui/$UID/ai.thinkfleet.gateway (replace with ai.thinkfleet.<profile>; legacy com.thinkfleetbot.* still works)
 ```
 
 **Fix 2: Port is busy (find the listener)**

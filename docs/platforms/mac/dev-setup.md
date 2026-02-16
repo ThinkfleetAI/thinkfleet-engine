@@ -74,7 +74,7 @@ If the app crashes when you try to allow **Speech Recognition** or **Microphone*
 **Fix:**
 1. Reset the TCC permissions:
    ```bash
-   tccutil reset All bot.molt.mac.debug
+   tccutil reset All ai.thinkfleet.mac.debug
    ```
 2. If that fails, change the `BUNDLE_ID` temporarily in [`scripts/package-mac-app.sh`](https://github.com/thinkfleetbot/thinkfleet-engine/blob/main/scripts/package-mac-app.sh) to force a "clean slate" from macOS.
 

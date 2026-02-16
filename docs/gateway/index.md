@@ -56,7 +56,7 @@ Usually unnecessary: one Gateway can serve multiple messaging channels and agent
 Supported if you isolate state + config and use unique ports. Full guide: [Multiple gateways](/gateway/multiple-gateways).
 
 Service names are profile-aware:
-- macOS: `bot.molt.<profile>` (legacy `com.thinkfleetbot.*` may still exist)
+- macOS: `ai.thinkfleet.<profile>` (legacy `com.thinkfleetbot.*` may still exist)
 - Linux: `thinkfleetbot-gateway-<profile>.service`
 - Windows: `ThinkFleetBot Gateway (<profile>)`
 
@@ -181,8 +181,8 @@ See also: [Presence](/concepts/presence) for how presence is produced/deduped an
   - StandardOut/Err: file paths or `syslog`
 - On failure, launchd restarts; fatal misconfig should keep exiting so the operator notices.
 - LaunchAgents are per-user and require a logged-in session; for headless setups use a custom LaunchDaemon (not shipped).
-  - `thinkfleetbot gateway install` writes `~/Library/LaunchAgents/bot.molt.gateway.plist`
-    (or `bot.molt.<profile>.plist`; legacy `com.thinkfleetbot.*` is cleaned up).
+  - `thinkfleetbot gateway install` writes `~/Library/LaunchAgents/ai.thinkfleet.gateway.plist`
+    (or `ai.thinkfleet.<profile>.plist`; legacy `com.thinkfleetbot.*` is cleaned up).
   - `thinkfleetbot doctor` audits the LaunchAgent config and can update it to current defaults.
 
 ## Gateway service management (CLI)
@@ -213,11 +213,11 @@ Notes:
 
 Bundled mac app:
 - ThinkFleetBot.app can bundle a Node-based gateway relay and install a per-user LaunchAgent labeled
-  `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.thinkfleetbot.*` labels still unload cleanly).
-- To stop it cleanly, use `thinkfleetbot gateway stop` (or `launchctl bootout gui/$UID/bot.molt.gateway`).
-- To restart, use `thinkfleetbot gateway restart` (or `launchctl kickstart -k gui/$UID/bot.molt.gateway`).
+  `ai.thinkfleet.gateway` (or `ai.thinkfleet.<profile>`; legacy `com.thinkfleetbot.*` labels still unload cleanly).
+- To stop it cleanly, use `thinkfleetbot gateway stop` (or `launchctl bootout gui/$UID/ai.thinkfleet.gateway`).
+- To restart, use `thinkfleetbot gateway restart` (or `launchctl kickstart -k gui/$UID/ai.thinkfleet.gateway`).
   - `launchctl` only works if the LaunchAgent is installed; otherwise use `thinkfleetbot gateway install` first.
-  - Replace the label with `bot.molt.<profile>` when running a named profile.
+  - Replace the label with `ai.thinkfleet.<profile>` when running a named profile.
 
 ## Supervision (systemd user unit)
 ThinkFleetBot installs a **systemd user service** by default on Linux/WSL2. We

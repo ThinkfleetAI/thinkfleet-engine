@@ -78,7 +78,11 @@ function isThinkfleetGatewayLaunchdService(label: string, contents: string): boo
   if (hasGatewayServiceMarker(contents)) return true;
   const lowerContents = contents.toLowerCase();
   if (!lowerContents.includes("gateway")) return false;
-  return label.startsWith("bot.molt.") || label.startsWith("com.thinkfleet.");
+  return (
+    label.startsWith("ai.thinkfleet.") ||
+    label.startsWith("bot.molt.") ||
+    label.startsWith("com.thinkfleet.")
+  );
 }
 
 function isThinkfleetGatewaySystemdService(name: string, contents: string): boolean {

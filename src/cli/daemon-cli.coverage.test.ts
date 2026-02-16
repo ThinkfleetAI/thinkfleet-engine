@@ -145,7 +145,7 @@ describe("daemon-cli coverage", () => {
         THINKFLEET_CONFIG_PATH: "/tmp/thinkfleet-daemon-state/thinkfleet.json",
         THINKFLEET_GATEWAY_PORT: "19001",
       },
-      sourcePath: "/tmp/bot.molt.gateway.plist",
+      sourcePath: "/tmp/ai.thinkfleet.gateway.plist",
     });
 
     const { registerDaemonCli } = await import("./daemon-cli.js");

@@ -230,7 +230,7 @@ describe("buildServiceEnvironment", () => {
     expect(typeof env.THINKFLEET_SERVICE_VERSION).toBe("string");
     expect(env.THINKFLEET_SYSTEMD_UNIT).toBe("thinkfleet-gateway.service");
     if (process.platform === "darwin") {
-      expect(env.THINKFLEET_LAUNCHD_LABEL).toBe("bot.molt.gateway");
+      expect(env.THINKFLEET_LAUNCHD_LABEL).toBe("ai.thinkfleet.gateway");
     }
   });
 
@@ -241,7 +241,7 @@ describe("buildServiceEnvironment", () => {
     });
     expect(env.THINKFLEET_SYSTEMD_UNIT).toBe("thinkfleet-gateway-work.service");
     if (process.platform === "darwin") {
-      expect(env.THINKFLEET_LAUNCHD_LABEL).toBe("bot.molt.work");
+      expect(env.THINKFLEET_LAUNCHD_LABEL).toBe("ai.thinkfleet.work");
     }
   });
 });

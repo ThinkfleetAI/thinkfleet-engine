@@ -32,15 +32,15 @@ The app does not spawn the Gateway as a child process.
 
 ## Launchd control
 
-The app manages a per‑user LaunchAgent labeled `bot.molt.gateway`
-(or `bot.molt.<profile>` when using `--profile`/`THINKFLEETBOT_PROFILE`; legacy `com.thinkfleetbot.*` still unloads).
+The app manages a per‑user LaunchAgent labeled `ai.thinkfleet.gateway`
+(or `ai.thinkfleet.<profile>` when using `--profile`/`THINKFLEETBOT_PROFILE`; legacy `com.thinkfleetbot.*` still unloads).
 
 ```bash
-launchctl kickstart -k gui/$UID/bot.molt.gateway
-launchctl bootout gui/$UID/bot.molt.gateway
+launchctl kickstart -k gui/$UID/ai.thinkfleet.gateway
+launchctl bootout gui/$UID/ai.thinkfleet.gateway
 ```
 
-Replace the label with `bot.molt.<profile>` when running a named profile.
+Replace the label with `ai.thinkfleet.<profile>` when running a named profile.
 
 If the LaunchAgent isn’t installed, enable it from the app or run
 `thinkfleetbot gateway install`.

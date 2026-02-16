@@ -46,5 +46,5 @@ Use one of these (all supported):
 - Repair/migrate: `thinkfleetbot doctor` (offers to install or fix the service)
 
 The service target depends on OS:
-- macOS: LaunchAgent (`bot.molt.gateway` or `bot.molt.<profile>`; legacy `com.thinkfleetbot.*`)
+- macOS: LaunchAgent (`ai.thinkfleet.gateway` or `ai.thinkfleet.<profile>`; legacy `com.thinkfleetbot.*`)
 - Linux/WSL2: systemd user service (`thinkfleetbot-gateway[-<profile>].service`)

@@ -158,7 +158,7 @@ thinkfleetbot logs --follow
 ```
 
 If you’re supervised:
-- macOS launchd (app-bundled LaunchAgent): `launchctl kickstart -k gui/$UID/bot.molt.gateway` (use `bot.molt.<profile>`; legacy `com.thinkfleetbot.*` still works)
+- macOS launchd (app-bundled LaunchAgent): `launchctl kickstart -k gui/$UID/ai.thinkfleet.gateway` (use `ai.thinkfleet.<profile>`; legacy `com.thinkfleetbot.*` still works)
 - Linux systemd user service: `systemctl --user restart thinkfleetbot-gateway[-<profile>].service`
 - Windows (WSL2): `systemctl --user restart thinkfleetbot-gateway[-<profile>].service`
   - `launchctl`/`systemctl` only work if the service is installed; otherwise run `thinkfleetbot gateway install`.

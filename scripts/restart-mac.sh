@@ -9,7 +9,7 @@ APP_PROCESS_PATTERN="ThinkFleetBot.app/Contents/MacOS/ThinkFleetBot"
 DEBUG_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build/debug/ThinkFleetBot"
 LOCAL_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build-local/debug/ThinkFleetBot"
 RELEASE_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build/release/ThinkFleetBot"
-LAUNCH_AGENT="${HOME}/Library/LaunchAgents/bot.molt.mac.plist"
+LAUNCH_AGENT="${HOME}/Library/LaunchAgents/ai.thinkfleet.mac.plist"
 LOCK_KEY="$(printf '%s' "${ROOT_DIR}" | shasum -a 256 | cut -c1-8)"
 LOCK_DIR="${TMPDIR:-/tmp}/thinkfleetbot-restart-${LOCK_KEY}"
 LOCK_PID_FILE="${LOCK_DIR}/pid"
@@ -145,7 +145,7 @@ kill_all_thinkfleetbot() {
 }
 
 stop_launch_agent() {
-  launchctl bootout gui/"$UID"/bot.molt.mac 2>/dev/null || true
+  launchctl bootout gui/"$UID"/ai.thinkfleet.mac 2>/dev/null || true
 }
 
 # 1) Kill all running instances first.
@@ -265,5 +265,5 @@ else
 fi
 
 if [ "$NO_SIGN" -eq 1 ] && [ "$ATTACH_ONLY" -ne 1 ]; then
-  run_step "show gateway launch agent args (unsigned)" bash -lc "/usr/bin/plutil -p '${HOME}/Library/LaunchAgents/bot.molt.gateway.plist' | head -n 40 || true"
+  run_step "show gateway launch agent args (unsigned)" bash -lc "/usr/bin/plutil -p '${HOME}/Library/LaunchAgents/ai.thinkfleet.gateway.plist' | head -n 40 || true"
 fi

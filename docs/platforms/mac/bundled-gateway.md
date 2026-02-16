@@ -26,11 +26,11 @@ The macOS app’s **Install CLI** button runs the same flow via npm/pnpm (bun no
 ## Launchd (Gateway as LaunchAgent)
 
 Label:
-- `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.thinkfleetbot.*` may remain)
+- `ai.thinkfleet.gateway` (or `ai.thinkfleet.<profile>`; legacy `com.thinkfleetbot.*` may remain)
 
 Plist location (per‑user):
-- `~/Library/LaunchAgents/bot.molt.gateway.plist`
-  (or `~/Library/LaunchAgents/bot.molt.<profile>.plist`)
+- `~/Library/LaunchAgents/ai.thinkfleet.gateway.plist`
+  (or `~/Library/LaunchAgents/ai.thinkfleet.<profile>.plist`)
 
 Manager:
 - The macOS app owns LaunchAgent install/update in Local mode.

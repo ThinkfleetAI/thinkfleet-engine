@@ -78,14 +78,14 @@ Use this if the gateway service keeps running but `thinkfleetbot` is missing.
 
 ### macOS (launchd)
 
-Default label is `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.thinkfleetbot.*` may still exist):
+Default label is `ai.thinkfleet.gateway` (or `ai.thinkfleet.<profile>`; legacy `com.thinkfleetbot.*` may still exist):
 
 ```bash
-launchctl bootout gui/$UID/bot.molt.gateway
-rm -f ~/Library/LaunchAgents/bot.molt.gateway.plist
+launchctl bootout gui/$UID/ai.thinkfleet.gateway
+rm -f ~/Library/LaunchAgents/ai.thinkfleet.gateway.plist
 ```
 
-If you used a profile, replace the label and plist name with `bot.molt.<profile>`. Remove any legacy `com.thinkfleetbot.*` plists if present.
+If you used a profile, replace the label and plist name with `ai.thinkfleet.<profile>`. Remove any legacy `com.thinkfleetbot.*` plists if present.
 
 ### Linux (systemd user unit)
 

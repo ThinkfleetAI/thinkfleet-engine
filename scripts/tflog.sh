@@ -6,7 +6,7 @@
 set -euo pipefail
 
 # Configuration
-SUBSYSTEM="bot.molt"
+SUBSYSTEM="ai.thinkfleet"
 DEFAULT_LEVEL="info"
 
 # Colors for output
@@ -58,7 +58,7 @@ DESCRIPTION:
     Requires sudo access configured for /usr/bin/log command.
 
 LOG FLOW ARCHITECTURE:
-    ThinkFleetBot logs flow through the macOS unified log (subsystem: bot.molt).
+    ThinkFleetBot logs flow through the macOS unified log (subsystem: ai.thinkfleet).
 
 LOG CATEGORIES (examples):
     • voicewake           - Voice wake detection/test harness

@@ -20,7 +20,7 @@ agent (with a session switcher for other sessions).
   ```bash
   dist/ThinkFleetBot.app/Contents/MacOS/ThinkFleetBot --webchat
   ```
-- Logs: `./scripts/tflog.sh` (subsystem `bot.molt`, category `WebChatSwiftUI`).
+- Logs: `./scripts/tflog.sh` (subsystem `ai.thinkfleet`, category `WebChatSwiftUI`).
 
 ## How it’s wired
 

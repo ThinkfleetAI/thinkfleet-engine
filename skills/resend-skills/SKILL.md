@@ -19,7 +19,7 @@ Resend is an email platform for developers. This skill routes to feature-specifi
 |---------|-------|----------|
 | **Sending emails** | `send-email` | Transactional emails, notifications, batch sends |
 | **Receiving emails** | `resend-inbound` | Processing inbound emails, webhooks for received mail, attachments |
-| **AI Agent inbox** | `moltbot` | Setting up email for AI agents with security measures against prompt injection |
+| **AI Agent inbox** | `agent-inbox` | Setting up email for AI agents with security measures against prompt injection |
 
 ## Quick Routing
 
@@ -34,7 +34,7 @@ Resend is an email platform for developers. This skill routes to feature-specifi
 - Retrieving email content and attachments
 - Forwarding received emails
 
-**Setting up an AI agent inbox?** Use `moltbot` skill
+**Setting up an AI agent inbox?** Use `agent-inbox` skill
 - Configuring email for ThinkFleet or similar AI agents
 - Webhook setup with ngrok/tunneling for local development
 - Security levels to prevent prompt injection attacks
